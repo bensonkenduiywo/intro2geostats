@@ -1,0 +1,10 @@
+List of health facilities with geographical location
+
+This data set shows the list of operating health facilities with geographical location
+
+Ministry of Health and Social Welfare
+
+http://opendata.go.tz/dataset/list-of-health-facilities-with-geographical-location
+
+Downloaded August 2016
+
