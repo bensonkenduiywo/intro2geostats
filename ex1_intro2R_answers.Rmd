@@ -1,0 +1,67 @@
+---
+title: "Manipulating data in R"
+author: "Benson Kenduiywo"
+date: "26/11/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Reading data
+
+Our first exercise entails reading data from files and summarizing and combining the records. This is very common and important step; but somewhat tricky to learn.  We will use the data in a file named "Operating-Health-Facilities-with-location-2014.csv" under "data" read the data in the file into a data.frame and answer all the questions by using R code only. 
+
+Replace the ___________ with the appropriate code 
+
+Feel free to use materials of Introduction to R in: http://rspatial.org/intr/.
+
+1. Read the file into a data.frame.
+
+```{r d1}
+d <- read.csv("Operating-Health-Facilities-with-location-2014.csv", stringsAsFactors=FALSE)
+
+```
+
+2. how many rows and columns are there?
+
+```{r d2}
+dim(d)
+nrow(d)
+ncol(d)
+```
+
+
+3. what are the variable names?
+
+```{r d3}
+colnames(d)
+head(d)
+tail(d)
+```
+
+
+4. What is the number of facilities for each zone?
+See [data exploration](https://rspatial.org/intr/7-explore.html#data-exploration)
+
+```{r d4}
+table(d$ZONE) 
+summary(d)
+plot(sort(d$LATITUDE))
+
+```
+
+5. Which region has most facilities (and how many), and which has least (and how many)?
+
+```{r d4}
+x <- table(d$REGION)
+names(which.min(x))
+min(x)
+names(which.max(x))
+max(x)
+
+```
+
+
+

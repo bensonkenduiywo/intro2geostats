@@ -375,18 +375,158 @@ summary {
 <p>Replace the ___________ with the appropriate code</p>
 <p>Feel free to use materials of Introduction to R in: <a href="http://rspatial.org/intr/" class="uri">http://rspatial.org/intr/</a>.</p>
 <ol style="list-style-type: decimal">
-<li><p>Read the file into a data.frame. d &lt;- read.csv(___________, stringsAsFactors=FALSE)</p></li>
-<li><p>how many rows and columns are there? _________</p></li>
-<li><p>what are the variable names? _________</p></li>
-<li><p>What is the number of facilities for each zone? See <a href="https://rspatial.org/intr/7-explore.html#data-exploration">data exploration</a> table(_________)</p></li>
-<li><p>Which region has most facilities (and how many), and which has least (and how many)?</p></li>
+<li>Read the file into a data.frame.</li>
 </ol>
-<ul>
-<li>x &lt;- table(_________)<br></li>
-<li>names(which.min(_________)) <br></li>
-<li>names(x)[which.min(x)]<br></li>
-<li>min(_________)<br></li>
-</ul>
+<blockquote>
+<p>d &lt;- read.csv(___________, stringsAsFactors=FALSE)</p>
+</blockquote>
+<ol start="2" style="list-style-type: decimal">
+<li>how many rows and columns are there?</li>
+</ol>
+<blockquote>
+<hr />
+</blockquote>
+<ol start="3" style="list-style-type: decimal">
+<li>what are the variable names?</li>
+</ol>
+<blockquote>
+<hr />
+</blockquote>
+<ol start="4" style="list-style-type: decimal">
+<li>What is the number of facilities for each zone? See <a href="https://rspatial.org/intr/7-explore.html#data-exploration">data exploration</a></li>
+</ol>
+<blockquote>
+<p>table(_________)</p>
+</blockquote>
+<ol start="5" style="list-style-type: decimal">
+<li>Which region has most facilities (and how many), and which has least (and how many)?</li>
+</ol>
+<blockquote>
+<p>x &lt;- table(_________)<br> names(which.min(_________)) <br> names(x)[which.min(x)]<br> min(_________)<br></p>
+</blockquote>
+<ol start="6" style="list-style-type: decimal">
+<li>What is the average elevation of all clinics?</li>
+</ol>
+<blockquote>
+<p>mean(_________, na.rm=_________)</p>
+</blockquote>
+<ol start="7" style="list-style-type: decimal">
+<li>Create a data.frame with four columns: ZONE, REGION, the number of facilities, and their average elevation (by REGION)</li>
+</ol>
+<blockquote>
+<p>we want something like this</p>
+</blockquote>
+<table>
+<thead>
+<tr class="header">
+<th>ZONE</th>
+<th>REGION</th>
+<th>elevation</th>
+<th>n</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1 Central</td>
+<td>Dodoma</td>
+<td>1059.4</td>
+<td>369</td>
+</tr>
+<tr class="even">
+<td>2 Central</td>
+<td>Singida</td>
+<td>1355.4</td>
+<td>210</td>
+</tr>
+<tr class="odd">
+<td>3 Eastern</td>
+<td>Dar es Salaam</td>
+<td>54.4</td>
+<td>599</td>
+</tr>
+</tbody>
+</table>
+<p>We can use the aggregate function. If you struggle, divide and conquer. Do what you can do first. Split the task into parts, and then combine them again later.</p>
+<blockquote>
+<p>One approach: a1 &lt;- aggregate(_________, d[, c(‘ZONE’, ‘REGION’)], FUN=_________, na.rm=_________) a2 &lt;- aggregate(d$ALTITUDE, d[, c(‘ZONE’, ‘REGION’)], FUN=_________) a &lt;- merge(_________, _________, by=_________)</p>
+</blockquote>
+<p>7b. provide appropriate column names</p>
+<blockquote>
+<p>colnames(a)____ &lt;- c(‘elevation’, ‘n’)</p>
+</blockquote>
+<p>7c. sort by ZONE, REGION. See Introduction to R. Chapter 11</p>
+<blockquote>
+<p>a &lt;- a[order(_________, _________), ]</p>
+</blockquote>
+<p>7d. elevation should be rounded to the nearest 10 cm</p>
+<blockquote>
+<p>a$elevation &lt;- _________(_________ , _________)</p>
+</blockquote>
+<p>7e. show the first five lines of the data.frame</p>
+<blockquote>
+<p>a[_________, ]</p>
+</blockquote>
+<p>7f. Save “a” in a file on your disk (comma separated by values format)</p>
+<blockquote>
+<p>write._________(_________, _________, row.names=FALSE)</p>
+</blockquote>
+<ol start="8" style="list-style-type: decimal">
+<li>Also read fdile “Tanzania-All-Waterpoints-July-2015.csv”</li>
+</ol>
+<blockquote>
+<p>w &lt;- read.csv(_________, stringsAsFactors=FALSE)</p>
+</blockquote>
+<ol start="9" style="list-style-type: decimal">
+<li>For each region, compute the total number of water points, and the total number of people served (POPULATION.SERVED), and the most common quantity (“WATER_QUAN”) and type (“WATERPOINT”) (either use the “modal” function from the raster package; or use the table function</li>
+</ol>
+<blockquote>
+<p>number of water points:</p>
+</blockquote>
+<blockquote>
+<p>wa &lt;- aggregate(w[, _________], w[, ‘REGION’, drop=FALSE], _________) colnames(wa)[2] &lt;- ‘nwp’</p>
+</blockquote>
+<blockquote>
+<p>number of people served</p>
+</blockquote>
+<blockquote>
+<p>wb &lt;- aggregate(w[, _________, drop=FALSE], w[, ‘REGION’, drop=FALSE], _________, na.rm=TRUE)</p>
+</blockquote>
+<blockquote>
+<p>modal function from the raster package</p>
+</blockquote>
+<blockquote>
+<p>library(raster) wc &lt;- aggregate(w[, _________], w[, ‘REGION’, drop=FALSE], modal, na.rm=TRUE)</p>
+</blockquote>
+<blockquote>
+<p>or</p>
+</blockquote>
+<blockquote>
+<p>f &lt;- function(x) names(which.max(table(x))) wc &lt;- aggregate(w[, _________], w[, ‘REGION’, drop=FALSE], f)</p>
+</blockquote>
+<blockquote>
+<p>combine:</p>
+</blockquote>
+<blockquote>
+<p>water &lt;- merge(_________, _________, by=‘REGION’) water &lt;- merge(water, _________, by=‘REGION’)</p>
+</blockquote>
+<ol start="10" style="list-style-type: decimal">
+<li>Make a table that shows counts of water quality types (“WATER_QUAL”) by region</li>
+</ol>
+<blockquote>
+<p>qual &lt;- table(_________, _________)</p>
+</blockquote>
+<ol start="11" style="list-style-type: decimal">
+<li>Make a new data.frame that combines the REGION level totals/averages for the Health facilities and for the water points, and for the water quality to get something like:</li>
+</ol>
+<blockquote>
+<p>m &lt;- merge(a, water, by=‘REGION’) q &lt;- as.data.frame.matrix(qual) result &lt;- merge(_________, _________, by.x=‘REGION’, by.y=0) head(result)</p>
+</blockquote>
+<blockquote>
+<p>or</p>
+</blockquote>
+<blockquote>
+<p>m &lt;- merge(a, water, by=‘REGION’) qq &lt;- as.data.frame(qual) qq &lt;- reshape(, direction=‘wide’, timevar=‘Var2’, idvar=‘Var1’) result &lt;- merge(_________, _________, by.x=‘REGION’, by.y=1)</p>
+</blockquote>
 </div>
 
 

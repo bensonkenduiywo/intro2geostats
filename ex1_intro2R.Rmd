@@ -18,24 +18,119 @@ Replace the ___________ with the appropriate code
 Feel free to use materials of Introduction to R in: http://rspatial.org/intr/.
 
 1. Read the file into a data.frame.
-d <- read.csv(___________, stringsAsFactors=FALSE)
+
+> d <- read.csv(___________, stringsAsFactors=FALSE)
 
 2. how many rows and columns are there?
-_________
+
+> _________
 
 3. what are the variable names?
-_________
+
+> _________
 
 4. What is the number of facilities for each zone?
 See [data exploration](https://rspatial.org/intr/7-explore.html#data-exploration)
-table(_________) 
 
+> table(_________) 
 
 5. Which region has most facilities (and how many), and which has least (and how many)?
 
-- x <- table(_________)<br> 
-- names(which.min(_________)) <br> 
-- names(x)[which.min(x)]<br> 
-- min(_________)<br> 
+> x <- table(_________)<br> 
+> names(which.min(_________)) <br> 
+> names(x)[which.min(x)]<br> 
+> min(_________)<br> 
+
+6. What is the average elevation of all clinics?
+
+> mean(_________, na.rm=_________)
+
+
+7. Create a data.frame with four columns: ZONE, REGION, the number of facilities, and their average elevation (by REGION)
+
+> we want something like this
+
+| ZONE      | REGION        | elevation | n   |
+|-----------|---------------|-----------|-----|
+| 1 Central | Dodoma        | 1059.4    | 369 |
+| 2 Central | Singida       | 1355.4    | 210 |
+| 3 Eastern | Dar es Salaam | 54.4      | 599 |
+
+We can use the aggregate function. If you struggle, divide and conquer. Do what you can do first. Split the task into parts, and then combine them again later.
+
+> One approach:
+> a1 <- aggregate(_________, d[, c('ZONE', 'REGION')], FUN=_________, na.rm=_________) 
+> a2 <- aggregate(d$ALTITUDE, d[, c('ZONE', 'REGION')], FUN=_________)
+> a <- merge(_________, _________, by=_________)
+ 
+7b. provide appropriate column names 
+
+> colnames(a)____  <- c('elevation', 'n')
+
+7c. sort by ZONE, REGION. See Introduction to R. Chapter 11
+
+> a <- a[order(_________, _________), ]
+
+7d. elevation should be rounded to the nearest 10 cm
+
+> a$elevation <- _________(_________ , _________)
+
+7e. show the first five lines of the data.frame
+
+> a[_________, ]
+
+7f. Save "a" in a file on your disk (comma separated by values format)
+
+> write._________(_________, _________, row.names=FALSE)
+
+8. Also read fdile "Tanzania-All-Waterpoints-July-2015.csv"
+
+> w <- read.csv(_________, stringsAsFactors=FALSE)
+
+9. For each region, compute the total number of water points, and the total number of people served (POPULATION.SERVED),  and the most common quantity ("WATER_QUAN") and type ("WATERPOINT") (either use the "modal" function from the raster package; or  use the table function
+
+>  number of water points:
+
+> wa <- aggregate(w[, _________], w[, 'REGION', drop=FALSE], _________) 
+colnames(wa)[2] <- 'nwp'
+
+> number of people served 
+
+> wb <- aggregate(w[, _________, drop=FALSE], w[, 'REGION', drop=FALSE], _________, na.rm=TRUE) 
+
+> modal function from the raster package
+
+> library(raster)
+>  wc <- aggregate(w[, _________], w[, 'REGION', drop=FALSE], modal, na.rm=TRUE) 
+
+> or
+
+> f <- function(x) names(which.max(table(x)))
+wc <- aggregate(w[, _________], w[, 'REGION', drop=FALSE], f) 
+
+> combine:
+
+> water <- merge(_________, _________, by='REGION')
+> water <- merge(water, _________, by='REGION')
+
+10. Make a table that shows counts of water quality types ("WATER_QUAL") by region
+
+> qual <- table(_________, _________)
+
+11. Make a new data.frame that combines the REGION level totals/averages for the  Health facilities and for the water points, and for the water quality
+to get something like:
+
+>  m <- merge(a, water, by='REGION')
+> q <- as.data.frame.matrix(qual)
+>  result <- merge(_________, _________, by.x='REGION', by.y=0)
+> head(result)
+
+> or
+
+> m <- merge(a, water, by='REGION')
+> qq <- as.data.frame(qual)
+> qq <- reshape(, direction='wide', timevar='Var2', idvar='Var1')
+> result <- merge(_________, _________, by.x='REGION', by.y=1)
+
 
 
