@@ -128,8 +128,11 @@ to get something like:
 > or
 
 > m <- merge(a, water, by='REGION')
+
 > qq <- as.data.frame(qual)
+
 > qq <- reshape(, direction='wide', timevar='Var2', idvar='Var1')
+
 > result <- merge(_________, _________, by.x='REGION', by.y=1)
 
 
