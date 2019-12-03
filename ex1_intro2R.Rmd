@@ -58,10 +58,10 @@ See [data exploration](https://rspatial.org/intr/7-explore.html#data-exploration
 
 We can use the aggregate function. If you struggle, divide and conquer. Do what you can do first. Split the task into parts, and then combine them again later.
 
-> One approach:
-> a1 <- aggregate(_________, d[, c('ZONE', 'REGION')], FUN=_________, na.rm=_________) 
-> a2 <- aggregate(d$ALTITUDE, d[, c('ZONE', 'REGION')], FUN=_________)
-> a <- merge(_________, _________, by=_________)
+> One approach: <br>
+> a1 <- aggregate(_________, d[, c('ZONE', 'REGION')], FUN=_________, na.rm=_________)<br> 
+> a2 <- aggregate(d$ALTITUDE, d[, c('ZONE', 'REGION')], FUN=_________)<br>
+> a <- merge(_________, _________, by=_________)<br>
  
 7b. provide appropriate column names 
 
@@ -89,51 +89,48 @@ We can use the aggregate function. If you struggle, divide and conquer. Do what 
 
 9. For each region, compute the total number of water points, and the total number of people served (POPULATION.SERVED),  and the most common quantity ("WATER_QUAN") and type ("WATERPOINT") (either use the "modal" function from the raster package; or  use the table function
 
->  number of water points:
+>  number of water points:<br>
+> wa <- aggregate(w[, _________], w[, 'REGION', drop=FALSE], _________)<br> 
+> colnames(wa)[2] <- 'nwp'<br>
+> number of people served<br> 
+> wb <- aggregate(w[, _________, drop=FALSE], w[, 'REGION', drop=FALSE], _________, na.rm=TRUE)<br> 
+> Get modal function from the raster package<br>
 
-> wa <- aggregate(w[, _________], w[, 'REGION', drop=FALSE], _________) 
-colnames(wa)[2] <- 'nwp'
+> library(raster) <br>
+>  wc <- aggregate(w[, _________], w[, 'REGION', drop=FALSE], modal, na.rm=TRUE)<br> 
+> or make a function using which.max()<br>
+> f <- function(x) names(which.max(table(x)))<br>
+> wc <- aggregate(w[, _________], w[, 'REGION', drop=FALSE], f)<br> 
+> combine: <br>
 
-> number of people served 
-
-> wb <- aggregate(w[, _________, drop=FALSE], w[, 'REGION', drop=FALSE], _________, na.rm=TRUE) 
-
-> modal function from the raster package
-
-> library(raster)
->  wc <- aggregate(w[, _________], w[, 'REGION', drop=FALSE], modal, na.rm=TRUE) 
-
-> or
-
-> f <- function(x) names(which.max(table(x)))
-wc <- aggregate(w[, _________], w[, 'REGION', drop=FALSE], f) 
-
-> combine:
-
-> water <- merge(_________, _________, by='REGION')
-> water <- merge(water, _________, by='REGION')
+> water <- merge(_________, _________, by='REGION')<br>
+> water <- merge(water, _________, by='REGION')<br>
 
 10. Make a table that shows counts of water quality types ("WATER_QUAL") by region
 
 > qual <- table(_________, _________)
 
-11. Make a new data.frame that combines the REGION level totals/averages for the  Health facilities and for the water points, and for the water quality
-to get something like:
+11. Make a new data.frame that combines the REGION level totals/averages for the  Health facilities and for the water points, and for the water quality to get something like:
 
->  m <- merge(a, water, by='REGION')
-> q <- as.data.frame.matrix(qual)
->  result <- merge(_________, _________, by.x='REGION', by.y=0)
-> head(result)
+| REGION | ZONE               | elevation | n   | nwp  | POPULATION.SERVED | WATER_QUAN   | WATERPOINT         | coloured | fluoride | fluoride abandoned | good | milky | salty | salty abandoned | soft | unknown |
+|--------|--------------------|-----------|-----|------|-------------------|--------------|--------------------|----------|----------|--------------------|------|-------|-------|-----------------|------|---------|
+| Arusha | Northern           | 1542.9    | 334 | 4564 | 1776454           | insufficient | communal standpipe | 18       | 161      | 1                  | 0    | 5     | 20    | 1               | 4227 | 131     |
+| Dodoma | Central            | 1059.4    | 369 | 3532 | 4239573           | enough       | communal standpipe | 38       | 0        | 0                  | 0    | 21    | 594   | 22              | 2694 | 163     |
+| Geita  | Lake               | 1721.7    | 143 | 1944 | 384               | enough       | hand pump          | 32       | 1        | 0                  | 0    | 33    | 51    | 1               | 1561 | 265     |
+| Iringa | Southern Highlands | 1541.1    | 241 | 2292 | 108092            | enough       | communal standpipe | 3        | 0        | 0                  | 0    | 0     | 27    | 4               | 2191 | 67      |
+| Kagera | Lake               | 1426.5    | 298 | 4531 | 572969            | enough       | communal standpipe | 64       | 5        | 0                  | 0    | 76    | 117   | 2               | 4066 | 201     |
+| Katavi | Southern Highlands | 1162.5    | 77  | 1069 | 217               | enough       | hand pump          | 6        | 0        | 0                  | 0    | 6     | 127   | 2               | 907  | 21      |
 
-> or
 
-> m <- merge(a, water, by='REGION')
-
-> qq <- as.data.frame(qual)
-
-> qq <- reshape(, direction='wide', timevar='Var2', idvar='Var1')
-
-> result <- merge(_________, _________, by.x='REGION', by.y=1)
+> m <- merge(a, water, by='REGION')<br>
+> q <- as.data.frame.matrix(qual)<br>
+>  result <- merge(_________, _________, by.x='REGION', by.y=0)<br>
+> head(result)<br>
+> or<br>
+> m <- merge(a, water, by='REGION')<br>
+> qq <- as.data.frame(qual)<br>
+> qq <- reshape(, direction='wide', timevar='Var2', idvar='Var1')<br>
+> result <- merge(_________, _________, by.x='REGION', by.y=1)<br>
 
 
 

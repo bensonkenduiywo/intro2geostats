@@ -54,7 +54,7 @@ plot(sort(d$LATITUDE))
 
 5. Which region has most facilities (and how many), and which has least (and how many)?
 
-```{r d4}
+```{r d5}
 x <- table(d$REGION)
 names(which.min(x))
 min(x)
@@ -63,5 +63,156 @@ max(x)
 
 ```
 
+6. What is the average elevation of all clinics?
 
+```{r 6}
+mean(d$ALTITUDE, na.rm=TRUE)
+
+
+```
+
+
+7a. Create a data.frame with four columns: ZONE, REGION, the number of facilities, and their average elevation (by REGION)
+
+> we want something like this
+
+| ZONE      | REGION        | elevation | n   |
+|-----------|---------------|-----------|-----|
+| 1 Central | Dodoma        | 1059.4    | 369 |
+| 2 Central | Singida       | 1355.4    | 210 |
+| 3 Eastern | Dar es Salaam | 54.4      | 599 |
+
+We can use the aggregate function. If you struggle, divide and conquer. Do what you can do first. Split the task into parts, and then combine them again later.
+
+```{r 7a}
+#Start with mean
+a <- aggregate(d[, "ALTITUDE", drop=FALSE], d[, c("ZONE","REGION"), drop=FALSE], mean, na.rm=TRUE)
+head(a)
+#The number of facilities
+b <- aggregate(d[, "FACILITY_ID_NUMBER", drop=FALSE], d[, c("ZONE","REGION"), drop=FALSE], length)
+head(b)
+a <- merge(a, b, by = c("ZONE","REGION") )
+
+```
+
+Can also be done using a loop as follows:
+
+```{r 7ab}
+r <- sort(unique(d$REGION))
+result <- matrix(nrow=length(r), ncol=4)
+colnames(result) <- c("ZONE", "REGION", "ALTITUDE", "Facilities")
+for (i in 1:length(r)) {
+  m <- d[d$REGION==r[i], ]
+  result[i,1] = unique(m$ZONE)
+  result[i,2] = r[i]
+  result[i,3] = mean(m$ALTITUDE, na.rm = TRUE)
+  result[i,4] = length(m$ALTITUDE)
+}
+result <- as.data.frame(result)
+head(result)
+
+```
+
+
+7b. provide appropriate column names 
+
+```{r 7b}
+colnames(a)[3:4] <- c('ELEVATION', 'FACILITIES No.')
+head(a)
+```
+
+
+7c. sort by ZONE, REGION. See Introduction to R. Chapter 11
+
+```{r 7c}
+a <- a[order(a$ZONE, a$REGION), ]
+head(a)
+```
+
+
+7d. elevation should be rounded to the nearest 10 cm
+
+```{r 7d}
+a$ELEVATION <- round(a$ELEVATION, 1)
+
+```
+
+
+7e. show the first five lines of the data.frame
+
+```{r 7e}
+head(a, n=5)
+#or
+a[1:5, ]
+```
+
+
+
+7f. Save "a" in a file on your disk (comma separated by values format)
+
+```{r 7f}
+write.csv(a, paste0(tempdir(),'\\test.csv'), row.names=FALSE)
+
+```
+
+
+8. Also read file "Tanzania-All-Waterpoints-July-2015.csv"
+
+```{r 8}
+w <- read.csv("Tanzania-All-Waterpoints-July-2015.csv", stringsAsFactors=FALSE)
+
+```
+
+
+9. For each region, compute the total number of water points, and the total number of people served (POPULATION.SERVED),  and the most common quantity ("WATER_QUAN") and type ("WATERPOINT") (either use the "modal" function from the raster package; or  use the table function
+
+```{r 9}
+wa <- aggregate(w[, 'POPULATION.SERVED'], w[, 'REGION', drop=FALSE], length) 
+colnames(wa)[2] <- 'nwp'
+wb <- aggregate(w[, 'POPULATION.SERVED', drop=FALSE], w[, 'REGION', drop=FALSE], sum, na.rm=TRUE) 
+
+library(raster)
+wc <- aggregate(w[, c('WATER_QUAN', 'WATERPOINT')], w[, 'REGION', drop=FALSE], modal, na.rm=TRUE) 
+# or
+f <- function(x) names(which.max(table(x)))
+wc <- aggregate(w[, c('WATER_QUAN', 'WATERPOINT')], w[, 'REGION', drop=FALSE], f) 
+
+#combine:
+water <- merge(wa, wb, by='REGION')
+water <- merge(water, wc, by='REGION')
+head(water)
+```
+
+
+10. Make a table that shows counts of water quality types ("WATER_QUAL") by region
+
+```{r 10}
+qual <- table(w$REGION, w$WATER_QUAL)
+head(qual, n=2)
+```
+
+
+11. Make a new data.frame that combines the REGION level totals/averages for the  Health facilities and for the water points, and for the water quality to get something like:
+
+| REGION | ZONE               | elevation | n   | nwp  | POPULATION.SERVED | WATER_QUAN   | WATERPOINT         | coloured | fluoride | fluoride abandoned | good | milky | salty | salty abandoned | soft | unknown |
+|--------|--------------------|-----------|-----|------|-------------------|--------------|--------------------|----------|----------|--------------------|------|-------|-------|-----------------|------|---------|
+| Arusha | Northern           | 1542.9    | 334 | 4564 | 1776454           | insufficient | communal standpipe | 18       | 161      | 1                  | 0    | 5     | 20    | 1               | 4227 | 131     |
+| Dodoma | Central            | 1059.4    | 369 | 3532 | 4239573           | enough       | communal standpipe | 38       | 0        | 0                  | 0    | 21    | 594   | 22              | 2694 | 163     |
+| Geita  | Lake               | 1721.7    | 143 | 1944 | 384               | enough       | hand pump          | 32       | 1        | 0                  | 0    | 33    | 51    | 1               | 1561 | 265     |
+| Iringa | Southern Highlands | 1541.1    | 241 | 2292 | 108092            | enough       | communal standpipe | 3        | 0        | 0                  | 0    | 0     | 27    | 4               | 2191 | 67      |
+| Kagera | Lake               | 1426.5    | 298 | 4531 | 572969            | enough       | communal standpipe | 64       | 5        | 0                  | 0    | 76    | 117   | 2               | 4066 | 201     |
+| Katavi | Southern Highlands | 1162.5    | 77  | 1069 | 217               | enough       | hand pump          | 6        | 0        | 0                  | 0    | 6     | 127   | 2               | 907  | 21      |
+
+
+```{r 11}
+m <- merge(a, water, by='REGION')
+q <- as.data.frame.matrix(qual)
+m <- merge(m, q, by.x='REGION', by.y=0)
+# or
+m <- merge(a, water, by='REGION')
+qq <- as.data.frame(qual)
+qq <- reshape(qq, direction='wide', timevar='Var2', idvar='Var1')
+m <- merge(m, qq, by.x='REGION', by.y=1)
+
+```
 

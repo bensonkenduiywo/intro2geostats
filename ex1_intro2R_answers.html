@@ -377,42 +377,141 @@ summary {
 <ol style="list-style-type: decimal">
 <li>Read the file into a data.frame.</li>
 </ol>
-<blockquote>
-<p>d &lt;- read.csv(___________, stringsAsFactors=FALSE)</p>
-</blockquote>
+<pre class="r"><code>d &lt;- read.csv(&quot;Operating-Health-Facilities-with-location-2014.csv&quot;, stringsAsFactors=FALSE)</code></pre>
 <ol start="2" style="list-style-type: decimal">
 <li>how many rows and columns are there?</li>
 </ol>
-<blockquote>
-<hr />
-</blockquote>
+<pre class="r"><code>dim(d)</code></pre>
+<pre><code>## [1] 7071   12</code></pre>
+<pre class="r"><code>nrow(d)</code></pre>
+<pre><code>## [1] 7071</code></pre>
+<pre class="r"><code>ncol(d)</code></pre>
+<pre><code>## [1] 12</code></pre>
 <ol start="3" style="list-style-type: decimal">
 <li>what are the variable names?</li>
 </ol>
-<blockquote>
-<hr />
-</blockquote>
+<pre class="r"><code>colnames(d)</code></pre>
+<pre><code>##  [1] &quot;FACILITY_ID_NUMBER&quot;          &quot;FACILITY_NAME&quot;              
+##  [3] &quot;LATITUDE&quot;                    &quot;LONGITUDE&quot;                  
+##  [5] &quot;ZONE&quot;                        &quot;REGION&quot;                     
+##  [7] &quot;COUNCIL&quot;                     &quot;COMMON.FACILITY.HEALTH.NAME&quot;
+##  [9] &quot;ALTITUDE&quot;                    &quot;FACILITY.TYPE&quot;              
+## [11] &quot;OWNERSHIP&quot;                   &quot;OPERATING_STATUS&quot;</code></pre>
+<pre class="r"><code>head(d)</code></pre>
+<pre><code>##   FACILITY_ID_NUMBER     FACILITY_NAME LATITUDE LONGITUDE
+## 1           100000-9 BUPANDAGILA - SDA -2.64496  34.01009
+## 2           100001-7     BUPANDWAMHELA -2.44682  32.15260
+## 3           100002-5            BUPIGI -3.55117  33.69935
+## 4           100003-3            BUPIGU -9.50139  33.34760
+## 5           100004-1              BUPU -7.19919  39.02250
+## 6           100005-8            BURERE -1.30831  33.96400
+##                 ZONE    REGION                    COUNCIL
+## 1            Western    Simiyu       Bariadi Town Council
+## 2               Lake    Mwanza Sengerema District Council
+## 3            Western Shinyanga   Kishapu District Council
+## 4 Southern Highlands     Mbeya     Ileje District Council
+## 5            Eastern     Pwani  Mkuranga District Council
+## 6               Lake      Mara     Rorya District Council
+##   COMMON.FACILITY.HEALTH.NAME ALTITUDE FACILITY.TYPE
+## 1                                 1298    Dispensary
+## 2                    Zahanati     1171    Dispensary
+## 3                      Bupigi     1175    Dispensary
+## 4                                 1234    Dispensary
+## 5                                  143    Dispensary
+## 6                                 3899    Dispensary
+##                  OWNERSHIP OPERATING_STATUS
+## 1 Faith based organization        Operating
+## 2                   Public        Operating
+## 3                   Public        Operating
+## 4                   Public        Operating
+## 5                   Public        Operating
+## 6 Faith based organization        Operating</code></pre>
+<pre class="r"><code>tail(d)</code></pre>
+<pre><code>##      FACILITY_ID_NUMBER FACILITY_NAME  LATITUDE LONGITUDE    ZONE
+## 7066           110843-0        MADONA -6.827267  39.23248 Eastern
+## 7067           110844-8   AAR MBAGALA -6.910340  39.26977 Eastern
+## 7068           110845-5       KANDAGA -4.960950  29.84394 Western
+## 7069           110846-3       KALENGE -4.956860  29.87916 Western
+## 7070           110847-1         MLELA -4.918070  29.85859 Western
+## 7071           110848-9         MLELA -4.918070  29.85859 Western
+##             REGION                  COUNCIL COMMON.FACILITY.HEALTH.NAME
+## 7066 Dar es Salaam  Ilala Municipal Council                      Madona
+## 7067 Dar es Salaam Temeke Municipal Council          AAR Mbagala Clinic
+## 7068        Kigoma                                              KANDAGA
+## 7069        Kigoma                                              KALENGE
+## 7070        Kigoma                                                MLELA
+## 7071        Kigoma                                                MLELA
+##      ALTITUDE FACILITY.TYPE OWNERSHIP OPERATING_STATUS
+## 7066       NA Health Centre   Private        Operating
+## 7067       66    Dispensary   Private        Operating
+## 7068       NA    Dispensary    Public        Operating
+## 7069     1035    Dispensary    Public        Operating
+## 7070       NA    Dispensary    Public        Operating
+## 7071      929    Dispensary    Public        Operating</code></pre>
 <ol start="4" style="list-style-type: decimal">
 <li>What is the number of facilities for each zone? See <a href="https://rspatial.org/intr/7-explore.html#data-exploration">data exploration</a></li>
 </ol>
-<blockquote>
-<p>table(_________)</p>
-</blockquote>
+<pre class="r"><code>table(d$ZONE) </code></pre>
+<pre><code>## 
+##            Central            Eastern               Lake 
+##                579               1242               1078 
+##           Northern           Southern Southern Highlands 
+##               1274                716               1232 
+##            Western 
+##                950</code></pre>
+<pre class="r"><code>summary(d)</code></pre>
+<pre><code>##  FACILITY_ID_NUMBER FACILITY_NAME         LATITUDE         LONGITUDE    
+##  Length:7071        Length:7071        Min.   :-11.648   Min.   :29.61  
+##  Class :character   Class :character   1st Qu.: -8.009   1st Qu.:33.29  
+##  Mode  :character   Mode  :character   Median : -5.698   Median :35.43  
+##                                        Mean   : -5.877   Mean   :35.43  
+##                                        3rd Qu.: -3.419   3rd Qu.:37.77  
+##                                        Max.   : -1.004   Max.   :40.42  
+##                                        NA&#39;s   :888       NA&#39;s   :888    
+##      ZONE              REGION            COUNCIL         
+##  Length:7071        Length:7071        Length:7071       
+##  Class :character   Class :character   Class :character  
+##  Mode  :character   Mode  :character   Mode  :character  
+##                                                          
+##                                                          
+##                                                          
+##                                                          
+##  COMMON.FACILITY.HEALTH.NAME    ALTITUDE     FACILITY.TYPE     
+##  Length:7071                 Min.   : -317   Length:7071       
+##  Class :character            1st Qu.:  518   Class :character  
+##  Mode  :character            Median : 1167   Mode  :character  
+##                              Mean   : 1077                     
+##                              3rd Qu.: 1388                     
+##                              Max.   :18804                     
+##                              NA&#39;s   :2316                      
+##   OWNERSHIP         OPERATING_STATUS  
+##  Length:7071        Length:7071       
+##  Class :character   Class :character  
+##  Mode  :character   Mode  :character  
+##                                       
+##                                       
+##                                       
+## </code></pre>
+<pre class="r"><code>plot(sort(d$LATITUDE))</code></pre>
+<p><img src="data:image/png;base64,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" width="672" /></p>
 <ol start="5" style="list-style-type: decimal">
 <li>Which region has most facilities (and how many), and which has least (and how many)?</li>
 </ol>
-<blockquote>
-<p>x &lt;- table(_________)<br> names(which.min(_________)) <br> names(x)[which.min(x)]<br> min(_________)<br></p>
-</blockquote>
+<pre class="r"><code>x &lt;- table(d$REGION)
+names(which.min(x))</code></pre>
+<pre><code>## [1] &quot;Katavi&quot;</code></pre>
+<pre class="r"><code>min(x)</code></pre>
+<pre><code>## [1] 77</code></pre>
+<pre class="r"><code>names(which.max(x))</code></pre>
+<pre><code>## [1] &quot;Dar es Salaam&quot;</code></pre>
+<pre class="r"><code>max(x)</code></pre>
+<pre><code>## [1] 599</code></pre>
 <ol start="6" style="list-style-type: decimal">
 <li>What is the average elevation of all clinics?</li>
 </ol>
-<blockquote>
-<p>mean(_________, na.rm=_________)</p>
-</blockquote>
-<ol start="7" style="list-style-type: decimal">
-<li>Create a data.frame with four columns: ZONE, REGION, the number of facilities, and their average elevation (by REGION)</li>
-</ol>
+<pre class="r"><code>mean(d$ALTITUDE, na.rm=TRUE)</code></pre>
+<pre><code>## [1] 1076.533</code></pre>
+<p>7a. Create a data.frame with four columns: ZONE, REGION, the number of facilities, and their average elevation (by REGION)</p>
 <blockquote>
 <p>we want something like this</p>
 </blockquote>
@@ -447,53 +546,129 @@ summary {
 </tbody>
 </table>
 <p>We can use the aggregate function. If you struggle, divide and conquer. Do what you can do first. Split the task into parts, and then combine them again later.</p>
-<blockquote>
-<p>One approach: <br> a1 &lt;- aggregate(_________, d[, c(‘ZONE’, ‘REGION’)], FUN=_________, na.rm=_________)<br> a2 &lt;- aggregate(d$ALTITUDE, d[, c(‘ZONE’, ‘REGION’)], FUN=_________)<br> a &lt;- merge(_________, _________, by=_________)<br></p>
-</blockquote>
+<pre class="r"><code>#Start with mean
+a &lt;- aggregate(d[, &quot;ALTITUDE&quot;, drop=FALSE], d[, c(&quot;ZONE&quot;,&quot;REGION&quot;), drop=FALSE], mean, na.rm=TRUE)
+head(a)</code></pre>
+<pre><code>##                 ZONE        REGION   ALTITUDE
+## 1           Northern        Arusha 1542.92913
+## 2            Eastern Dar es Salaam   54.40603
+## 3            Central        Dodoma 1059.37631
+## 4               Lake         Geita 1721.67273
+## 5 Southern Highlands        Iringa 1541.08995
+## 6               Lake        Kagera 1426.51852</code></pre>
+<pre class="r"><code>#The number of facilities
+b &lt;- aggregate(d[, &quot;FACILITY_ID_NUMBER&quot;, drop=FALSE], d[, c(&quot;ZONE&quot;,&quot;REGION&quot;), drop=FALSE], length)
+head(b)</code></pre>
+<pre><code>##                 ZONE        REGION FACILITY_ID_NUMBER
+## 1           Northern        Arusha                334
+## 2            Eastern Dar es Salaam                599
+## 3            Central        Dodoma                369
+## 4               Lake         Geita                143
+## 5 Southern Highlands        Iringa                241
+## 6               Lake        Kagera                298</code></pre>
+<pre class="r"><code>a &lt;- merge(a, b, by = c(&quot;ZONE&quot;,&quot;REGION&quot;) )</code></pre>
+<p>Can also be done using a loop as follows:</p>
+<pre class="r"><code>r &lt;- sort(unique(d$REGION))
+result &lt;- matrix(nrow=length(r), ncol=4)
+colnames(result) &lt;- c(&quot;ZONE&quot;, &quot;REGION&quot;, &quot;ALTITUDE&quot;, &quot;Facilities&quot;)
+for (i in 1:length(r)) {
+  m &lt;- d[d$REGION==r[i], ]
+  result[i,1] = unique(m$ZONE)
+  result[i,2] = r[i]
+  result[i,3] = mean(m$ALTITUDE, na.rm = TRUE)
+  result[i,4] = length(m$ALTITUDE)
+}
+result &lt;- as.data.frame(result)
+head(result)</code></pre>
+<pre><code>##                 ZONE        REGION         ALTITUDE Facilities
+## 1           Northern        Arusha 1542.92913385827        334
+## 2            Eastern Dar es Salaam 54.4060324825986        599
+## 3            Central        Dodoma 1059.37630662021        369
+## 4               Lake         Geita 1721.67272727273        143
+## 5 Southern Highlands        Iringa 1541.08994708995        241
+## 6               Lake        Kagera 1426.51851851852        298</code></pre>
 <p>7b. provide appropriate column names</p>
-<blockquote>
-<p>colnames(a)____ &lt;- c(‘elevation’, ‘n’)</p>
-</blockquote>
+<pre class="r"><code>colnames(a)[3:4] &lt;- c(&#39;ELEVATION&#39;, &#39;FACILITIES No.&#39;)
+head(a)</code></pre>
+<pre><code>##      ZONE        REGION  ELEVATION FACILITIES No.
+## 1 Central        Dodoma 1059.37631            369
+## 2 Central       Singida 1355.35065            210
+## 3 Eastern Dar es Salaam   54.40603            599
+## 4 Eastern      Morogoro  633.95902            357
+## 5 Eastern         Pwani  132.02765            286
+## 6    Lake         Geita 1721.67273            143</code></pre>
 <p>7c. sort by ZONE, REGION. See Introduction to R. Chapter 11</p>
-<blockquote>
-<p>a &lt;- a[order(_________, _________), ]</p>
-</blockquote>
+<pre class="r"><code>a &lt;- a[order(a$ZONE, a$REGION), ]
+head(a)</code></pre>
+<pre><code>##      ZONE        REGION  ELEVATION FACILITIES No.
+## 1 Central        Dodoma 1059.37631            369
+## 2 Central       Singida 1355.35065            210
+## 3 Eastern Dar es Salaam   54.40603            599
+## 4 Eastern      Morogoro  633.95902            357
+## 5 Eastern         Pwani  132.02765            286
+## 6    Lake         Geita 1721.67273            143</code></pre>
 <p>7d. elevation should be rounded to the nearest 10 cm</p>
-<blockquote>
-<p>a$elevation &lt;- _________(_________ , _________)</p>
-</blockquote>
+<pre class="r"><code>a$ELEVATION &lt;- round(a$ELEVATION, 1)</code></pre>
 <p>7e. show the first five lines of the data.frame</p>
-<blockquote>
-<p>a[_________, ]</p>
-</blockquote>
+<pre class="r"><code>head(a, n=5)</code></pre>
+<pre><code>##      ZONE        REGION ELEVATION FACILITIES No.
+## 1 Central        Dodoma    1059.4            369
+## 2 Central       Singida    1355.4            210
+## 3 Eastern Dar es Salaam      54.4            599
+## 4 Eastern      Morogoro     634.0            357
+## 5 Eastern         Pwani     132.0            286</code></pre>
+<pre class="r"><code>#or
+a[1:5, ]</code></pre>
+<pre><code>##      ZONE        REGION ELEVATION FACILITIES No.
+## 1 Central        Dodoma    1059.4            369
+## 2 Central       Singida    1355.4            210
+## 3 Eastern Dar es Salaam      54.4            599
+## 4 Eastern      Morogoro     634.0            357
+## 5 Eastern         Pwani     132.0            286</code></pre>
 <p>7f. Save “a” in a file on your disk (comma separated by values format)</p>
-<blockquote>
-<p>write._________(_________, _________, row.names=FALSE)</p>
-</blockquote>
+<pre class="r"><code>write.csv(a, paste0(tempdir(),&#39;\\test.csv&#39;), row.names=FALSE)</code></pre>
 <ol start="8" style="list-style-type: decimal">
-<li>Also read fdile “Tanzania-All-Waterpoints-July-2015.csv”</li>
+<li>Also read file “Tanzania-All-Waterpoints-July-2015.csv”</li>
 </ol>
-<blockquote>
-<p>w &lt;- read.csv(_________, stringsAsFactors=FALSE)</p>
-</blockquote>
+<pre class="r"><code>w &lt;- read.csv(&quot;Tanzania-All-Waterpoints-July-2015.csv&quot;, stringsAsFactors=FALSE)</code></pre>
 <ol start="9" style="list-style-type: decimal">
 <li>For each region, compute the total number of water points, and the total number of people served (POPULATION.SERVED), and the most common quantity (“WATER_QUAN”) and type (“WATERPOINT”) (either use the “modal” function from the raster package; or use the table function</li>
 </ol>
-<blockquote>
-<p>number of water points:<br> wa &lt;- aggregate(w[, _________], w[, ‘REGION’, drop=FALSE], _________)<br> colnames(wa)[2] &lt;- ‘nwp’<br> number of people served<br> wb &lt;- aggregate(w[, _________, drop=FALSE], w[, ‘REGION’, drop=FALSE], _________, na.rm=TRUE)<br> Get modal function from the raster package<br></p>
-</blockquote>
-<blockquote>
-<p>library(raster) <br> wc &lt;- aggregate(w[, _________], w[, ‘REGION’, drop=FALSE], modal, na.rm=TRUE)<br> or make a function using which.max()<br> f &lt;- function(x) names(which.max(table(x)))<br> wc &lt;- aggregate(w[, _________], w[, ‘REGION’, drop=FALSE], f)<br> combine: <br></p>
-</blockquote>
-<blockquote>
-<p>water &lt;- merge(_________, _________, by=‘REGION’)<br> water &lt;- merge(water, _________, by=‘REGION’)<br></p>
-</blockquote>
+<pre class="r"><code>wa &lt;- aggregate(w[, &#39;POPULATION.SERVED&#39;], w[, &#39;REGION&#39;, drop=FALSE], length) 
+colnames(wa)[2] &lt;- &#39;nwp&#39;
+wb &lt;- aggregate(w[, &#39;POPULATION.SERVED&#39;, drop=FALSE], w[, &#39;REGION&#39;, drop=FALSE], sum, na.rm=TRUE) 
+
+library(raster)</code></pre>
+<pre><code>## Loading required package: sp</code></pre>
+<pre class="r"><code>wc &lt;- aggregate(w[, c(&#39;WATER_QUAN&#39;, &#39;WATERPOINT&#39;)], w[, &#39;REGION&#39;, drop=FALSE], modal, na.rm=TRUE) 
+# or
+f &lt;- function(x) names(which.max(table(x)))
+wc &lt;- aggregate(w[, c(&#39;WATER_QUAN&#39;, &#39;WATERPOINT&#39;)], w[, &#39;REGION&#39;, drop=FALSE], f) 
+
+#combine:
+water &lt;- merge(wa, wb, by=&#39;REGION&#39;)
+water &lt;- merge(water, wc, by=&#39;REGION&#39;)
+head(water)</code></pre>
+<pre><code>##          REGION  nwp POPULATION.SERVED   WATER_QUAN         WATERPOINT
+## 1        Arusha 4564           1776454 insufficient communal standpipe
+## 2 Dar es salaam 1133                 0       enough communal standpipe
+## 3        Dodoma 3532           4239573       enough communal standpipe
+## 4         Geita 1944               384       enough          hand pump
+## 5        Iringa 2292            108092       enough communal standpipe
+## 6        Kagera 4531            572969       enough communal standpipe</code></pre>
 <ol start="10" style="list-style-type: decimal">
 <li>Make a table that shows counts of water quality types (“WATER_QUAL”) by region</li>
 </ol>
-<blockquote>
-<p>qual &lt;- table(_________, _________)</p>
-</blockquote>
+<pre class="r"><code>qual &lt;- table(w$REGION, w$WATER_QUAL)
+head(qual, n=2)</code></pre>
+<pre><code>##                
+##                 coloured fluoride fluoride abandoned good milky salty
+##   Arusha              18      161                  1    0     5    20
+##   Dar es salaam        0        0                  2    0     2   176
+##                
+##                 salty abandoned soft unknown
+##   Arusha                      1 4227     131
+##   Dar es salaam             119  808      26</code></pre>
 <ol start="11" style="list-style-type: decimal">
 <li>Make a new data.frame that combines the REGION level totals/averages for the Health facilities and for the water points, and for the water quality to get something like:</li>
 </ol>
@@ -655,9 +830,14 @@ summary {
 </tr>
 </tbody>
 </table>
-<blockquote>
-<p>m &lt;- merge(a, water, by=‘REGION’)<br> q &lt;- as.data.frame.matrix(qual)<br> result &lt;- merge(_________, _________, by.x=‘REGION’, by.y=0)<br> head(result)<br> or<br> m &lt;- merge(a, water, by=‘REGION’)<br> qq &lt;- as.data.frame(qual)<br> qq &lt;- reshape(, direction=‘wide’, timevar=‘Var2’, idvar=‘Var1’)<br> result &lt;- merge(_________, _________, by.x=‘REGION’, by.y=1)<br></p>
-</blockquote>
+<pre class="r"><code>m &lt;- merge(a, water, by=&#39;REGION&#39;)
+q &lt;- as.data.frame.matrix(qual)
+m &lt;- merge(m, q, by.x=&#39;REGION&#39;, by.y=0)
+# or
+m &lt;- merge(a, water, by=&#39;REGION&#39;)
+qq &lt;- as.data.frame(qual)
+qq &lt;- reshape(qq, direction=&#39;wide&#39;, timevar=&#39;Var2&#39;, idvar=&#39;Var1&#39;)
+m &lt;- merge(m, qq, by.x=&#39;REGION&#39;, by.y=1)</code></pre>
 </div>
 
 
