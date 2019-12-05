@@ -1,7 +1,4 @@
 ---
-title: "Manipulating data in R"
-author: "Benson Kenduiywo"
-date: "26/11/2019"
 output: html_document
 ---
 
