@@ -1,0 +1,28 @@
+---
+title: "Explorarory data analaysis"
+author: "Benson Kenduiywo"
+date: "03/12/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+Geostatistical analysis involves estimation and modelling of spatial correlation (covariance or semivariance), and evaluating whether simplifying assumptions such as stationarity can be justified or need refinement.
+
+
+```{r t1}
+d <- read.csv("soil_data_CIAT.csv", stringsAsFactors=FALSE)
+head(d, n=3)
+```
+
+Examine the spatial trend of pH by using regression on coordinates
+```{r t2}
+trend <- lm(Clay~X+Y, d) 
+summary(trend)
+
+```
+
