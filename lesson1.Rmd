@@ -6,10 +6,132 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-### Exploratory data analysis
+## Exploratory df analysis
 
-It is important prior to starting any analysis to inspect data. This can be done to check for any departures from normality or any existing trend. Principle plots like histogram, boxplots and kurtosis can help detect distributions of data that deviates from the normal. In additions maps can aid illustrate any spatial trends.
+It is important prior to starting any analysis to inspect df. This can be done to check for any departures from normality or any existing trend. Principle plots like histogram, boxplots and measures of central tendency and dispersion can help detect distributions of df that deviates from the normal. In additions maps can aid illustrate any spatial trends.
 
+### Load df
+
+We will mostly use the meuse dfset available in **sp** package. The meuse df set provided by package sp is a df set comprising of four heavy metals measured in the top soil in a flood plain along the river Meuse, along with a handful of covariates. The process governing heavy metal distribution seems that polluted sediment is carried by the river, and mostly deposited close to the river bank, and areas with low elevation. This document shows a Geostatistical analysis of this df set. The df set was introduced by Burrough and McDonnell, 1998.
+
+```{r message=FALSE}
+rm(list=ls(all=TRUE)) # Clear memory
+#Load existing/install missing libraries
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load(gstat,sp)
+data(meuse)
+df <- meuse
+head(df, n=3)
+
+```
+
+### Measures of Cental Tendency
+
+Measures of of center of tendency include: mean. median and mode. For example, using the topsoil copper concentration df in Meuses dfset these measures can be computed as follows in R.
+
+#### Mean and Median
+
+See below.
+
+```{r}
+vMean   <- mean(df$copper)
+cat("The mean is ", vMean)
+vMedian <- median(df$copper)
+cat("The median is ", vMedian)
+```
+
+#### Mode
+
+There are several ways of finding the mode. We will illustrate here using a designed function and an inbuilt function in modeest library.
+
+```{r, message=FALSE}
+pacman::p_load(modeest)
+attach(df)
+getmode <- function(x) {
+  ux <- unique(x)
+  ux[which.max(tabulate(match(x, ux)))]
+}
+vMode <- getmode(copper)
+cat("The mode using the designed function is ", vMode)
+vMode <- mlv(copper, method = "mfv")
+str(vMode) #Chec structure
+typeof(vMode) #Check variable type
+cat("The mode using modeest package is ", vMode)
+
+```
+
+
+### Measures of Dispersion
+
+Measures of dispersion include: variance, standard deviation, kurtosis, coefficient of variation and kurtosis. To illustrate this we still use meuse data in sp package.
+
+#### Variance and standard deviation
+
+```{r, message=FALSE}
+data(meuse)
+attach(meuse)
+#compute variance of copper
+var(copper)
+#Standard deviation of copper 
+sd(copper)
+#Or You can compare the two approaches as below:
+sd(copper)==sqrt(var(copper))
+
+```
+
+#### Kurtosis and skewness
+
+Intuitively, the kurtosis describes the tail shape of the data distribution. The normal distribution has zero kurtosis and thus the standard tail shape. For instance the copper data is more peaked than the normal distribution since the kurtosis > 0. This is also illustrated by a histogram plot overlaid with the normal distribution curve.
+
+On the other hand, skewness is a measure of symmetry. As a rule, negative skewness indicates that the mean of the data values is less than the median, and the data distribution is left-skewed. Positive skewness would indicate that the mean of the data values is larger than the median, and the data distribution is right-skewed.
+
+```{r, message=FALSE}
+pacman::p_load(e1071)
+kurtosis(copper)
+hist(copper, prob=TRUE,breaks=20,main="Normal distribution curve over histogram", xlab= "Copper")
+curve(dnorm(x, mean=mean(copper), sd=sd(copper)), add=TRUE)
+abline(v=mean(copper), col="red")
+text(mean(copper),0.04,"Mean", col = "red", adj = c(0, -.1))
+abline(v=median(copper), col="blue")
+text(median(copper),0.04,"Median", col = "blue", adj = c(1, -.1))
+cat("Skewness of copper is ", skewness(copper), " . This means that the data is positively skewed as illustrated on the histogram plot.")
+```
+
+
+### Normal Distribution
+Here we illustrate how normal distribution looks like. In R you can generate a the normal distribution using a specified mean and standard deviation. 
+
+```{r}
+x<-rnorm(100000,mean=10, sd=2) 
+hist(x,breaks=150,xlim=c(0,20),freq=FALSE)
+abline(v=10, lwd=5)
+abline(v=c(4,6,8,12,14,16), lwd=3,lty=3)
+```
+
+### Exploring spatial trend
+
+Spatial exploratory data analysis starts with the plotting of maps with a
+measured variable.
+
+```{r sp1}
+coordinates(meuse) <- c("x", "y")
+spplot(meuse, "zinc", do.log = T)
+bubble(meuse, "zinc", do.log = T, key.space = "bottom")
+
+```
+
+The evident structure here is that zinc concentration is larger close to the
+river Meuse banks.
+
+```{r sp2, message=FALSE}
+pacman::p_load(lattice)
+xyplot(log(zinc) ~ sqrt(dist), as.data.frame(meuse))
+zn.lm <- lm(log(zinc) ~ sqrt(dist), meuse)
+meuse$fitted.s <- predict(zn.lm, meuse) - mean(predict(zn.lm, meuse))
+meuse$residuals <- residuals(zn.lm)
+spplot(meuse, c("fitted.s", "residuals"))
+
+```
 
 
 ```{r t1}

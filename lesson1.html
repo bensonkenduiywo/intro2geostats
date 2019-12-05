@@ -333,9 +333,123 @@ $(document).ready(function () {
 </div>
 
 
-<div id="exploratory-data-analysis" class="section level3">
-<h3>Exploratory data analysis</h3>
-<p>It is important prior to starting any analysis to inspect data. This can be done to check for any departures from normality or any existing trend. Principle plots like histogram, boxplots and kurtosis can help detect distributions of data that deviates from the normal. In additions maps can aid illustrate any spatial trends.</p>
+<div id="exploratory-df-analysis" class="section level2">
+<h2>Exploratory df analysis</h2>
+<p>It is important prior to starting any analysis to inspect df. This can be done to check for any departures from normality or any existing trend. Principle plots like histogram, boxplots and measures of central tendency and dispersion can help detect distributions of df that deviates from the normal. In additions maps can aid illustrate any spatial trends.</p>
+<div id="load-df" class="section level3">
+<h3>Load df</h3>
+<p>We will mostly use the meuse dfset available in <strong>sp</strong> package. The meuse df set provided by package sp is a df set comprising of four heavy metals measured in the top soil in a flood plain along the river Meuse, along with a handful of covariates. The process governing heavy metal distribution seems that polluted sediment is carried by the river, and mostly deposited close to the river bank, and areas with low elevation. This document shows a Geostatistical analysis of this df set. The df set was introduced by Burrough and McDonnell, 1998.</p>
+<pre class="r"><code>rm(list=ls(all=TRUE)) # Clear memory
+#Load existing/install missing libraries
+if (!require(&quot;pacman&quot;)) install.packages(&quot;pacman&quot;)
+pacman::p_load(gstat,sp)
+data(meuse)
+df &lt;- meuse
+head(df, n=3)</code></pre>
+<pre><code>##        x      y cadmium copper lead zinc  elev       dist   om ffreq soil
+## 1 181072 333611    11.7     85  299 1022 7.909 0.00135803 13.6     1    1
+## 2 181025 333558     8.6     81  277 1141 6.983 0.01222430 14.0     1    1
+## 3 181165 333537     6.5     68  199  640 7.800 0.10302900 13.0     1    1
+##   lime landuse dist.m
+## 1    1      Ah     50
+## 2    1      Ah     30
+## 3    1      Ah    150</code></pre>
+</div>
+<div id="measures-of-cental-tendency" class="section level3">
+<h3>Measures of Cental Tendency</h3>
+<p>Measures of of center of tendency include: mean. median and mode. For example, using the topsoil copper concentration df in Meuses dfset these measures can be computed as follows in R.</p>
+<div id="mean-and-median" class="section level4">
+<h4>Mean and Median</h4>
+<p>See below.</p>
+<pre class="r"><code>vMean   &lt;- mean(df$copper)
+cat(&quot;The mean is &quot;, vMean)</code></pre>
+<pre><code>## The mean is  40.31613</code></pre>
+<pre class="r"><code>vMedian &lt;- median(df$copper)
+cat(&quot;The median is &quot;, vMedian)</code></pre>
+<pre><code>## The median is  31</code></pre>
+</div>
+<div id="mode" class="section level4">
+<h4>Mode</h4>
+<p>There are several ways of finding the mode. We will illustrate here using a designed function and an inbuilt function in modeest library.</p>
+<pre class="r"><code>pacman::p_load(modeest)
+attach(df)
+getmode &lt;- function(x) {
+  ux &lt;- unique(x)
+  ux[which.max(tabulate(match(x, ux)))]
+}
+vMode &lt;- getmode(copper)
+cat(&quot;The mode using the designed function is &quot;, vMode)</code></pre>
+<pre><code>## The mode using the designed function is  22</code></pre>
+<pre class="r"><code>vMode &lt;- mlv(copper, method = &quot;mfv&quot;)
+str(vMode) #Chec structure</code></pre>
+<pre><code>##  num 22</code></pre>
+<pre class="r"><code>typeof(vMode) #Check variable type</code></pre>
+<pre><code>## [1] &quot;double&quot;</code></pre>
+<pre class="r"><code>cat(&quot;The mode using modeest package is &quot;, vMode)</code></pre>
+<pre><code>## The mode using modeest package is  22</code></pre>
+</div>
+</div>
+<div id="measures-of-dispersion" class="section level3">
+<h3>Measures of Dispersion</h3>
+<p>Measures of dispersion include: variance, standard deviation, kurtosis, coefficient of variation and kurtosis. To illustrate this we still use meuse data in sp package.</p>
+<div id="variance-and-standard-deviation" class="section level4">
+<h4>Variance and standard deviation</h4>
+<pre class="r"><code>data(meuse)
+attach(meuse)
+#compute variance of copper
+var(copper)</code></pre>
+<pre><code>## [1] 560.763</code></pre>
+<pre class="r"><code>#Standard deviation of copper 
+sd(copper)</code></pre>
+<pre><code>## [1] 23.68044</code></pre>
+<pre class="r"><code>#Or You can compare the two approaches as below:
+sd(copper)==sqrt(var(copper))</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+</div>
+<div id="kurtosis-and-skewness" class="section level4">
+<h4>Kurtosis and skewness</h4>
+<p>Intuitively, the kurtosis describes the tail shape of the data distribution. The normal distribution has zero kurtosis and thus the standard tail shape. For instance the copper data is more peaked than the normal distribution since the kurtosis &gt; 0. This is also illustrated by a histogram plot overlaid with the normal distribution curve.</p>
+<p>On the other hand, skewness is a measure of symmetry. As a rule, negative skewness indicates that the mean of the data values is less than the median, and the data distribution is left-skewed. Positive skewness would indicate that the mean of the data values is larger than the median, and the data distribution is right-skewed.</p>
+<pre class="r"><code>pacman::p_load(e1071)
+kurtosis(copper)</code></pre>
+<pre><code>## [1] 1.22259</code></pre>
+<pre class="r"><code>hist(copper, prob=TRUE,breaks=20,main=&quot;Normal distribution curve over histogram&quot;, xlab= &quot;Copper&quot;)
+curve(dnorm(x, mean=mean(copper), sd=sd(copper)), add=TRUE)
+abline(v=mean(copper), col=&quot;red&quot;)
+text(mean(copper),0.04,&quot;Mean&quot;, col = &quot;red&quot;, adj = c(0, -.1))
+abline(v=median(copper), col=&quot;blue&quot;)
+text(median(copper),0.04,&quot;Median&quot;, col = &quot;blue&quot;, adj = c(1, -.1))</code></pre>
+<p><img src="lesson1_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<pre class="r"><code>cat(&quot;Skewness of copper is &quot;, skewness(copper), &quot; . This means that the data is positively skewed as illustrated on the histogram plot.&quot;)</code></pre>
+<pre><code>## Skewness of copper is  1.386803  . This means that the data is positively skewed as illustrated on the histogram plot.</code></pre>
+</div>
+</div>
+<div id="normal-distribution" class="section level3">
+<h3>Normal Distribution</h3>
+<p>Here we illustrate how normal distribution looks like. In R you can generate a the normal distribution using a specified mean and standard deviation.</p>
+<pre class="r"><code>x&lt;-rnorm(100000,mean=10, sd=2) 
+hist(x,breaks=150,xlim=c(0,20),freq=FALSE)
+abline(v=10, lwd=5)
+abline(v=c(4,6,8,12,14,16), lwd=3,lty=3)</code></pre>
+<p><img src="lesson1_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+</div>
+<div id="exploring-spatial-trend" class="section level3">
+<h3>Exploring spatial trend</h3>
+<p>Spatial exploratory data analysis starts with the plotting of maps with a measured variable.</p>
+<pre class="r"><code>coordinates(meuse) &lt;- c(&quot;x&quot;, &quot;y&quot;)
+spplot(meuse, &quot;zinc&quot;, do.log = T)</code></pre>
+<p><img src="lesson1_files/figure-html/sp1-1.png" width="672" /></p>
+<pre class="r"><code>bubble(meuse, &quot;zinc&quot;, do.log = T, key.space = &quot;bottom&quot;)</code></pre>
+<p><img src="lesson1_files/figure-html/sp1-2.png" width="672" /></p>
+<p>The evident structure here is that zinc concentration is larger close to the river Meuse banks.</p>
+<pre class="r"><code>pacman::p_load(lattice)
+xyplot(log(zinc) ~ sqrt(dist), as.data.frame(meuse))</code></pre>
+<p><img src="lesson1_files/figure-html/sp2-1.png" width="672" /></p>
+<pre class="r"><code>zn.lm &lt;- lm(log(zinc) ~ sqrt(dist), meuse)
+meuse$fitted.s &lt;- predict(zn.lm, meuse) - mean(predict(zn.lm, meuse))
+meuse$residuals &lt;- residuals(zn.lm)
+spplot(meuse, c(&quot;fitted.s&quot;, &quot;residuals&quot;))</code></pre>
+<p><img src="lesson1_files/figure-html/sp2-2.png" width="672" /></p>
 <pre class="r"><code>d &lt;- read.csv(&quot;soil_data_CIAT.csv&quot;, stringsAsFactors=FALSE)
 head(d, n=3)</code></pre>
 <pre><code>##       LAB_ID      X     Y Bulk_density Carbon     Clay     Sand
@@ -364,6 +478,7 @@ summary(trend)</code></pre>
 ## Residual standard error: 7.987 on 197 degrees of freedom
 ## Multiple R-squared:  0.0547, Adjusted R-squared:  0.0451 
 ## F-statistic:   5.7 on 2 and 197 DF,  p-value: 0.003923</code></pre>
+</div>
 </div>
 
 
