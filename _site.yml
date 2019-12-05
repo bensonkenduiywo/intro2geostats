@@ -14,7 +14,7 @@ navbar:
         - text: "Manipulating data in R Solutions"
           href: ex1_intro2R_answers.html
         - text: "Exploratory data analysis"
-          href: ex1_geostatistics_lesson1.html
+          href: lesson1.html
   right:
     - icon: fa-envelope fa-lg
       href: contact.html

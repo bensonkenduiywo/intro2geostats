@@ -12,7 +12,7 @@
 
 
 
-<title>index.utf8.md</title>
+<title>lesson1.utf8.md</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -333,37 +333,37 @@ $(document).ready(function () {
 </div>
 
 
-<div id="background" class="section level3">
-<h3>Background</h3>
-<p>The goal of this tutorial is to introduce principles of Geostatical data analysis in R. Geostatistics is a branch of statistical sciences that studies spatial/temporal phenomena &amp; capitalizes on spatial relationships to model possible values of variable(s) at unobserved, unsampled locations (Caers, 2005). Geostatistical tools are useful for interpolation of sampled data and simulation/prediction of phenomena.</p>
-<p>Generally, geostatistics deals with the analysis of <strong>random fields</strong> <span class="math inline">\(Z(s)\)</span>, where <em>Z</em> is a random variable and <em>s</em> the non-random spatial index. Basically, at a limited number of sampled locations, measurements on <em>Z</em> are available, and prediction (interpolation) of <em>Z</em> is required at non-observed locations <span class="math inline">\(s_0\)</span>, or the mean of <em>Z</em> is required over a specific region <span class="math inline">\(B_0\)</span>. Geostatistical analysis involves estimation and modelling of spatial correlation (covariance or semivariance), and evaluating whether simplifying assumptions such as stationarity can be justified or need refinement. Advanced topics include the conditional simulation of Z(s), for example over locations on a grid, and model-based inference, which propagates uncertainty of correlation parameters through spatial predictions or simulations.</p>
-<p>We will use <strong>gstat</strong> package, because it offers the widest geostatistical functionality in R namely:</p>
-<ol style="list-style-type: decimal">
-<li>variogram cloud diagnostics,</li>
-<li>variogram modelling,</li>
-<li>simple kriging to local universal cokriging,</li>
-<li>multivariate geostatistics,</li>
-<li>block kriging,</li>
-<li>indicator kriging and,</li>
-<li>Gaussian conditional simulation e.t.c</li>
-</ol>
-</div>
-<div id="structure" class="section level3">
-<h3>Structure</h3>
-<p>The tutorial is organized into exercises as follows:</p>
-<ol style="list-style-type: decimal">
-<li>Exercise 1: <a href="ex1_intro2R.html">Manipulating data in R Exercise</a>.</li>
-<li><a href="ex1_intro2R_answers.html">Solutions to Exercise 1</a>.</li>
-<li>Exercise 2:</li>
-</ol>
-</div>
-<div id="resources" class="section level3">
-<h3>Resources</h3>
-<p>We will use R software. R software is opensource and can be downloaded from <a href="https://cran.r-project.org/" class="uri">https://cran.r-project.org/</a>. A suitable R user interface that we shall use is <a href="https://rstudio.com/products/rstudio/download/">R Studio</a>. First download and install the latest version of R followed by the editor (RStudio). Other editors are available and you are free to use depending on your preference or previous experience.</p>
-</div>
-<div id="references" class="section level3">
-<h3>References</h3>
-<p>Caers, J. (2005). <a href="https://store.spe.org/Petroleum-Geostatistics-P45.aspx"><em>Petroleum geostatistics</em></a>. Society of Petroleum Engineers Richardson</p>
+<div id="exploratory-data-analysis" class="section level3">
+<h3>Exploratory data analysis</h3>
+<p>It is important prior to starting any analysis to inspect data. This can be done to check for any departures from normality or any existing trend. Principle plots like histogram, boxplots and kurtosis can help detect distributions of data that deviates from the normal. In additions maps can aid illustrate any spatial trends.</p>
+<pre class="r"><code>d &lt;- read.csv(&quot;soil_data_CIAT.csv&quot;, stringsAsFactors=FALSE)
+head(d, n=3)</code></pre>
+<pre><code>##       LAB_ID      X     Y Bulk_density Carbon     Clay     Sand
+## 1 CT258-6711 714875 72875     1.454268  2.472 43.54774 40.47143
+## 2 CT258-6697 713625 73125     1.171975  2.298 51.57937 32.42703
+## 3 CT258-6797 706625 73375     1.398217  1.510 35.93126 54.07674</code></pre>
+<p>Examine the spatial trend of pH by using regression on coordinates</p>
+<pre class="r"><code>trend &lt;- lm(Clay~X+Y, d) 
+summary(trend)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = Clay ~ X + Y, data = d)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -19.4605  -5.2877   0.1225   5.3326  20.4552 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) -3.158e+02  1.029e+02  -3.070 0.002444 ** 
+## X            5.052e-04  1.502e-04   3.364 0.000922 ***
+## Y           -1.867e-04  2.346e-04  -0.796 0.427177    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 7.987 on 197 degrees of freedom
+## Multiple R-squared:  0.0547, Adjusted R-squared:  0.0451 
+## F-statistic:   5.7 on 2 and 197 DF,  p-value: 0.003923</code></pre>
 </div>
 
 
