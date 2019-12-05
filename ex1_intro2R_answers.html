@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>ex1_intro2R_answers.utf8.md</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 64px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h2 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h3 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h4 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h5 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h6 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Introduction to Geostatistics in R</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="ex1_intro2R.html">Manipulating data in R Exercise</a>
+</li>
+<li>
+  <a href="ex1_intro2R_answers.html">Manipulating data in R Solutions</a>
+</li>
+<li>
+  <a href="ex1_geostatistics_lesson1.html">Exploratory data analysis</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="contact.html">
+    <span class="fa fa-envelope fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="http://github.com/bensonkenduiywo">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://twitter.com/bensonkenduiywo">
+    <span class="fa fa-twitter fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://www.linkedin.com/in/benson-kenduiywo-1a218137">
+    <span class="fa fa-linkedin fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+
+</div>
+
+
+<div id="reading-data" class="section level2">
+<h2>Reading data</h2>
+<p>Our first exercise entails reading data from files and summarizing and combining the records. This is very common and important step; but somewhat tricky to learn. We will use the data in a file named “Operating-Health-Facilities-with-location-2014.csv” under “data” read the data in the file into a data.frame and answer all the questions by using R code only.</p>
+<p>Replace the ___________ with the appropriate code</p>
+<p>Feel free to use materials of Introduction to R in: <a href="http://rspatial.org/intr/" class="uri">http://rspatial.org/intr/</a>.</p>
+<ol style="list-style-type: decimal">
+<li>Read the file into a data.frame.</li>
+</ol>
+<pre class="r"><code>d &lt;- read.csv(&quot;Operating-Health-Facilities-with-location-2014.csv&quot;, stringsAsFactors=FALSE)</code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li>how many rows and columns are there?</li>
+</ol>
+<pre class="r"><code>dim(d)</code></pre>
+<pre><code>## [1] 7071   12</code></pre>
+<pre class="r"><code>nrow(d)</code></pre>
+<pre><code>## [1] 7071</code></pre>
+<pre class="r"><code>ncol(d)</code></pre>
+<pre><code>## [1] 12</code></pre>
+<ol start="3" style="list-style-type: decimal">
+<li>what are the variable names?</li>
+</ol>
+<pre class="r"><code>colnames(d)</code></pre>
+<pre><code>##  [1] &quot;FACILITY_ID_NUMBER&quot;          &quot;FACILITY_NAME&quot;              
+##  [3] &quot;LATITUDE&quot;                    &quot;LONGITUDE&quot;                  
+##  [5] &quot;ZONE&quot;                        &quot;REGION&quot;                     
+##  [7] &quot;COUNCIL&quot;                     &quot;COMMON.FACILITY.HEALTH.NAME&quot;
+##  [9] &quot;ALTITUDE&quot;                    &quot;FACILITY.TYPE&quot;              
+## [11] &quot;OWNERSHIP&quot;                   &quot;OPERATING_STATUS&quot;</code></pre>
+<pre class="r"><code>head(d)</code></pre>
+<pre><code>##   FACILITY_ID_NUMBER     FACILITY_NAME LATITUDE LONGITUDE
+## 1           100000-9 BUPANDAGILA - SDA -2.64496  34.01009
+## 2           100001-7     BUPANDWAMHELA -2.44682  32.15260
+## 3           100002-5            BUPIGI -3.55117  33.69935
+## 4           100003-3            BUPIGU -9.50139  33.34760
+## 5           100004-1              BUPU -7.19919  39.02250
+## 6           100005-8            BURERE -1.30831  33.96400
+##                 ZONE    REGION                    COUNCIL
+## 1            Western    Simiyu       Bariadi Town Council
+## 2               Lake    Mwanza Sengerema District Council
+## 3            Western Shinyanga   Kishapu District Council
+## 4 Southern Highlands     Mbeya     Ileje District Council
+## 5            Eastern     Pwani  Mkuranga District Council
+## 6               Lake      Mara     Rorya District Council
+##   COMMON.FACILITY.HEALTH.NAME ALTITUDE FACILITY.TYPE
+## 1                                 1298    Dispensary
+## 2                    Zahanati     1171    Dispensary
+## 3                      Bupigi     1175    Dispensary
+## 4                                 1234    Dispensary
+## 5                                  143    Dispensary
+## 6                                 3899    Dispensary
+##                  OWNERSHIP OPERATING_STATUS
+## 1 Faith based organization        Operating
+## 2                   Public        Operating
+## 3                   Public        Operating
+## 4                   Public        Operating
+## 5                   Public        Operating
+## 6 Faith based organization        Operating</code></pre>
+<pre class="r"><code>tail(d)</code></pre>
+<pre><code>##      FACILITY_ID_NUMBER FACILITY_NAME  LATITUDE LONGITUDE    ZONE
+## 7066           110843-0        MADONA -6.827267  39.23248 Eastern
+## 7067           110844-8   AAR MBAGALA -6.910340  39.26977 Eastern
+## 7068           110845-5       KANDAGA -4.960950  29.84394 Western
+## 7069           110846-3       KALENGE -4.956860  29.87916 Western
+## 7070           110847-1         MLELA -4.918070  29.85859 Western
+## 7071           110848-9         MLELA -4.918070  29.85859 Western
+##             REGION                  COUNCIL COMMON.FACILITY.HEALTH.NAME
+## 7066 Dar es Salaam  Ilala Municipal Council                      Madona
+## 7067 Dar es Salaam Temeke Municipal Council          AAR Mbagala Clinic
+## 7068        Kigoma                                              KANDAGA
+## 7069        Kigoma                                              KALENGE
+## 7070        Kigoma                                                MLELA
+## 7071        Kigoma                                                MLELA
+##      ALTITUDE FACILITY.TYPE OWNERSHIP OPERATING_STATUS
+## 7066       NA Health Centre   Private        Operating
+## 7067       66    Dispensary   Private        Operating
+## 7068       NA    Dispensary    Public        Operating
+## 7069     1035    Dispensary    Public        Operating
+## 7070       NA    Dispensary    Public        Operating
+## 7071      929    Dispensary    Public        Operating</code></pre>
+<ol start="4" style="list-style-type: decimal">
+<li>What is the number of facilities for each zone? See <a href="https://rspatial.org/intr/7-explore.html#data-exploration">data exploration</a></li>
+</ol>
+<pre class="r"><code>table(d$ZONE) </code></pre>
+<pre><code>## 
+##            Central            Eastern               Lake 
+##                579               1242               1078 
+##           Northern           Southern Southern Highlands 
+##               1274                716               1232 
+##            Western 
+##                950</code></pre>
+<pre class="r"><code>summary(d)</code></pre>
+<pre><code>##  FACILITY_ID_NUMBER FACILITY_NAME         LATITUDE         LONGITUDE    
+##  Length:7071        Length:7071        Min.   :-11.648   Min.   :29.61  
+##  Class :character   Class :character   1st Qu.: -8.009   1st Qu.:33.29  
+##  Mode  :character   Mode  :character   Median : -5.698   Median :35.43  
+##                                        Mean   : -5.877   Mean   :35.43  
+##                                        3rd Qu.: -3.419   3rd Qu.:37.77  
+##                                        Max.   : -1.004   Max.   :40.42  
+##                                        NA&#39;s   :888       NA&#39;s   :888    
+##      ZONE              REGION            COUNCIL         
+##  Length:7071        Length:7071        Length:7071       
+##  Class :character   Class :character   Class :character  
+##  Mode  :character   Mode  :character   Mode  :character  
+##                                                          
+##                                                          
+##                                                          
+##                                                          
+##  COMMON.FACILITY.HEALTH.NAME    ALTITUDE     FACILITY.TYPE     
+##  Length:7071                 Min.   : -317   Length:7071       
+##  Class :character            1st Qu.:  518   Class :character  
+##  Mode  :character            Median : 1167   Mode  :character  
+##                              Mean   : 1077                     
+##                              3rd Qu.: 1388                     
+##                              Max.   :18804                     
+##                              NA&#39;s   :2316                      
+##   OWNERSHIP         OPERATING_STATUS  
+##  Length:7071        Length:7071       
+##  Class :character   Class :character  
+##  Mode  :character   Mode  :character  
+##                                       
+##                                       
+##                                       
+## </code></pre>
+<pre class="r"><code>plot(sort(d$LATITUDE))</code></pre>
+<p><img src="ex1_intro2R_answers_files/figure-html/d4-1.png" width="672" /></p>
+<ol start="5" style="list-style-type: decimal">
+<li>Which region has most facilities (and how many), and which has least (and how many)?</li>
+</ol>
+<pre class="r"><code>x &lt;- table(d$REGION)
+names(which.min(x))</code></pre>
+<pre><code>## [1] &quot;Katavi&quot;</code></pre>
+<pre class="r"><code>min(x)</code></pre>
+<pre><code>## [1] 77</code></pre>
+<pre class="r"><code>names(which.max(x))</code></pre>
+<pre><code>## [1] &quot;Dar es Salaam&quot;</code></pre>
+<pre class="r"><code>max(x)</code></pre>
+<pre><code>## [1] 599</code></pre>
+<ol start="6" style="list-style-type: decimal">
+<li>What is the average elevation of all clinics?</li>
+</ol>
+<pre class="r"><code>mean(d$ALTITUDE, na.rm=TRUE)</code></pre>
+<pre><code>## [1] 1076.533</code></pre>
+<p>7a. Create a data.frame with four columns: ZONE, REGION, the number of facilities, and their average elevation (by REGION)</p>
+<blockquote>
+<p>we want something like this</p>
+</blockquote>
+<table>
+<thead>
+<tr class="header">
+<th>ZONE</th>
+<th>REGION</th>
+<th>elevation</th>
+<th>n</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1 Central</td>
+<td>Dodoma</td>
+<td>1059.4</td>
+<td>369</td>
+</tr>
+<tr class="even">
+<td>2 Central</td>
+<td>Singida</td>
+<td>1355.4</td>
+<td>210</td>
+</tr>
+<tr class="odd">
+<td>3 Eastern</td>
+<td>Dar es Salaam</td>
+<td>54.4</td>
+<td>599</td>
+</tr>
+</tbody>
+</table>
+<p>We can use the aggregate function. If you struggle, divide and conquer. Do what you can do first. Split the task into parts, and then combine them again later.</p>
+<pre class="r"><code>#Start with mean
+a &lt;- aggregate(d[, &quot;ALTITUDE&quot;, drop=FALSE], d[, c(&quot;ZONE&quot;,&quot;REGION&quot;), drop=FALSE], mean, na.rm=TRUE)
+head(a)</code></pre>
+<pre><code>##                 ZONE        REGION   ALTITUDE
+## 1           Northern        Arusha 1542.92913
+## 2            Eastern Dar es Salaam   54.40603
+## 3            Central        Dodoma 1059.37631
+## 4               Lake         Geita 1721.67273
+## 5 Southern Highlands        Iringa 1541.08995
+## 6               Lake        Kagera 1426.51852</code></pre>
+<pre class="r"><code>#The number of facilities
+b &lt;- aggregate(d[, &quot;FACILITY_ID_NUMBER&quot;, drop=FALSE], d[, c(&quot;ZONE&quot;,&quot;REGION&quot;), drop=FALSE], length)
+head(b)</code></pre>
+<pre><code>##                 ZONE        REGION FACILITY_ID_NUMBER
+## 1           Northern        Arusha                334
+## 2            Eastern Dar es Salaam                599
+## 3            Central        Dodoma                369
+## 4               Lake         Geita                143
+## 5 Southern Highlands        Iringa                241
+## 6               Lake        Kagera                298</code></pre>
+<pre class="r"><code>a &lt;- merge(a, b, by = c(&quot;ZONE&quot;,&quot;REGION&quot;) )</code></pre>
+<p>Can also be done using a loop as follows:</p>
+<pre class="r"><code>r &lt;- sort(unique(d$REGION))
+result &lt;- matrix(nrow=length(r), ncol=4)
+colnames(result) &lt;- c(&quot;ZONE&quot;, &quot;REGION&quot;, &quot;ALTITUDE&quot;, &quot;Facilities&quot;)
+for (i in 1:length(r)) {
+  m &lt;- d[d$REGION==r[i], ]
+  result[i,1] = unique(m$ZONE)
+  result[i,2] = r[i]
+  result[i,3] = mean(m$ALTITUDE, na.rm = TRUE)
+  result[i,4] = length(m$ALTITUDE)
+}
+result &lt;- as.data.frame(result)
+head(result)</code></pre>
+<pre><code>##                 ZONE        REGION         ALTITUDE Facilities
+## 1           Northern        Arusha 1542.92913385827        334
+## 2            Eastern Dar es Salaam 54.4060324825986        599
+## 3            Central        Dodoma 1059.37630662021        369
+## 4               Lake         Geita 1721.67272727273        143
+## 5 Southern Highlands        Iringa 1541.08994708995        241
+## 6               Lake        Kagera 1426.51851851852        298</code></pre>
+<p>7b. provide appropriate column names</p>
+<pre class="r"><code>colnames(a)[3:4] &lt;- c(&#39;ELEVATION&#39;, &#39;FACILITIES No.&#39;)
+head(a)</code></pre>
+<pre><code>##      ZONE        REGION  ELEVATION FACILITIES No.
+## 1 Central        Dodoma 1059.37631            369
+## 2 Central       Singida 1355.35065            210
+## 3 Eastern Dar es Salaam   54.40603            599
+## 4 Eastern      Morogoro  633.95902            357
+## 5 Eastern         Pwani  132.02765            286
+## 6    Lake         Geita 1721.67273            143</code></pre>
+<p>7c. sort by ZONE, REGION. See Introduction to R. Chapter 11</p>
+<pre class="r"><code>a &lt;- a[order(a$ZONE, a$REGION), ]
+head(a)</code></pre>
+<pre><code>##      ZONE        REGION  ELEVATION FACILITIES No.
+## 1 Central        Dodoma 1059.37631            369
+## 2 Central       Singida 1355.35065            210
+## 3 Eastern Dar es Salaam   54.40603            599
+## 4 Eastern      Morogoro  633.95902            357
+## 5 Eastern         Pwani  132.02765            286
+## 6    Lake         Geita 1721.67273            143</code></pre>
+<p>7d. elevation should be rounded to the nearest 10 cm</p>
+<pre class="r"><code>a$ELEVATION &lt;- round(a$ELEVATION, 1)</code></pre>
+<p>7e. show the first five lines of the data.frame</p>
+<pre class="r"><code>head(a, n=5)</code></pre>
+<pre><code>##      ZONE        REGION ELEVATION FACILITIES No.
+## 1 Central        Dodoma    1059.4            369
+## 2 Central       Singida    1355.4            210
+## 3 Eastern Dar es Salaam      54.4            599
+## 4 Eastern      Morogoro     634.0            357
+## 5 Eastern         Pwani     132.0            286</code></pre>
+<pre class="r"><code>#or
+a[1:5, ]</code></pre>
+<pre><code>##      ZONE        REGION ELEVATION FACILITIES No.
+## 1 Central        Dodoma    1059.4            369
+## 2 Central       Singida    1355.4            210
+## 3 Eastern Dar es Salaam      54.4            599
+## 4 Eastern      Morogoro     634.0            357
+## 5 Eastern         Pwani     132.0            286</code></pre>
+<p>7f. Save “a” in a file on your disk (comma separated by values format)</p>
+<pre class="r"><code>write.csv(a, paste0(tempdir(),&#39;\\test.csv&#39;), row.names=FALSE)</code></pre>
+<ol start="8" style="list-style-type: decimal">
+<li>Also read file “Tanzania-All-Waterpoints-July-2015.csv”</li>
+</ol>
+<pre class="r"><code>w &lt;- read.csv(&quot;Tanzania-All-Waterpoints-July-2015.csv&quot;, stringsAsFactors=FALSE)</code></pre>
+<ol start="9" style="list-style-type: decimal">
+<li>For each region, compute the total number of water points, and the total number of people served (POPULATION.SERVED), and the most common quantity (“WATER_QUAN”) and type (“WATERPOINT”) (either use the “modal” function from the raster package; or use the table function</li>
+</ol>
+<pre class="r"><code>wa &lt;- aggregate(w[, &#39;POPULATION.SERVED&#39;], w[, &#39;REGION&#39;, drop=FALSE], length) 
+colnames(wa)[2] &lt;- &#39;nwp&#39;
+wb &lt;- aggregate(w[, &#39;POPULATION.SERVED&#39;, drop=FALSE], w[, &#39;REGION&#39;, drop=FALSE], sum, na.rm=TRUE) 
+
+library(raster)
+wc &lt;- aggregate(w[, c(&#39;WATER_QUAN&#39;, &#39;WATERPOINT&#39;)], w[, &#39;REGION&#39;, drop=FALSE], modal, na.rm=TRUE) 
+# or
+f &lt;- function(x) names(which.max(table(x)))
+wc &lt;- aggregate(w[, c(&#39;WATER_QUAN&#39;, &#39;WATERPOINT&#39;)], w[, &#39;REGION&#39;, drop=FALSE], f) 
+
+#combine:
+water &lt;- merge(wa, wb, by=&#39;REGION&#39;)
+water &lt;- merge(water, wc, by=&#39;REGION&#39;)
+head(water)</code></pre>
+<pre><code>##          REGION  nwp POPULATION.SERVED   WATER_QUAN         WATERPOINT
+## 1        Arusha 4564           1776454 insufficient communal standpipe
+## 2 Dar es salaam 1133                 0       enough communal standpipe
+## 3        Dodoma 3532           4239573       enough communal standpipe
+## 4         Geita 1944               384       enough          hand pump
+## 5        Iringa 2292            108092       enough communal standpipe
+## 6        Kagera 4531            572969       enough communal standpipe</code></pre>
+<ol start="10" style="list-style-type: decimal">
+<li>Make a table that shows counts of water quality types (“WATER_QUAL”) by region</li>
+</ol>
+<pre class="r"><code>qual &lt;- table(w$REGION, w$WATER_QUAL)
+head(qual, n=2)</code></pre>
+<pre><code>##                
+##                 coloured fluoride fluoride abandoned good milky salty
+##   Arusha              18      161                  1    0     5    20
+##   Dar es salaam        0        0                  2    0     2   176
+##                
+##                 salty abandoned soft unknown
+##   Arusha                      1 4227     131
+##   Dar es salaam             119  808      26</code></pre>
+<ol start="11" style="list-style-type: decimal">
+<li>Make a new data.frame that combines the REGION level totals/averages for the Health facilities and for the water points, and for the water quality to get something like:</li>
+</ol>
+<table>
+<colgroup>
+<col width="4%" />
+<col width="10%" />
+<col width="5%" />
+<col width="2%" />
+<col width="3%" />
+<col width="9%" />
+<col width="7%" />
+<col width="10%" />
+<col width="5%" />
+<col width="5%" />
+<col width="10%" />
+<col width="3%" />
+<col width="3%" />
+<col width="3%" />
+<col width="8%" />
+<col width="3%" />
+<col width="4%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>REGION</th>
+<th>ZONE</th>
+<th>elevation</th>
+<th>n</th>
+<th>nwp</th>
+<th>POPULATION.SERVED</th>
+<th>WATER_QUAN</th>
+<th>WATERPOINT</th>
+<th>coloured</th>
+<th>fluoride</th>
+<th>fluoride abandoned</th>
+<th>good</th>
+<th>milky</th>
+<th>salty</th>
+<th>salty abandoned</th>
+<th>soft</th>
+<th>unknown</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Arusha</td>
+<td>Northern</td>
+<td>1542.9</td>
+<td>334</td>
+<td>4564</td>
+<td>1776454</td>
+<td>insufficient</td>
+<td>communal standpipe</td>
+<td>18</td>
+<td>161</td>
+<td>1</td>
+<td>0</td>
+<td>5</td>
+<td>20</td>
+<td>1</td>
+<td>4227</td>
+<td>131</td>
+</tr>
+<tr class="even">
+<td>Dodoma</td>
+<td>Central</td>
+<td>1059.4</td>
+<td>369</td>
+<td>3532</td>
+<td>4239573</td>
+<td>enough</td>
+<td>communal standpipe</td>
+<td>38</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>21</td>
+<td>594</td>
+<td>22</td>
+<td>2694</td>
+<td>163</td>
+</tr>
+<tr class="odd">
+<td>Geita</td>
+<td>Lake</td>
+<td>1721.7</td>
+<td>143</td>
+<td>1944</td>
+<td>384</td>
+<td>enough</td>
+<td>hand pump</td>
+<td>32</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>33</td>
+<td>51</td>
+<td>1</td>
+<td>1561</td>
+<td>265</td>
+</tr>
+<tr class="even">
+<td>Iringa</td>
+<td>Southern Highlands</td>
+<td>1541.1</td>
+<td>241</td>
+<td>2292</td>
+<td>108092</td>
+<td>enough</td>
+<td>communal standpipe</td>
+<td>3</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>27</td>
+<td>4</td>
+<td>2191</td>
+<td>67</td>
+</tr>
+<tr class="odd">
+<td>Kagera</td>
+<td>Lake</td>
+<td>1426.5</td>
+<td>298</td>
+<td>4531</td>
+<td>572969</td>
+<td>enough</td>
+<td>communal standpipe</td>
+<td>64</td>
+<td>5</td>
+<td>0</td>
+<td>0</td>
+<td>76</td>
+<td>117</td>
+<td>2</td>
+<td>4066</td>
+<td>201</td>
+</tr>
+<tr class="even">
+<td>Katavi</td>
+<td>Southern Highlands</td>
+<td>1162.5</td>
+<td>77</td>
+<td>1069</td>
+<td>217</td>
+<td>enough</td>
+<td>hand pump</td>
+<td>6</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>6</td>
+<td>127</td>
+<td>2</td>
+<td>907</td>
+<td>21</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>m &lt;- merge(a, water, by=&#39;REGION&#39;)
+q &lt;- as.data.frame.matrix(qual)
+m &lt;- merge(m, q, by.x=&#39;REGION&#39;, by.y=0)
+# or
+m &lt;- merge(a, water, by=&#39;REGION&#39;)
+qq &lt;- as.data.frame(qual)
+qq &lt;- reshape(qq, direction=&#39;wide&#39;, timevar=&#39;Var2&#39;, idvar=&#39;Var1&#39;)
+m &lt;- merge(m, qq, by.x=&#39;REGION&#39;, by.y=1)</code></pre>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

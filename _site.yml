@@ -1,4 +1,5 @@
 name: "Dr. -Ing. Benson Kenduiywo"
+output_dir: "."
 author: https://www.linkedin.com/in/benson-kenduiywo-1a218137
 navbar:
   title: "Introduction to Geostatistics in R"
