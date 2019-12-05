@@ -20,6 +20,7 @@ We will use **gstat* package, because it offers the widest geostatistical functi
 5. block kriging, 
 6. indicator kriging and, 
 7. Gaussian conditional simulation e.t.c
+
 The tutorial is organized into exercises as follows:
 
 1. Exercise 1: [Introduction to R](ex1_intro2R.html).
