@@ -6,9 +6,10 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+### Exploratory data analysis
 
-Geostatistical analysis involves estimation and modelling of spatial correlation (covariance or semivariance), and evaluating whether simplifying assumptions such as stationarity can be justified or need refinement.
+It is important prior to stating any analysis to inspect data. This can be done to check for any departures from normality or any existing trend. Principle plots like histogram, boxplots and kurtosis can help detect distributions of data that deviates from the normality. In additions maps can aid illustrate any spatial trends.
+
 
 
 ```{r t1}

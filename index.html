@@ -335,7 +335,8 @@ $(document).ready(function () {
 
 <div id="background" class="section level3">
 <h3>Background</h3>
-<p>The goal of this tutorial is to introduce principles of Geostatical data analysis in R.</p>
+<p>The goal of this tutorial is to introduce principles of Geostatical data analysis in R. Geostatistics is a branch of statistical sciences that studies spatial/temporal phenomena &amp; capitalizes on spatial relationships to model possible values of variable(s) at unobserved, unsampled locations (Caers, 2005). Geostatistical tools are useful for interpolation of sampled data and simulation/prediction of phenomena.</p>
+<p>Generally, geostatistics deals with the analysis of <strong>random fields</strong> <span class="math inline">\(Z(s)\)</span>, where <em>Z</em> is a random variable and <em>s</em> the non-random spatial index. Basically, at a limited number of sampled locations, measurements on <em>Z</em> are available, and prediction (interpolation) of <em>Z</em> is required at non-observed locations <span class="math inline">\(s_0\)</span>, or the mean of <em>Z</em> is required over a specific region <span class="math inline">\(B_0\)</span>. Geostatistical analysis involves estimation and modelling of spatial correlation (covariance or semivariance), and evaluating whether simplifying assumptions such as stationarity can be justified or need refinement. Advanced topics include the conditional simulation of Z(s), for example over locations on a grid, and model-based inference, which propagates uncertainty of correlation parameters through spatial predictions or simulations.</p>
 <p>We will use <strong>gstat</strong> package, because it offers the widest geostatistical functionality in R namely:</p>
 <ol style="list-style-type: decimal">
 <li>variogram cloud diagnostics,</li>
@@ -346,12 +347,23 @@ $(document).ready(function () {
 <li>indicator kriging and,</li>
 <li>Gaussian conditional simulation e.t.c</li>
 </ol>
+</div>
+<div id="structure" class="section level3">
+<h3>Structure</h3>
 <p>The tutorial is organized into exercises as follows:</p>
 <ol style="list-style-type: decimal">
-<li>Exercise 1: <a href="ex1_intro2R.html">Introduction to R</a>.</li>
-<li><a href="ex1_intro2R_answers.html">Answers to exercise</a>.</li>
+<li>Exercise 1: <a href="ex1_intro2R.html">Manipulating data in R Exercise</a>.</li>
+<li><a href="ex1_intro2R_answers.html">Solutions to Exercise 1</a>.</li>
 <li>Exercise 2:</li>
 </ol>
+</div>
+<div id="resources" class="section level3">
+<h3>Resources</h3>
+<p>We will use R software. R software is opensource and can be downloaded from <a href="https://cran.r-project.org/" class="uri">https://cran.r-project.org/</a>. A suitable R user interface that we shall use is <a href="https://rstudio.com/products/rstudio/download/">R Studio</a>. First download and install the latest version of R followed by the editor (RStudio). Other editors are available and you are free to use depending on your preference or previous experience.</p>
+</div>
+<div id="references" class="section level3">
+<h3>References</h3>
+<p>Caers, J. (2005). <a href="https://store.spe.org/Petroleum-Geostatistics-P45.aspx"><em>Petroleum geostatistics</em></a>. Society of Petroleum Engineers Richardson</p>
 </div>
 
 
