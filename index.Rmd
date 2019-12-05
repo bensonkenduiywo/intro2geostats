@@ -3,7 +3,9 @@
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Background
+
+
+### Background
 
 The goal of this tutorial is to introduce principles of Geostatical data analysis in R.
 
