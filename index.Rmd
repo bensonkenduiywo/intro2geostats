@@ -3,6 +3,8 @@
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+## Background
+
 The goal of this tutorial is to introduce principles of Geostatical data analysis in R.
 
 We will use **gstat** package, because it offers the widest geostatistical functionality in R namely: 

@@ -1,7 +1,4 @@
 ---
-title: "Explorarory data analaysis"
-author: "Benson Kenduiywo"
-date: "03/12/2019"
 output: html_document
 ---
 
