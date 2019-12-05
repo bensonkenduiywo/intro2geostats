@@ -1,0 +1,27 @@
+---
+title: "Progamme"
+author: "Benson Kenduiywo"
+date: "05/12/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+The goal of this tutorial is to introduce principles of Geostatical data analysis in R.
+
+We will use **gstat* package, because it offers the widest geostatistical functionality in R namely: 
+
+1. variogram cloud diagnostics, 
+2. variogram modelling, 
+3. simple kriging to local universal cokriging, 
+4. multivariate geostatistics, 
+5. block kriging, 
+6. indicator kriging and, 
+7. Gaussian conditional simulation e.t.c
+The tutorial is organized into exercises as follows:
+
+1. Exercise 1: [Introduction to R](ex1_intro2R.html).
+2. [Answers to exercise](ex1_intro2R_answers.html).
+3. Exercise 2

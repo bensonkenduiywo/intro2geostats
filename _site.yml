@@ -1,0 +1,6 @@
+name: "spatial_analysis"
+navbar:
+  title: "Introduction to Geostatistics"
+left:
+  - text: "Programme"
+href: index.html
