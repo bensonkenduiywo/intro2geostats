@@ -27,9 +27,9 @@ We will use **gstat** package, because it offers the widest geostatistical funct
 
 The tutorial is organized into exercises as follows:
 
-1. Exercise 1: [Manipulating data in R Exercise](ex1_intro2R.html).
+1. Exercise 1: [Manipulating data in R](ex1_intro2R.html).
 2. [Solutions to Exercise 1](ex1_intro2R_answers.html).
-3. Exercise 2:
+3. Exercise 2: [Exploratory data analysis](lesson1.html) 
 
 ### Resources
 
