@@ -300,7 +300,7 @@ $(document).ready(function () {
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="mailto:fake@email.com">
+  <a href="mailto:bensonkemboi@gmail.com">
     <span class="fa fa-envelope fa-lg"></span>
      
   </a>
@@ -338,9 +338,15 @@ $(document).ready(function () {
 
 <div id="spatial-interpolation-prediction" class="section level2">
 <h2>Spatial interpolation (prediction)</h2>
-<p>Spatial interpolation/prediction is necessary in various application because of sparse data. For instance, due to economic and time constraints measurements may be sampled and later prediction done at unobserved locations using spatial interpolation models. Spatial prediction models (algorithms) can be grouped according to the amount of statistical analysis i.e. amount of expert knowledge included in the analysis. The following are the main groupings of interpolation techniques:</p>
-<div id="deterministic-non-geostatistical-interpolationprediction-models" class="section level3">
-<h3>Deterministic (non-geostatistical) interpolation/prediction models</h3>
+<p>Spatial interpolation/prediction is necessary in various application because it helps:</p>
+<ol style="list-style-type: lower-alpha">
+<li>Predict a variable across space, including in areas where there are little to no data.</li>
+<li>To smooth the data across space so that we cannot interpret the results of individuals, but still, identify the general trends from the data. This is particularly useful when the data corresponds to individual persons and disclosing their locations is unethical.</li>
+</ol>
+<p>For instance, due to economic and time constraints measurements may be sampled and later prediction done at unobserved locations using spatial interpolation models. Spatial prediction models (algorithms) can be grouped according to the amount of statistical analysis i.e. amount of expert knowledge included in the analysis. The following are the main groupings of interpolation techniques:</p>
+<ol style="list-style-type: decimal">
+<li>Deterministic (non-geostatistical) interpolation/prediction models</li>
+</ol>
 <p>These are models where arbitrary or empirical model parameters are used. No estimate of the model error is available and usually no strict assumptions about the variability of a feature exist. The most common techniques that belong to this group are:</p>
 <ol style="list-style-type: lower-alpha">
 <li>Inverse distance weighted interpolation;</li>
@@ -350,7 +356,74 @@ $(document).ready(function () {
 <li>Splines;</li>
 <li>Radial Basis Function Interpolation</li>
 </ol>
+<ol start="2" style="list-style-type: decimal">
+<li>Geostatistical interpolation techniques.</li>
+</ol>
+<p>in this case, the model parameters are commonly estimated in an objective way, following probability theory. The predictions are accompanied with an estimate of the prediction error. A drawback is that the input data set usually need to satisfy strict statistical assumptions. There are at least four groups of linear statistical models:</p>
+<ol style="list-style-type: lower-alpha">
+<li>kriging (plain geostatistics);</li>
+<li>environmental correlation (e.g. regression-based);</li>
+<li>Bayesian-based models (e.g. Bayesian Maximum Entropy);</li>
+<li>hybrid models (e.g. regression-kriging).</li>
+</ol>
+<p>In this lesson we cover the first category (non-geostatistical).</p>
 </div>
+<div id="non-geostatistical-prediction" class="section level2">
+<h2>Non-geostatistical prediction</h2>
+<p>Load the packages and data we will use.</p>
+<pre class="r"><code>pacman::p_load(sp,rgdal,rgeos,tmap,raster) 
+shp &lt;- readOGR(&quot;soil_data_CIAT.shp&quot;)</code></pre>
+<pre><code>## OGR data source with driver: ESRI Shapefile 
+## Source: &quot;D:\JKUAT\ShortCourses\Geostatistics\intro2geostats\soil_data_CIAT.shp&quot;, layer: &quot;soil_data_CIAT&quot;
+## with 200 features
+## It has 7 fields
+## Integer64 fields read as strings:  X Y</code></pre>
+<pre class="r"><code>plot(shp, pch = 19, col = &quot;red&quot;)</code></pre>
+<p><img src="lesson2_files/figure-html/n1-1.png" width="672" /></p>
+<p>View coordinate reference system and extents of the shapefile.</p>
+<pre class="r"><code>crs(shp)</code></pre>
+<pre><code>## CRS arguments:
+##  +proj=utm +zone=36 +datum=WGS84 +units=m +no_defs +ellps=WGS84
+## +towgs84=0,0,0</code></pre>
+<pre class="r"><code>extent(shp)</code></pre>
+<pre><code>## class      : Extent 
+## xmin       : 705125 
+## xmax       : 720125 
+## ymin       : 72875 
+## ymax       : 83375</code></pre>
+</div>
+<div id="thiessen-polygons" class="section level2">
+<h2>Thiessen polygons</h2>
+<ul>
+<li>Thiessen polygons are formed to assign boundaries of the areas closest to each unique point. Therefore, for every point in a dataset, it has a corresponding Thiessen polygon.</li>
+<li>We will create Thiessen polygons for the soil data, then use the polygons to map the carbon at their corresponding locations.</li>
+<li>The <em>spatstat</em> package provides the functionality to produce Thiessen polygons via its dirichlet tessellation of spatial point patterns function (dirichlet()).</li>
+<li>We also need to first convert the data to a ppp (point pattern) object class. The <em>maptools</em> package will help us achive this via as.ppp() function.</li>
+</ul>
+<p>Load necessary packages and convert data to point pattern.</p>
+<pre class="r"><code>pacman::p_load(spatstat, maptools) 
+# Create a tessellated surface
+dat.pp &lt;- as(dirichlet(as.ppp(shp)), &quot;SpatialPolygons&quot;)
+dat.pp &lt;- as(dat.pp,&quot;SpatialPolygons&quot;)</code></pre>
+<p>Define the projection to the ppp object.</p>
+<pre class="r"><code>proj4string(dat.pp) &lt;- crs(shp)
+plot(dat.pp, pch = 19)</code></pre>
+<p><img src="lesson2_files/figure-html/n4-1.png" width="672" /></p>
+<p>The Polygons are extended beyond points boundary so get the boundary and clip the Thiesen polygon</p>
+<pre class="r"><code>bdy &lt;- readOGR(&quot;soil_boundary.shp&quot;)</code></pre>
+<pre><code>## OGR data source with driver: ESRI Shapefile 
+## Source: &quot;D:\JKUAT\ShortCourses\Geostatistics\intro2geostats\soil_boundary.shp&quot;, layer: &quot;soil_boundary&quot;
+## with 1 features
+## It has 1 fields</code></pre>
+<pre class="r"><code>dat.pp &lt;- intersect(dat.pp, bdy)
+plot(dat.pp, pch = 19)</code></pre>
+<p><img src="lesson2_files/figure-html/n4b-1.png" width="672" /></p>
+<p>Assign to each polygon the carbon information.</p>
+<pre class="r"><code>int.Z &lt;- over(dat.pp, shp[,&quot;Carbon&quot;], fn=mean, na.rm=TRUE) </code></pre>
+<p>Map Thiessen polygons and Carbon sampled points.</p>
+<pre class="r"><code>tm_shape(dat.pp) +  tm_borders(alpha=.5, col = &quot;black&quot;) +
+  tm_shape(shp) + tm_dots(col = &quot;blue&quot;, scale = 0.5)</code></pre>
+<p><img src="lesson2_files/figure-html/n6-1.png" width="672" /></p>
 </div>
 
 

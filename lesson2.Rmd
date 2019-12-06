@@ -8,9 +8,14 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Spatial interpolation (prediction)
 
-Spatial interpolation/prediction is necessary in various application because of sparse data. For instance, due to economic and time constraints measurements may be sampled and later prediction done at unobserved locations using spatial interpolation models. Spatial prediction models (algorithms) can be grouped according to the amount of statistical analysis i.e. amount of expert knowledge included in the analysis. The following are the main groupings of interpolation techniques:
+Spatial interpolation/prediction is necessary in various application because it helps:
 
-### Deterministic (non-geostatistical) interpolation/prediction models 
+  a. Predict a variable across space, including in areas where there are little to no data.
+  b. To smooth the data across space so that we cannot interpret the results of individuals, but still, identify the general trends from the data. This is particularly useful when the data corresponds to individual persons and disclosing their locations is unethical.
+  
+For instance, due to economic and time constraints measurements may be sampled and later prediction done at unobserved locations using spatial interpolation models. Spatial prediction models (algorithms) can be grouped according to the amount of statistical analysis i.e. amount of expert knowledge included in the analysis. The following are the main groupings of interpolation techniques:
+
+1. Deterministic (non-geostatistical) interpolation/prediction models 
 
 These are models where arbitrary or empirical model parameters are used. No estimate of the model error is available and usually no strict assumptions about the variability of a feature exist. The most common techniques that belong to this group are:
 
@@ -20,3 +25,82 @@ These are models where arbitrary or empirical model parameters are used. No esti
   d. Polynomial trend surfaces;
   e. Splines;
   f. Radial Basis Function Interpolation
+
+2. Geostatistical interpolation techniques.
+
+in this case, the model parameters are commonly estimated in an objective way, following probability theory. The predictions are accompanied with an estimate of the prediction error. A drawback is that the input data set usually need to satisfy strict statistical assumptions. There are at least four groups of linear statistical models:
+
+  a. kriging (plain geostatistics);
+  b. environmental correlation (e.g. regression-based);
+  c. Bayesian-based models (e.g. Bayesian Maximum Entropy);
+  d. hybrid models (e.g. regression-kriging).
+  
+In this lesson we cover the first category (non-geostatistical).
+
+## Non-geostatistical prediction
+
+Load the packages and data we will use.
+
+```{r n1, message=FALSE}
+pacman::p_load(sp,rgdal,rgeos,tmap,raster) 
+shp <- readOGR("soil_data_CIAT.shp")
+plot(shp, pch = 19, col = "red")
+```
+
+View coordinate reference system and extents of the shapefile.
+
+```{r n2}
+crs(shp)
+extent(shp)
+```
+
+
+## Thiessen polygons
+
+- Thiessen polygons are formed to assign boundaries of the areas closest to each unique point. Therefore, for every point in a dataset, it has a corresponding Thiessen polygon.
+- We will create Thiessen polygons for the soil data, then use the polygons to map the carbon at their corresponding locations. 
+- The *spatstat* package provides the functionality to produce Thiessen polygons via its dirichlet tessellation of spatial point patterns function (dirichlet()). 
+- We also need to first convert the data to a ppp (point pattern) object class. The *maptools* package will help us achive this via  as.ppp() function.
+
+Load necessary packages and convert data to point pattern.
+
+```{r n3, message=FALSE}
+pacman::p_load(spatstat, maptools) 
+# Create a tessellated surface
+dat.pp <- as(dirichlet(as.ppp(shp)), "SpatialPolygons")
+dat.pp <- as(dat.pp,"SpatialPolygons")
+
+```
+
+Define the projection to the ppp object.
+
+```{r n4, message=FALSE}
+proj4string(dat.pp) <- crs(shp)
+plot(dat.pp, pch = 19)
+```
+
+The Polygons are extended beyond points boundary so get the boundary and clip the Thiesen polygon
+
+```{r n4b, message=FALSE}
+bdy <- readOGR("soil_boundary.shp")
+dat.pp <- intersect(dat.pp, bdy)
+plot(dat.pp, pch = 19)
+
+```
+
+
+Assign to each polygon the carbon information.
+
+```{r n5, message=FALSE}
+int.Z <- over(dat.pp, shp[,"Carbon"], fn=mean, na.rm=TRUE) 
+
+```
+
+Map Thiessen polygons and Carbon sampled points.
+
+```{r n6}
+tm_shape(dat.pp) +  tm_borders(alpha=.5, col = "black") +
+  tm_shape(shp) + tm_dots(col = "blue", scale = 0.5)
+
+```
+
