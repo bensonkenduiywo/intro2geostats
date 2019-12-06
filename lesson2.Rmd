@@ -100,7 +100,7 @@ Map Thiessen polygons and Carbon sampled points.
 
 ```{r n6}
 tm_shape(dat.pp) +  tm_borders(alpha=.5, col = "black") +
-  tm_shape(shp) + tm_dots(col = "blue", scale = 0.5)
+  tm_shape(shp) + tm_dots(col = "blue", scale = 2)
 
 ```
 

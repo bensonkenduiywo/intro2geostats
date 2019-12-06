@@ -422,7 +422,7 @@ plot(dat.pp, pch = 19)</code></pre>
 <pre class="r"><code>int.Z &lt;- over(dat.pp, shp[,&quot;Carbon&quot;], fn=mean, na.rm=TRUE) </code></pre>
 <p>Map Thiessen polygons and Carbon sampled points.</p>
 <pre class="r"><code>tm_shape(dat.pp) +  tm_borders(alpha=.5, col = &quot;black&quot;) +
-  tm_shape(shp) + tm_dots(col = &quot;blue&quot;, scale = 0.5)</code></pre>
+  tm_shape(shp) + tm_dots(col = &quot;blue&quot;, scale = 2)</code></pre>
 <p><img src="lesson2_files/figure-html/n6-1.png" width="672" /></p>
 </div>
 
