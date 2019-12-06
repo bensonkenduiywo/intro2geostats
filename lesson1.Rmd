@@ -145,22 +145,59 @@ spplot(meuse, c("fitted.s", "residuals"))
 
 ```
 
-These plots reveal that although the trend removes a large part of the variability, the residuals do not appear to behave as spatially unstructured (spatially independent) or white noise. We see that **residuals** with a similar value occur regularly close to another. This indicates some degree of **spatial dependency** with distance. More exploratory analysis will
+These plots reveal that although the trend removes a large part of the variability, the residuals do not appear to behave as spatially unstructured (spatially independent) or white noise. We see that **residuals** with a similar value occur regularly close to another. This indicates some degree of **spatial dependency** with distance. More analysis will
 take place when we further analyse these data in the context of geostatistical
-models; first we deal with simple, non-geostatistical interpolation approaches.
+models; first we will go through simple, **non-geostatistical interpolation** approaches.
 
-
-
+Let us first look at another example before we go to **non-geostatistical interpolation**. Here we use data from [Piikki et al.] 2019(https://www.mdpi.com/2071-1050/11/15/4038).
 
 ```{r t1}
 d <- read.csv("soil_data_CIAT.csv", stringsAsFactors=FALSE)
 head(d, n=3)
-```
-
-Examine the spatial trend of pH by using regression on coordinates
-```{r t2}
-trend <- lm(Clay~X+Y, d) 
-summary(trend)
 
 ```
 
+Examine the spatial trend of the variables (Bulk density, Carbon, Sand and Clay).
+
+```{r t2, out.width="100%"}
+p_load(gridExtra)
+coordinates(d) <- c("X", "Y")
+plots = lapply(names(d)[2:5], function(.x) spplot(d,.x,do.log = T, main=.x))
+do.call(grid.arrange, plots)
+
+```
+
+Its clear that there is some spatial structure in these variables. This is also supported by the trend depicted their residuals obtained by regressing the variables over their locations/coordinates:
+
+```{r t2a}
+#Carbon
+ca_lm <- lm(Carbon ~ X + Y, d)
+d$fitted.ca <- predict(ca_lm, d) - mean(predict(ca_lm, d))
+d$residuals.ca <- residuals(ca_lm)
+#Bulk density
+bd_lm <- lm(Bulk_density ~ X + Y, d)
+d$fitted.bd <- predict(bd_lm, d) - mean(predict(bd_lm, d))
+d$residuals.bd <- residuals(bd_lm)
+#sand
+sa_lm <- lm(Sand ~ X + Y, d)
+d$fitted.sa <- predict(sa_lm, d) - mean(predict(sa_lm, d))
+d$residuals.sa <- residuals(sa_lm)
+spplot(d, names(d)[6:11])
+#plots = lapply(names(d)[6:11], function(.x) spplot(d,.x, main=.x))
+#do.call(grid.arrange, plots)
+
+```
+
+Is there any relationship between organic carbon with clay and sand?
+
+```{r t3}
+par(mfrow=c(1,2))
+plot(Carbon ~ Clay + Sand , d)
+
+```
+
+We have seen how to explore data using plots and some measures. Next lesson illustrates how to analyze the data using **non-geostatistical interpolation**. 
+
+### References
+
+Piikki, K.; Söderström, M.; Sommer, R.; Da Silva, M.; Munialo, S.; Abera, W. [A Boundary Plane Approach to Map Hotspots for Achievable Soil Carbon Sequestration and Soil Fertility Improvement.](https://www.mdpi.com/2071-1050/11/15/4038) *Sustainability* 2019, 11, 4038.

@@ -15,9 +15,11 @@ navbar:
           href: ex1_intro2R_answers.html
         - text: "Exploratory data analysis"
           href: lesson1.html
+        - text: "Spatial prediction: non-geostatistical"
+          href: lesson2.html          
   right:
     - icon: fa-envelope fa-lg
-      href: contact.html
+      href: mailto:fake@email.com">fake@email.com
     - icon: fa-github fa-lg
       href: http://github.com/bensonkenduiywo
     - icon: fa-twitter fa-lg

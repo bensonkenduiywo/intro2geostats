@@ -292,12 +292,15 @@ $(document).ready(function () {
     <li>
       <a href="lesson1.html">Exploratory data analysis</a>
     </li>
+    <li>
+      <a href="lesson2.html">Spatial prediction: non-geostatistical</a>
+    </li>
   </ul>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="contact.html">
+  <a href="mailto:fake@email.com&quot;&gt;fake@email.com">
     <span class="fa fa-envelope fa-lg"></span>
      
   </a>
@@ -453,35 +456,46 @@ meuse$fitted.s &lt;- predict(zn.lm, meuse) - mean(predict(zn.lm, meuse))
 meuse$residuals &lt;- residuals(zn.lm)
 spplot(meuse, c(&quot;fitted.s&quot;, &quot;residuals&quot;))</code></pre>
 <p><img src="lesson1_files/figure-html/sp3-1.png" width="672" /></p>
-<p>These plots reveal that although the trend removes a large part of the variability, the residuals do not appear to behave as spatially unstructured (spatially independent) or white noise. We see that <strong>residuals</strong> with a similar value occur regularly close to another. This indicates some degree of <strong>spatial dependency</strong> with distance. More exploratory analysis will take place when we further analyse these data in the context of geostatistical models; first we deal with simple, non-geostatistical interpolation approaches.</p>
+<p>These plots reveal that although the trend removes a large part of the variability, the residuals do not appear to behave as spatially unstructured (spatially independent) or white noise. We see that <strong>residuals</strong> with a similar value occur regularly close to another. This indicates some degree of <strong>spatial dependency</strong> with distance. More analysis will take place when we further analyse these data in the context of geostatistical models; first we will go through simple, <strong>non-geostatistical interpolation</strong> approaches.</p>
+<p>Let us first look at another example before we go to <strong>non-geostatistical interpolation</strong>. Here we use data from [Piikki et al.] 2019(<a href="https://www.mdpi.com/2071-1050/11/15/4038" class="uri">https://www.mdpi.com/2071-1050/11/15/4038</a>).</p>
 <pre class="r"><code>d &lt;- read.csv(&quot;soil_data_CIAT.csv&quot;, stringsAsFactors=FALSE)
 head(d, n=3)</code></pre>
 <pre><code>##       LAB_ID      X     Y Bulk_density Carbon     Clay     Sand
 ## 1 CT258-6711 714875 72875     1.454268  2.472 43.54774 40.47143
 ## 2 CT258-6697 713625 73125     1.171975  2.298 51.57937 32.42703
 ## 3 CT258-6797 706625 73375     1.398217  1.510 35.93126 54.07674</code></pre>
-<p>Examine the spatial trend of pH by using regression on coordinates</p>
-<pre class="r"><code>trend &lt;- lm(Clay~X+Y, d) 
-summary(trend)</code></pre>
-<pre><code>## 
-## Call:
-## lm(formula = Clay ~ X + Y, data = d)
-## 
-## Residuals:
-##      Min       1Q   Median       3Q      Max 
-## -19.4605  -5.2877   0.1225   5.3326  20.4552 
-## 
-## Coefficients:
-##               Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept) -3.158e+02  1.029e+02  -3.070 0.002444 ** 
-## X            5.052e-04  1.502e-04   3.364 0.000922 ***
-## Y           -1.867e-04  2.346e-04  -0.796 0.427177    
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
-## 
-## Residual standard error: 7.987 on 197 degrees of freedom
-## Multiple R-squared:  0.0547, Adjusted R-squared:  0.0451 
-## F-statistic:   5.7 on 2 and 197 DF,  p-value: 0.003923</code></pre>
+<p>Examine the spatial trend of the variables (Bulk density, Carbon, Sand and Clay).</p>
+<pre class="r"><code>p_load(gridExtra)
+coordinates(d) &lt;- c(&quot;X&quot;, &quot;Y&quot;)
+plots = lapply(names(d)[2:5], function(.x) spplot(d,.x,do.log = T, main=.x))
+do.call(grid.arrange, plots)</code></pre>
+<p><img src="lesson1_files/figure-html/t2-1.png" width="100%" /></p>
+<p>Its clear that there is some spatial structure in these variables. This is also supported by the trend depicted their residuals obtained by regressing the variables over their locations/coordinates:</p>
+<pre class="r"><code>#Carbon
+ca_lm &lt;- lm(Carbon ~ X + Y, d)
+d$fitted.ca &lt;- predict(ca_lm, d) - mean(predict(ca_lm, d))
+d$residuals.ca &lt;- residuals(ca_lm)
+#Bulk density
+bd_lm &lt;- lm(Bulk_density ~ X + Y, d)
+d$fitted.bd &lt;- predict(bd_lm, d) - mean(predict(bd_lm, d))
+d$residuals.bd &lt;- residuals(bd_lm)
+#sand
+sa_lm &lt;- lm(Sand ~ X + Y, d)
+d$fitted.sa &lt;- predict(sa_lm, d) - mean(predict(sa_lm, d))
+d$residuals.sa &lt;- residuals(sa_lm)
+spplot(d, names(d)[6:11])</code></pre>
+<p><img src="lesson1_files/figure-html/t2a-1.png" width="672" /></p>
+<pre class="r"><code>#plots = lapply(names(d)[6:11], function(.x) spplot(d,.x, main=.x))
+#do.call(grid.arrange, plots)</code></pre>
+<p>Is there any relationship between organic carbon with clay and sand?</p>
+<pre class="r"><code>par(mfrow=c(1,2))
+plot(Carbon ~ Clay + Sand , d)</code></pre>
+<p><img src="lesson1_files/figure-html/t3-1.png" width="672" /></p>
+<p>We have seen how to explore data using plots and some measures. Next lesson illustrates how to analyze the data using <strong>non-geostatistical interpolation</strong>.</p>
+</div>
+<div id="references" class="section level3">
+<h3>References</h3>
+<p>Piikki, K.; Söderström, M.; Sommer, R.; Da Silva, M.; Munialo, S.; Abera, W. <a href="https://www.mdpi.com/2071-1050/11/15/4038">A Boundary Plane Approach to Map Hotspots for Achievable Soil Carbon Sequestration and Soil Fertility Improvement.</a> <em>Sustainability</em> 2019, 11, 4038.</p>
 </div>
 </div>
 

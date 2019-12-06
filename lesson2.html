@@ -12,7 +12,7 @@
 
 
 
-<title>index.utf8.md</title>
+<title>lesson2.utf8.md</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -336,38 +336,21 @@ $(document).ready(function () {
 </div>
 
 
-<div id="background" class="section level3">
-<h3>Background</h3>
-<p>The goal of this tutorial is to introduce principles of Geostatical data analysis in R. Geostatistics is a branch of statistical sciences that studies spatial/temporal phenomena &amp; capitalizes on spatial relationships to model possible values of variable(s) at unobserved, unsampled locations (Caers, 2005). Geostatistical tools are useful for interpolation of sampled data and simulation/prediction of phenomena.</p>
-<p>Generally, geostatistics deals with the analysis of <strong>random fields</strong> <span class="math inline">\(Z(s)\)</span>, where <em>Z</em> is a random variable and <em>s</em> the non-random spatial index. Basically, at a limited number of sampled locations, measurements on <em>Z</em> are available, and prediction (interpolation) of <em>Z</em> is required at non-observed locations <span class="math inline">\(s_0\)</span>, or the mean of <em>Z</em> is required over a specific region <span class="math inline">\(B_0\)</span>. Geostatistical analysis involves estimation and modelling of spatial correlation (covariance or semivariance), and evaluating whether simplifying assumptions such as stationarity can be justified or need refinement. Advanced topics include the conditional simulation of Z(s), for example over locations on a grid, and model-based inference, which propagates uncertainty of correlation parameters through spatial predictions or simulations.</p>
-<p>We will use <strong>gstat</strong> package, because it offers the widest geostatistical functionality in R namely:</p>
-<ol style="list-style-type: decimal">
-<li>variogram cloud diagnostics,</li>
-<li>variogram modelling,</li>
-<li>simple kriging to local universal cokriging,</li>
-<li>multivariate geostatistics,</li>
-<li>block kriging,</li>
-<li>indicator kriging and,</li>
-<li>Gaussian conditional simulation e.t.c</li>
+<div id="spatial-interpolation-prediction" class="section level2">
+<h2>Spatial interpolation (prediction)</h2>
+<p>Spatial interpolation/prediction is necessary in various application because of sparse data. For instance, due to economic and time constraints measurements may be sampled and later prediction done at unobserved locations using spatial interpolation models. Spatial prediction models (algorithms) can be grouped according to the amount of statistical analysis i.e. amount of expert knowledge included in the analysis. The following are the main groupings of interpolation techniques:</p>
+<div id="deterministic-non-geostatistical-interpolationprediction-models" class="section level3">
+<h3>Deterministic (non-geostatistical) interpolation/prediction models</h3>
+<p>These are models where arbitrary or empirical model parameters are used. No estimate of the model error is available and usually no strict assumptions about the variability of a feature exist. The most common techniques that belong to this group are:</p>
+<ol style="list-style-type: lower-alpha">
+<li>Inverse distance weighted interpolation;</li>
+<li>Thiessen polygons;</li>
+<li>Natural neighbour interpolation;</li>
+<li>Polynomial trend surfaces;</li>
+<li>Splines;</li>
+<li>Radial Basis Function Interpolation</li>
 </ol>
 </div>
-<div id="structure" class="section level3">
-<h3>Structure</h3>
-<p>The tutorial is organized into exercises as follows:</p>
-<ol style="list-style-type: decimal">
-<li>Exercise 1: <a href="ex1_intro2R.html">Manipulating data in R</a>.</li>
-<li><a href="ex1_intro2R_answers.html">Solutions to Exercise 1</a>.</li>
-<li>Exercise 2: <a href="lesson1.html">Exploratory data analysis</a></li>
-<li>Exercise 3: <a href="lesson2.html">Spatial prediction: non-geostatistical</a></li>
-</ol>
-</div>
-<div id="resources" class="section level3">
-<h3>Resources</h3>
-<p>We will use R software. R software is opensource and can be downloaded from <a href="https://cran.r-project.org/" class="uri">https://cran.r-project.org/</a>. A suitable R user interface that we shall use is <a href="https://rstudio.com/products/rstudio/download/">R Studio</a>. First download and install the latest version of R followed by the editor (RStudio). Other editors are available and you are free to use depending on your preference or previous experience.</p>
-</div>
-<div id="references" class="section level3">
-<h3>References</h3>
-<p>Caers, J. (2005). <a href="https://store.spe.org/Petroleum-Geostatistics-P45.aspx"><em>Petroleum geostatistics</em></a>. Society of Petroleum Engineers Richardson</p>
 </div>
 
 

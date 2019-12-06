@@ -1,0 +1,22 @@
+---
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Spatial interpolation (prediction)
+
+Spatial interpolation/prediction is necessary in various application because of sparse data. For instance, due to economic and time constraints measurements may be sampled and later prediction done at unobserved locations using spatial interpolation models. Spatial prediction models (algorithms) can be grouped according to the amount of statistical analysis i.e. amount of expert knowledge included in the analysis. The following are the main groupings of interpolation techniques:
+
+### Deterministic (non-geostatistical) interpolation/prediction models 
+
+These are models where arbitrary or empirical model parameters are used. No estimate of the model error is available and usually no strict assumptions about the variability of a feature exist. The most common techniques that belong to this group are:
+
+  a. Inverse distance weighted interpolation;
+  b. Thiessen polygons;
+  c. Natural neighbour interpolation;
+  d. Polynomial trend surfaces;
+  e. Splines;
+  f. Radial Basis Function Interpolation

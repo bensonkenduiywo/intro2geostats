@@ -30,6 +30,7 @@ The tutorial is organized into exercises as follows:
 1. Exercise 1: [Manipulating data in R](ex1_intro2R.html).
 2. [Solutions to Exercise 1](ex1_intro2R_answers.html).
 3. Exercise 2: [Exploratory data analysis](lesson1.html) 
+4. Exercise 3: [Spatial prediction: non-geostatistical](lesson2.html)
 
 ### Resources
 
