@@ -333,12 +333,12 @@ $(document).ready(function () {
 </div>
 
 
-<div id="exploratory-df-analysis" class="section level2">
-<h2>Exploratory df analysis</h2>
-<p>It is important prior to starting any analysis to inspect df. This can be done to check for any departures from normality or any existing trend. Principle plots like histogram, boxplots and measures of central tendency and dispersion can help detect distributions of df that deviates from the normal. In additions maps can aid illustrate any spatial trends.</p>
-<div id="load-df" class="section level3">
-<h3>Load df</h3>
-<p>We will mostly use the meuse dfset available in <strong>sp</strong> package. The meuse df set provided by package sp is a df set comprising of four heavy metals measured in the top soil in a flood plain along the river Meuse, along with a handful of covariates. The process governing heavy metal distribution seems that polluted sediment is carried by the river, and mostly deposited close to the river bank, and areas with low elevation. This document shows a Geostatistical analysis of this df set. The df set was introduced by Burrough and McDonnell, 1998.</p>
+<div id="exploratory-data-analysis" class="section level2">
+<h2>Exploratory data analysis</h2>
+<p>It is important prior to starting any analysis to inspect data This can be done to check for any departures from normality or any existing trend. Principle plots like histogram, boxplots and measures of central tendency and dispersion can help detect distributions of data that deviates from the normal. In additions maps can aid illustrate any spatial trends.</p>
+<div id="load-data" class="section level3">
+<h3>Load data</h3>
+<p>We will mostly use the meuse dataset available in <strong>sp</strong> package. The meuse data set provided by package sp is a data set comprising of four heavy metals measured in the top soil in a flood plain along the river Meuse, along with a handful of covariates. The process governing heavy metal distribution seems that polluted sediment is carried by the river, and mostly deposited close to the river bank, and areas with low elevation. This document shows a Geostatistical analysis of this data set. The data set was introduced by Burrough and McDonnell, 1998.</p>
 <pre class="r"><code>rm(list=ls(all=TRUE)) # Clear memory
 #Load existing/install missing libraries
 if (!require(&quot;pacman&quot;)) install.packages(&quot;pacman&quot;)
@@ -357,7 +357,7 @@ head(df, n=3)</code></pre>
 </div>
 <div id="measures-of-cental-tendency" class="section level3">
 <h3>Measures of Cental Tendency</h3>
-<p>Measures of of center of tendency include: mean. median and mode. For example, using the topsoil copper concentration df in Meuses dfset these measures can be computed as follows in R.</p>
+<p>Measures of of center of tendency include: mean. median and mode. For example, using the topsoil copper concentration data in Meuses dataset these measures can be computed as follows in R.</p>
 <div id="mean-and-median" class="section level4">
 <h4>Mean and Median</h4>
 <p>See below.</p>
@@ -419,7 +419,7 @@ abline(v=mean(copper), col=&quot;red&quot;)
 text(mean(copper),0.04,&quot;Mean&quot;, col = &quot;red&quot;, adj = c(0, -.1))
 abline(v=median(copper), col=&quot;blue&quot;)
 text(median(copper),0.04,&quot;Median&quot;, col = &quot;blue&quot;, adj = c(1, -.1))</code></pre>
-<p><img src="lesson1_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p><img src="lesson1_files/figure-html/m4-1.png" width="672" /></p>
 <pre class="r"><code>cat(&quot;Skewness of copper is &quot;, skewness(copper), &quot; . This means that the data is positively skewed as illustrated on the histogram plot.&quot;)</code></pre>
 <pre><code>## Skewness of copper is  1.386803  . This means that the data is positively skewed as illustrated on the histogram plot.</code></pre>
 </div>
@@ -431,7 +431,7 @@ text(median(copper),0.04,&quot;Median&quot;, col = &quot;blue&quot;, adj = c(1, 
 hist(x,breaks=150,xlim=c(0,20),freq=FALSE)
 abline(v=10, lwd=5)
 abline(v=c(4,6,8,12,14,16), lwd=3,lty=3)</code></pre>
-<p><img src="lesson1_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p><img src="lesson1_files/figure-html/m5-1.png" width="672" /></p>
 </div>
 <div id="exploring-spatial-trend" class="section level3">
 <h3>Exploring spatial trend</h3>
@@ -442,14 +442,18 @@ spplot(meuse, &quot;zinc&quot;, do.log = T)</code></pre>
 <pre class="r"><code>bubble(meuse, &quot;zinc&quot;, do.log = T, key.space = &quot;bottom&quot;)</code></pre>
 <p><img src="lesson1_files/figure-html/sp1-2.png" width="672" /></p>
 <p>The evident structure here is that zinc concentration is larger close to the river Meuse banks.</p>
+<p>In case of an evident spatial trend, such as the relation between top soil zinc concentration and distance (<span class="math inline">\(\text{zinc} \propto \beta_0 + \beta_1(\text{dist})\)</span>) to the river, we make a plot to illustrate this relationship.</p>
 <pre class="r"><code>pacman::p_load(lattice)
 xyplot(log(zinc) ~ sqrt(dist), as.data.frame(meuse))</code></pre>
 <p><img src="lesson1_files/figure-html/sp2-1.png" width="672" /></p>
+<p>The plot shows that Zinc concentration linearly decreases with increasing distance from the river. This supports the former premise that heavy metal concentration is higher along the river banks.</p>
+<p>We can also model this relationship using a linear regression and plot maps with fitted values and with residuals.</p>
 <pre class="r"><code>zn.lm &lt;- lm(log(zinc) ~ sqrt(dist), meuse)
 meuse$fitted.s &lt;- predict(zn.lm, meuse) - mean(predict(zn.lm, meuse))
 meuse$residuals &lt;- residuals(zn.lm)
 spplot(meuse, c(&quot;fitted.s&quot;, &quot;residuals&quot;))</code></pre>
-<p><img src="lesson1_files/figure-html/sp2-2.png" width="672" /></p>
+<p><img src="lesson1_files/figure-html/sp3-1.png" width="672" /></p>
+<p>These plots reveal that although the trend removes a large part of the variability, the residuals do not appear to behave as spatially unstructured (spatially independent) or white noise. We see that <strong>residuals</strong> with a similar value occur regularly close to another. This indicates some degree of <strong>spatial dependency</strong> with distance. More exploratory analysis will take place when we further analyse these data in the context of geostatistical models; first we deal with simple, non-geostatistical interpolation approaches.</p>
 <pre class="r"><code>d &lt;- read.csv(&quot;soil_data_CIAT.csv&quot;, stringsAsFactors=FALSE)
 head(d, n=3)</code></pre>
 <pre><code>##       LAB_ID      X     Y Bulk_density Carbon     Clay     Sand

@@ -603,7 +603,11 @@ colnames(wa)[2] &lt;- &#39;nwp&#39;
 wb &lt;- aggregate(w[, &#39;POPULATION.SERVED&#39;, drop=FALSE], w[, &#39;REGION&#39;, drop=FALSE], sum, na.rm=TRUE) 
 
 library(raster)</code></pre>
-<pre><code>## Loading required package: sp</code></pre>
+<pre><code>## 
+## Attaching package: &#39;raster&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:e1071&#39;:
+## 
+##     interpolate</code></pre>
 <pre class="r"><code>wc &lt;- aggregate(w[, c(&#39;WATER_QUAN&#39;, &#39;WATERPOINT&#39;)], w[, &#39;REGION&#39;, drop=FALSE], modal, na.rm=TRUE) 
 # or
 f &lt;- function(x) names(which.max(table(x)))
