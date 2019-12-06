@@ -100,7 +100,23 @@ Map Thiessen polygons and Carbon sampled points.
 
 ```{r n6}
 tm_shape(dat.pp) +  tm_borders(alpha=.5, col = "black") +
-  tm_shape(shp) + tm_dots(col = "blue", scale = 2)
+  tm_shape(shp) + tm_dots(col = "red", scale = 2.5, shape = 16)
+
+```
+
+Create a *SpatialPolygonsDataFrame* object with Carbon content,
+
+```{r n6a}
+thiessen <- SpatialPolygonsDataFrame(dat.pp, int.Z)
+```
+
+
+then visualize our point data using the newly formed Thiessen polygons.
+
+```{r n7}
+tm_shape(thiessen) + tm_fill(col = "Carbon", style = "quantile", palette = "Reds", title = "Carbon content") + tm_borders(alpha=.3, col = "black") +
+tm_shape(shp) + tm_dots(col = "black", scale = 2.5) +
+tm_layout(legend.position = c("left", "top"),  legend.text.size = 1.05, legend.title.size = 1.2, frame = FALSE)
 
 ```
 

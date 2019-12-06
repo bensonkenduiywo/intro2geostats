@@ -422,8 +422,15 @@ plot(dat.pp, pch = 19)</code></pre>
 <pre class="r"><code>int.Z &lt;- over(dat.pp, shp[,&quot;Carbon&quot;], fn=mean, na.rm=TRUE) </code></pre>
 <p>Map Thiessen polygons and Carbon sampled points.</p>
 <pre class="r"><code>tm_shape(dat.pp) +  tm_borders(alpha=.5, col = &quot;black&quot;) +
-  tm_shape(shp) + tm_dots(col = &quot;blue&quot;, scale = 2)</code></pre>
+  tm_shape(shp) + tm_dots(col = &quot;red&quot;, scale = 2.5, shape = 16)</code></pre>
 <p><img src="lesson2_files/figure-html/n6-1.png" width="672" /></p>
+<p>Create a <em>SpatialPolygonsDataFrame</em> object with Carbon content,</p>
+<pre class="r"><code>thiessen &lt;- SpatialPolygonsDataFrame(dat.pp, int.Z)</code></pre>
+<p>then visualize our point data using the newly formed Thiessen polygons.</p>
+<pre class="r"><code>tm_shape(thiessen) + tm_fill(col = &quot;Carbon&quot;, style = &quot;quantile&quot;, palette = &quot;Reds&quot;, title = &quot;Carbon content&quot;) + tm_borders(alpha=.3, col = &quot;black&quot;) +
+tm_shape(shp) + tm_dots(col = &quot;black&quot;, scale = 2.5) +
+tm_layout(legend.position = c(&quot;left&quot;, &quot;top&quot;),  legend.text.size = 1.05, legend.title.size = 1.2, frame = FALSE)</code></pre>
+<p><img src="lesson2_files/figure-html/n7-1.png" width="672" /></p>
 </div>
 
 
