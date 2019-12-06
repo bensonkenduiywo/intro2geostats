@@ -19,7 +19,7 @@ navbar:
           href: lesson2.html          
   right:
     - icon: fa-envelope fa-lg
-      href: mailto:fake@email.com">fake@email.com
+      href: mailto:fake@email.com
     - icon: fa-github fa-lg
       href: http://github.com/bensonkenduiywo
     - icon: fa-twitter fa-lg
