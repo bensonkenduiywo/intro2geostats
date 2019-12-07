@@ -296,10 +296,10 @@ $(document).ready(function () {
       <a href="lesson2.html">Spatial prediction</a>
     </li>
     <li>
-      <a href="lesson3.html">Non-geostatistical spatial prediction]</a>
+      <a href="lesson3.html">Non-geostatistical spatial prediction</a>
     </li>
     <li>
-      <a href="lesson4.html">Geostatistical spatial prediction]</a>
+      <a href="lesson4.html">Geostatistical spatial prediction</a>
     </li>
   </ul>
 </li>
@@ -342,20 +342,139 @@ $(document).ready(function () {
 </div>
 
 
-<div id="geostatistical-prediction" class="section level2">
-<h2>Geostatistical prediction</h2>
-<p>in this case, the model parameters are commonly estimated in an objective way, following probability theory. The predictions are accompanied with an estimate of the prediction error. A drawback is that the input data set usually need to satisfy strict statistical assumptions. There are at least four groups of linear statistical models:</p>
-<ol style="list-style-type: lower-alpha">
-<li>kriging (plain geostatistics);</li>
-<li>environmental correlation (e.g. regression-based);</li>
-<li>Bayesian-based models (e.g. Bayesian Maximum Entropy);</li>
-<li>hybrid models (e.g. regression-kriging).</li>
+<div id="geostatistical-predictionprediction" class="section level2">
+<h2>Geostatistical prediction/prediction</h2>
+<p>Geostatistical interpolation differs from <a href="lesson1.html">non-geostatistical interpolation</a> approaches in that it assumes the data point values represent a sample from some underlying true population. By analyzing the sample it is possible to derive a general model that describes how the sample values vary with distance (and optionally, direction). A generalized model used conventional to describe spatial correlation of phenomena with respect to distance and direction is term as the <strong>Variogram</strong>. The variogram model may then be used to interpolate, or predict (a process called kriging), values at unsampled locations, in much the same way as with deterministic interpolation. If the samples meet various additional conditions it may also be possible to provide estimated confidence intervals for these predictions. Geostatistical interpolation methods attempt to address questions like:</p>
+<ul>
+<li>how many points are needed to compute the local average?</li>
+<li>what size, orientation and shape of neighborhood should be chosen?</li>
+<li>what model and weights should be used to compute the local average?</li>
+<li>what errors (uncertainties) are associated with interpolated values?</li>
+</ul>
+<div id="estimating-spatial-correlation-the-variogram" class="section level3">
+<h3>Estimating Spatial correlation: the Variogram</h3>
+<p>In geostatistics, spatial correlation has traditionally been modelled by a <strong>variogram</strong>. The variogram (semi-variogram) explains the degree to which nearby locations have similar values using <em>semi-variance</em>.</p>
+<p>In standard statistical problems, correlation can be estimated from a scatterplot, when several data pairs {a, b} are available. The spatial correlation between two observations of a variable <em>z(x)</em> at locations <span class="math inline">\(x\)</span> and <span class="math inline">\(x+h\)</span>, where <em>h</em> is the separating distance (lag), cannot be estimated, as only a single pair is available i.e. correlations can not be computed from two variables with a single observations. Geostatistics adopt <strong>stationarity</strong> assumption in order to compute spatial correlation. Stationarity underpins the practicality of geostatistics; it is assumption enables us to treat data as though they have the same degree of variation over a region of interest <a href="https://www.springer.com/gp/book/9783319158648">(Oliver &amp; Webster, 2015)</a>. A commonly used form of stationarity is termed as <strong>intrinsic stationarity</strong>, which assumes that the process that generated the samples is a random function <em>Z(x)</em> composed of a mean and residual</p>
+<p><span class="math display">\[Z(x) = m + e(x),\]</span> with a constant mean</p>
+<p><span class="math display">\[E(Z(x)) = m\]</span> and a variogram <span class="math inline">\(\gamma(h)\)</span> defined as</p>
+<p><span class="math display">\[\hat{\gamma}(h) =\frac{1}{2N}\sum_{i=1}^{N}\left\{Z(\textbf{x}_i+h)-Z(\textbf{x}_i)\right\}^2 \]</span> where <em>N</em> is the number of pair points seprated by lag <em>h</em> used to estimate <span class="math inline">\(\hat{\gamma}(h)\)</span>. This is also known as the <em>variogram cloud</em>, which shows the semivariances between all point pairs.</p>
+<p>Load the carbon data</p>
+<pre class="r"><code>rm(list=ls(all=TRUE))
+library(rgdal)
+d &lt;- readOGR(&quot;soil_data_CIAT.shp&quot;)</code></pre>
+<pre><code>## OGR data source with driver: ESRI Shapefile 
+## Source: &quot;D:\JKUAT\ShortCourses\Geostatistics\intro2geostats\soil_data_CIAT.shp&quot;, layer: &quot;soil_data_CIAT&quot;
+## with 200 features
+## It has 7 fields
+## Integer64 fields read as strings:  X Y</code></pre>
+<pre class="r"><code>head(d, n=3)</code></pre>
+<pre><code>##       LAB_ID      X     Y Bulk_densi Carbon     Clay     Sand
+## 1 CT258-6711 714875 72875   1.454268  2.472 43.54774 40.47143
+## 2 CT258-6697 713625 73125   1.171975  2.298 51.57937 32.42703
+## 3 CT258-6797 706625 73375   1.398217  1.510 35.93126 54.07674</code></pre>
+<p>How many point pairs are there in our data given the formula as <span class="math display">\[N= [n · (n − 1)]/2\]</span></p>
+<pre class="r"><code>(dim(d)[1] * (dim(d)[1] - 1))/2</code></pre>
+<pre><code>## [1] 19900</code></pre>
+</div>
+<div id="variogram-cloud" class="section level3">
+<h3>Variogram cloud</h3>
+<p>Let us plot a variogram cloud of Clay content. A variogram cloud is a scatterplot of data pairs, in which the semivariance is plotted against interpoint distance.</p>
+<pre class="r"><code>library(gstat)
+vc &lt;- variogram(d$Clay~1, data=d, cloud = T)
+head(vc, n=3)</code></pre>
+<pre><code>##       dist     gamma dir.hor dir.ver   id left right
+## 1 1274.755  32.25350       0       0 var1    2     1
+## 2 5505.679 292.14900       0       0 var1    4     2
+## 3 1500.000  36.33051       0       0 var1    4     3</code></pre>
+<pre class="r"><code>plot(vc, main = &quot;Variogram cloud of Clay&quot;, xlab = &quot;lag in meters&quot;)</code></pre>
+<p><img src="lesson4_files/figure-html/v3-1.png" width="672" /></p>
+<p>Note that the formula <code>d$Clay~1</code> indicates the form of the spatial dependence. The right-hand side 1 means to model the left-hand side <code>d$Clay</code> only as local spatial dependence, i.e. without any trend or other explanatory factors.</p>
+</div>
+<div id="variogram-map" class="section level3">
+<h3>Variogram map</h3>
+<p>We can also show the variogram map. The maps provide another means of looking at directional dependence in semivariograms. The map is centered around (0, 0), as <em>h</em> is geographical distance rather than geographical location. Cutoff and width correspond to some extent to map extent and cell size; the semivariance map is point symmetric around (0, 0), as <span class="math inline">\(\gamma(h) = \gamma(−h)\)</span>. We will set a threshold of 5 to ensure that only semivariogram map values based on at least 5 point pairs are shown, removing too noisy estimation.</p>
+<pre class="r"><code>v.map = variogram(Clay~1, d, cutoff = 1500, width = 100, map = TRUE)
+plot(v.map, threshold = 5)</code></pre>
+<p><img src="lesson4_files/figure-html/v4-1.png" width="672" /></p>
+<p>From the map we can see that there is there si strong spatial depency in clay content in the direction NE to SW.</p>
+</div>
+<div id="empirical-variogram" class="section level3">
+<h3>Empirical variogram</h3>
+<p>This variogram can be plotted as semi-variance <span class="math inline">\(\gamma(h)\)</span> (the squared difference of a certain property between locations) against average separation distance (<em>h</em>) along with the number of points that contributed to each estimate. Empirical here is used to refer to an experimental/sample variogram i.e. based on data test.</p>
+<pre class="r"><code>v &lt;- variogram(Clay~1, data=d)
+plot(v, plot.numbers=T,pch=3)</code></pre>
+<p><img src="lesson4_files/figure-html/v5-1.png" width="672" /></p>
+</div>
+<div id="main-properties-of-variogram" class="section level3">
+<h3>Main properties of Variogram</h3>
+<p>Some key properties of the variogram amongst others include:</p>
+<ol style="list-style-type: decimal">
+<li>Range: the critical distance beyond which there is no further correlation in the variogram,</li>
+<li>Sill: is the maximum semi-variance. It represents variability in the absence of spatial dependence, and</li>
+<li>Nugget: is the semi-variance as the separation approaches zero. It represents variability at a point that cant be explained by spatial structure.</li>
 </ol>
-<p>In this lesson we cover the first category (non-geostatistical).</p>
+<p>Let us extract these properties from our variogram.</p>
+<pre class="r"><code>nugget &lt;- v$gamma[v$np==95]
+cat(&quot;Nugget is &quot;, nugget)</code></pre>
+<pre><code>## Nugget is  39.03987</code></pre>
+<pre class="r"><code>sill &lt;- v$gamma[v$np==962]
+cat(&quot;Nugget is &quot;, sill)</code></pre>
+<pre><code>## Nugget is  72.32733</code></pre>
+<pre class="r"><code>range &lt;- v$dist[v$np==829]
+cat(&quot;Nugget is &quot;, range, &quot; m&quot;)</code></pre>
+<pre><code>## Nugget is  2631.411  m</code></pre>
+</div>
+<div id="defining-variogram-bins" class="section level3">
+<h3>Defining variogram bins</h3>
+<p>Some notes:</p>
+<ol style="list-style-type: decimal">
+<li>Distance interval, specifying the centres. E.g. <span class="math inline">\((0, 100, 200, \dots)\)</span> means intervals of <span class="math inline">\([0,\dots,50]\)</span>, <span class="math inline">\([50, \dots, 150]\)</span>, . . .</li>
+<li>All point pairs whose separation is in the interval are used to estimate <span class="math inline">\(\gamma(h)\)</span> for <em>h</em> as the interval centre</li>
+<li>Narrow intervals: more resolution but fewer point pairs for each sample</li>
+<li>Each bin should have &gt; 100 point pairs; &gt; 300 is much more reliable.</li>
+</ol>
+<p>So we can use a loop to evaluate different bin sizes.</p>
+<pre class="r"><code>par(mfrow = c(2,3), oma = c(2,2,0,0), mar = c(3,3,0,0), mgp = c(1.5,0.5,0),xpd = NA)
+for (bw in seq(20, 220, by = 40)) {
+  v&lt;-variogram(Clay~1, d, width=bw)
+  plot(v$dist, v$gamma, xlab=paste(&quot;bin width&quot;, bw))
+  cat(bw, &quot; bin width has these np:&quot;, v$np) 
+}</code></pre>
+<pre><code>## 20  bin width has these np: 10 47 38 30 83 55 41 83 105 50 122 63 111 118 84 79 28 64 45 65 82 77 93 35 113 68 80 66 70 31 160 83 101 77 62 38 59 121 62 68 95 92 70 58 56 49 53 67 63 29 47 120 30 113 50 55 29 105 53 113 59 47 47 27 64 202 62 47 53 55 98 67 77 56 66 53 73 51 47 39 98 103 39 100 46 76 81 102 11 46 127 91 52 77 49 51 191 94 84 121 71 41 40 21 124 36 37 96 77 25 32 33 37 100 83 130 31 70 43 77 18 41 97 31 62 39 70 41 27 139 38 36 84 73 39 105 82 27 54 27 44 95 73 70 57 71 62 39 44 130 60 63 35 26 91 56 33 26 33 64 35 9 77 57 113 60</code></pre>
+<pre><code>## 60  bin width has these np: 10 47 38 30 83 55 41 83 105 50 185 111 118 84 79 28 109 65 159 93 148 148 66 70 191 83 178 159 121 130 257 114 49 120 92 167 143 105 29 271 59 94 91 264 100 153 67 199 126 98 137 103 185 76 183 57 218 129 100 191 178 121 71 102 160 210 57 70 183 231 43 136 190 150 166 38 193 144 163 27 212 127 133 83 190 124 147 92 108 247 60</code></pre>
+<pre><code>## 100  bin width has these np: 10 47 38 30 83 179 155 185 111 202 79 137 147 170 148 148 167 243 178 159 251 187 184 169 259 143 134 330 121 328 155 242 248 137 240 222 194 264 229 285 205 173 293 167 220 231 276 243 166 270 268 166 271 145 288 206 167 307</code></pre>
+<pre><code>## 140  bin width has these np: 10 47 38 113 179 105 346 118 163 202 252 216 216 274 240 348 257 216 326 248 300 244 364 297 299 287 342 286 320 369 273 391 227 314 369 316 375 190 410 275 331 277 230</code></pre>
+<pre><code>## 180  bin width has these np: 10 85 30 138 124 340 229 191 333 241 284 452 280 387 283 402 405 244 517 392 338 444 404 469 294 427 484 369 354 500 366 406 363 415</code></pre>
+<p><img src="lesson4_files/figure-html/v6-1.png" width="672" /></p>
+<pre><code>## 220  bin width has these np: 10 85 113 179 340 313 281 287 397 452 410 420 522 405 508 453 427 547 453 541 543 471 478 508 473 546 423 415</code></pre>
+<p>We observe that if the intervals are short &amp; the bins narrow then there will be many estimates of (<em>h</em>), which can lead to a ”noisy” variogram because the semi-variances are calculated from few comparisons. In contrast, if the intervals are large and the bins wide then there might be too few estimates of the semi-variances to reveal the form of the variogram. The choice is thus a compromise; cannot be automated.</p>
+</div>
+<div id="variogram-modelling-and-fitting" class="section level3">
+<h3>Variogram modelling and fitting</h3>
+<p>In order to be able to define characteristics of the empirical variogram we parameterise it using different semi-variogram models. To do this authorized functions that are conditional negative semi-definite (positive definite) to the experimental values are used. There are a few principal features that the function must be able to represent <a href="https://onlinelibrary.wiley.com/doi/book/10.1002/9780470517277">(Webster and Oliver, 2007)</a>:</p>
+<ol style="list-style-type: decimal">
+<li>a monotonic increase with increasing lag distance from the ordinate of appropriate shape;</li>
+<li>a constant maximum or asymptote, or sill;</li>
+<li>a positive intercept on the ordinate, or nugget;</li>
+<li>anisotropy.</li>
+</ol>
+<p>The variogram model allows us to:</p>
+<ul>
+<li>Infer the characteristics of the underlying process from the functional form and its parameters;</li>
+<li>Compute the semi-variance between any point-pair, separated by any vector which is used in an optimal interpolator (kriging) to predict at unsampled locations. The kriging algorithm will need access to semi-variogram values for lag distances other than those used in the empirical semi-variogram.</li>
+<li>More importantly, the semivariogram models used in the kriging process need to obey certain numerical properties (the 4 features stated before) in order for the kriging equations to be solvable</li>
+</ul>
+<p>The following are the existing models in R.</p>
+<pre class="r"><code>show.vgms(as.groups=TRUE, models=c(&quot;Nug&quot;, &quot;Sph&quot;, &quot;Exp&quot;, &quot;Gau&quot;, &quot;Pow&quot;, &quot;Pen&quot;), plot=TRUE)</code></pre>
+<p><img src="lesson4_files/figure-html/v7-1.png" width="672" /></p>
+<p>In this case, the eye estimation did a pretty good job <span class="math inline">\(\dots\)</span>.</p>
+</div>
 </div>
 <div id="references" class="section level2">
 <h2>References</h2>
+<p>Webster, R., &amp; Oliver, M. A. (2007). <a href="https://onlinelibrary.wiley.com/doi/book/10.1002/9780470517277"><em>Geostatistics for Environmental Scientists</em></a> (2nd ed.). West Sussex, England: John Wiley &amp; Sons Ltd.</p>
 <p>De Smith, M. J., Goodchild, M. F., &amp; Longley, P. (2018). <a href="https://www.spatialanalysisonline.com/HTML/index.html"><em>Geospatial analysis: a comprehensive guide to principles, techniques and software tools</em></a>. Troubador publishing ltd.</p>
+<p>Oliver, M. A., &amp; Webster, R. (2015). <a href="https://www.springer.com/gp/book/9783319158648"><em>Basic steps in geostatistics: the variogram and kriging</em></a> (1st ed., Vol. 106). Springer</p>
 </div>
 
 

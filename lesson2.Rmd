@@ -35,7 +35,7 @@ in this case, the model parameters are commonly estimated in an objective way, f
   c. Bayesian-based models (e.g. Bayesian Maximum Entropy);
   d. hybrid models (e.g. regression-kriging).
   
-In this lesson we cover the first category (non-geostatistical).
+In the next lesson we cover the first category (non-geostatistical).
 
 ## References
 

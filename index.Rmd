@@ -9,9 +9,9 @@ knitr::opts_chunk$set(echo = TRUE)
 
 The goal of this tutorial is to introduce principles of Geostatical data analysis in R. Geostatistics is a branch of statistical sciences that studies spatial/temporal phenomena & capitalizes on spatial relationships to model possible values of variable(s) at unobserved, unsampled locations (Caers, 2005). Geostatistical tools are useful for interpolation of sampled data and simulation/prediction of phenomena. 
 
-Generally, geostatistics deals with the analysis of **random fields** $Z(s)$, where *Z* is a random variable and *s* the non-random spatial index. Basically, at a limited number of sampled locations, measurements on *Z* are available,
+Generally, geostatistics deals with the analysis of **random fields** $Z(s)$, where *Z* is a random variable and *x* the non-random spatial index. Basically, at a limited number of sampled locations, measurements on *Z* are available,
 and prediction (interpolation) of *Z* is required at non-observed locations
-$s_0$, or the mean of *Z* is required over a specific region $B_0$. Geostatistical analysis involves estimation and modelling of spatial correlation (covariance or semivariance), and evaluating whether simplifying assumptions such as stationarity can be justified or need refinement. Advanced topics include the conditional simulation of Z(s), for example over locations on a grid, and model-based inference, which propagates uncertainty of correlation parameters through spatial predictions or simulations.
+$s_0$, or the mean of *Z* is required over a specific region $\beta_0$. Geostatistical analysis involves estimation and modelling of spatial correlation (covariance or semivariance), and evaluating whether simplifying assumptions such as stationarity can be justified or need refinement. Advanced topics include the conditional simulation of Z(s), for example over locations on a grid, and model-based inference, which propagates uncertainty of correlation parameters through spatial predictions or simulations.
 
 We will use **gstat** package, because it offers the widest geostatistical functionality in R namely: 
 
@@ -25,7 +25,7 @@ We will use **gstat** package, because it offers the widest geostatistical funct
 
 ### Structure
 
-The tutorial is organized into exercises as follows:
+The tutorial is organized into the following sections:
 
 1. [Manipulating data in R: Excercise 1](ex1_intro2R.html).
 2. [Solutions to Exercise 1](ex1_intro2R_answers.html).

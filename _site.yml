@@ -17,9 +17,9 @@ navbar:
           href: lesson1.html
         - text: "Spatial prediction"
           href: lesson2.html
-        - text: "Non-geostatistical spatial prediction]"
+        - text: "Non-geostatistical spatial prediction"
           href: lesson3.html  
-        - text: "Geostatistical spatial prediction]"
+        - text: "Geostatistical spatial prediction"
           href: lesson4.html   
   right:
     - icon: fa-envelope fa-lg
