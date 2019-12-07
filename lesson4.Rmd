@@ -1,0 +1,24 @@
+---
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Geostatistical prediction
+
+in this case, the model parameters are commonly estimated in an objective way, following probability theory. The predictions are accompanied with an estimate of the prediction error. A drawback is that the input data set usually need to satisfy strict statistical assumptions. There are at least four groups of linear statistical models:
+
+  a. kriging (plain geostatistics);
+  b. environmental correlation (e.g. regression-based);
+  c. Bayesian-based models (e.g. Bayesian Maximum Entropy);
+  d. hybrid models (e.g. regression-kriging).
+  
+In this lesson we cover the first category (non-geostatistical).
+
+
+## References
+
+De Smith, M. J., Goodchild, M. F., & Longley, P. (2018). [*Geospatial analysis: a comprehensive guide to principles, techniques and software tools*](https://www.spatialanalysisonline.com/HTML/index.html). Troubador publishing ltd.
+

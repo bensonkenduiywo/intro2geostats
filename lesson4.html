@@ -12,7 +12,7 @@
 
 
 
-<title>lesson2.utf8.md</title>
+<title>lesson4.utf8.md</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -342,28 +342,8 @@ $(document).ready(function () {
 </div>
 
 
-<div id="spatial-interpolation-prediction" class="section level2">
-<h2>Spatial interpolation (prediction)</h2>
-<p>Spatial interpolation/prediction is necessary in various application because it helps:</p>
-<ol style="list-style-type: lower-alpha">
-<li>Predict a variable across space, including in areas where there are little to no data.</li>
-<li>To smooth the data across space so that we cannot interpret the results of individuals, but still, identify the general trends from the data. This is particularly useful when the data corresponds to individual persons and disclosing their locations is unethical.</li>
-</ol>
-<p>For instance, due to economic and time constraints measurements may be sampled and later prediction done at unobserved locations using spatial interpolation models. Spatial prediction models (algorithms) can be grouped according to the amount of statistical analysis i.e. amount of expert knowledge included in the analysis. The following are the main groupings of interpolation techniques:</p>
-<div id="deterministic-non-geostatistical-interpolationprediction-models" class="section level3">
-<h3>Deterministic (non-geostatistical) interpolation/prediction models</h3>
-<p>These are models where arbitrary or empirical model parameters are used. No estimate of the model error is available and usually no strict assumptions about the variability of a feature exist. The most common techniques that belong to this group are:</p>
-<ol style="list-style-type: lower-alpha">
-<li>Inverse distance weighted interpolation;</li>
-<li>Thiessen polygons;</li>
-<li>Natural neighbour interpolation;</li>
-<li>Polynomial trend surfaces;</li>
-<li>Splines;</li>
-<li>Radial Basis Function Interpolation</li>
-</ol>
-</div>
-<div id="geostatistical-interpolation-techniques." class="section level3">
-<h3>Geostatistical interpolation techniques.</h3>
+<div id="geostatistical-prediction" class="section level2">
+<h2>Geostatistical prediction</h2>
 <p>in this case, the model parameters are commonly estimated in an objective way, following probability theory. The predictions are accompanied with an estimate of the prediction error. A drawback is that the input data set usually need to satisfy strict statistical assumptions. There are at least four groups of linear statistical models:</p>
 <ol style="list-style-type: lower-alpha">
 <li>kriging (plain geostatistics);</li>
@@ -372,7 +352,6 @@ $(document).ready(function () {
 <li>hybrid models (e.g. regression-kriging).</li>
 </ol>
 <p>In this lesson we cover the first category (non-geostatistical).</p>
-</div>
 </div>
 <div id="references" class="section level2">
 <h2>References</h2>

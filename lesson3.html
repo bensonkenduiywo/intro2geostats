@@ -12,7 +12,7 @@
 
 
 
-<title>lesson2.utf8.md</title>
+<title>lesson3.utf8.md</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -342,36 +342,120 @@ $(document).ready(function () {
 </div>
 
 
-<div id="spatial-interpolation-prediction" class="section level2">
-<h2>Spatial interpolation (prediction)</h2>
-<p>Spatial interpolation/prediction is necessary in various application because it helps:</p>
-<ol style="list-style-type: lower-alpha">
-<li>Predict a variable across space, including in areas where there are little to no data.</li>
-<li>To smooth the data across space so that we cannot interpret the results of individuals, but still, identify the general trends from the data. This is particularly useful when the data corresponds to individual persons and disclosing their locations is unethical.</li>
-</ol>
-<p>For instance, due to economic and time constraints measurements may be sampled and later prediction done at unobserved locations using spatial interpolation models. Spatial prediction models (algorithms) can be grouped according to the amount of statistical analysis i.e. amount of expert knowledge included in the analysis. The following are the main groupings of interpolation techniques:</p>
-<div id="deterministic-non-geostatistical-interpolationprediction-models" class="section level3">
-<h3>Deterministic (non-geostatistical) interpolation/prediction models</h3>
-<p>These are models where arbitrary or empirical model parameters are used. No estimate of the model error is available and usually no strict assumptions about the variability of a feature exist. The most common techniques that belong to this group are:</p>
-<ol style="list-style-type: lower-alpha">
-<li>Inverse distance weighted interpolation;</li>
-<li>Thiessen polygons;</li>
-<li>Natural neighbour interpolation;</li>
-<li>Polynomial trend surfaces;</li>
-<li>Splines;</li>
-<li>Radial Basis Function Interpolation</li>
-</ol>
+<div id="non-geostatistical-prediction" class="section level2">
+<h2>Non-geostatistical prediction</h2>
+<p>Load the packages and data we will use.</p>
+<pre class="r"><code>pacman::p_load(sp, rgdal,rgeos,tmap,raster) 
+shp &lt;- readOGR(&quot;soil_data_CIAT.shp&quot;)</code></pre>
+<pre><code>## OGR data source with driver: ESRI Shapefile 
+## Source: &quot;D:\JKUAT\ShortCourses\Geostatistics\intro2geostats\soil_data_CIAT.shp&quot;, layer: &quot;soil_data_CIAT&quot;
+## with 200 features
+## It has 7 fields
+## Integer64 fields read as strings:  X Y</code></pre>
+<pre class="r"><code>plot(shp, pch = 19, col = &quot;red&quot;)</code></pre>
+<p><img src="lesson3_files/figure-html/n1-1.png" width="672" /></p>
+<p>View coordinate reference system and extents of the shapefile.</p>
+<pre class="r"><code>crs(shp)</code></pre>
+<pre><code>## CRS arguments:
+##  +proj=utm +zone=36 +datum=WGS84 +units=m +no_defs +ellps=WGS84
+## +towgs84=0,0,0</code></pre>
+<pre class="r"><code>extent(shp)</code></pre>
+<pre><code>## class      : Extent 
+## xmin       : 705125 
+## xmax       : 720125 
+## ymin       : 72875 
+## ymax       : 83375</code></pre>
+<div id="thiessen-polygons" class="section level3">
+<h3>Thiessen polygons</h3>
+<ul>
+<li>Thiessen polygons are formed to assign boundaries of the areas closest to each unique point. Therefore, for every point in a dataset, it has a corresponding Thiessen polygon.</li>
+<li>We will create Thiessen polygons for the soil data, then use the polygons to map the carbon at their corresponding locations.</li>
+<li>The <em>spatstat</em> package provides the functionality to produce Thiessen polygons via its dirichlet tessellation of spatial point patterns function (dirichlet()).</li>
+<li>We also need to first convert the data to a ppp (point pattern) object class. The <em>maptools</em> package will help us achive this via as.ppp() function.</li>
+</ul>
+<p>Load necessary packages and convert data to point pattern.</p>
+<pre class="r"><code>pacman::p_load(spatstat, maptools) 
+# Create a tessellated surface
+dat.pp &lt;- as(dirichlet(as.ppp(shp)), &quot;SpatialPolygons&quot;)
+dat.pp &lt;- as(dat.pp,&quot;SpatialPolygons&quot;)</code></pre>
+<p>Define the projection to the ppp object.</p>
+<pre class="r"><code>proj4string(dat.pp) &lt;- crs(shp)
+plot(dat.pp, pch = 19)</code></pre>
+<p><img src="lesson3_files/figure-html/n4-1.png" width="672" /></p>
+<p>The Polygons are extended beyond points boundary so get the boundary and clip the Thiesen polygon</p>
+<pre class="r"><code>bdy &lt;- readOGR(&quot;soil_boundary.shp&quot;)</code></pre>
+<pre><code>## OGR data source with driver: ESRI Shapefile 
+## Source: &quot;D:\JKUAT\ShortCourses\Geostatistics\intro2geostats\soil_boundary.shp&quot;, layer: &quot;soil_boundary&quot;
+## with 1 features
+## It has 1 fields</code></pre>
+<pre class="r"><code>dat.pp &lt;- intersect(dat.pp, bdy)
+plot(dat.pp, pch = 19)</code></pre>
+<p><img src="lesson3_files/figure-html/n4b-1.png" width="672" /></p>
+<p>Assign to each polygon the carbon information.</p>
+<pre class="r"><code>int.Z &lt;- over(dat.pp, shp[,&quot;Carbon&quot;], fn=mean, na.rm=TRUE) </code></pre>
+<p>Map Thiessen polygons and Carbon sampled points.</p>
+<pre class="r"><code>tm_shape(dat.pp) +  tm_borders(alpha=.5, col = &quot;black&quot;) +
+  tm_shape(shp) + tm_dots(col = &quot;red&quot;, scale = 2.5, shape = 16)</code></pre>
+<p><img src="lesson3_files/figure-html/n6-1.png" width="672" /></p>
+<p>Create a <em>SpatialPolygonsDataFrame</em> object with Carbon content,</p>
+<pre class="r"><code>thiessen &lt;- SpatialPolygonsDataFrame(dat.pp, int.Z)</code></pre>
+<p>then visualize our point data using the newly formed Thiessen polygons.</p>
+<pre class="r"><code>tm_shape(thiessen) + tm_fill(col = &quot;Carbon&quot;, style = &quot;quantile&quot;, palette = &quot;Reds&quot;, title = &quot;Carbon content&quot;) + tm_borders(alpha=.3, col = &quot;black&quot;) +
+tm_shape(shp) + tm_dots(col = &quot;black&quot;, scale = 2.5) +
+tm_layout(legend.position = c(&quot;left&quot;, &quot;top&quot;),  legend.text.size = 1.05, legend.title.size = 1.2, frame = FALSE)</code></pre>
+<p><img src="lesson3_files/figure-html/n7-1.png" width="672" /></p>
 </div>
-<div id="geostatistical-interpolation-techniques." class="section level3">
-<h3>Geostatistical interpolation techniques.</h3>
-<p>in this case, the model parameters are commonly estimated in an objective way, following probability theory. The predictions are accompanied with an estimate of the prediction error. A drawback is that the input data set usually need to satisfy strict statistical assumptions. There are at least four groups of linear statistical models:</p>
-<ol style="list-style-type: lower-alpha">
-<li>kriging (plain geostatistics);</li>
-<li>environmental correlation (e.g. regression-based);</li>
-<li>Bayesian-based models (e.g. Bayesian Maximum Entropy);</li>
-<li>hybrid models (e.g. regression-kriging).</li>
-</ol>
-<p>In this lesson we cover the first category (non-geostatistical).</p>
+<div id="inverse-distance-weighting-idw" class="section level3">
+<h3>Inverse Distance Weighting (IDW)</h3>
+<ul>
+<li>IDW is a means of converting point data of numerical values into a continuous surface to visualise how the <em>data</em> may be distributed across space.</li>
+<li>The technique interpolates point data by using a weighted average of a variable from nearby points to predict the value of that variable for each location (de Smith et al, 2018).</li>
+<li>The weighting of the points is determined by their inverse distances drawing on Tobler’s first law of geography.</li>
+</ul>
+<p>Load necessary packages and define sample grid based on the extent of data.</p>
+<pre class="r"><code>unloadNamespace(&quot;spatstat&quot;)
+pacman::p_load(gstat) 
+grid &lt;-spsample(bdy, type = &#39;regular&#39;, n = 10000)</code></pre>
+<p>Perform carbon content interpolation using IDW fucntion in Gstat package.</p>
+<pre class="r"><code>idw &lt;- idw(shp$Carbon ~ 1, shp, newdata= grid)</code></pre>
+<pre><code>## [inverse distance weighted interpolation]</code></pre>
+<p>Before we visualize the IDW result we transform the data into a data frame object. We can then rename the column headers.</p>
+<pre class="r"><code>idw.output = as.data.frame(idw)
+names(idw.output)[1:3] &lt;- c(&quot;long&quot;, &quot;lat&quot;, &quot;prediction&quot;)</code></pre>
+<p>Convert the output into a raster in order to visualize the output.</p>
+<pre class="r"><code>pacman::p_load(raster) 
+# create spatial points data frame
+spg &lt;- idw.output
+coordinates(spg) &lt;- ~ long + lat
+# coerce to SpatialPixelsDataFrame
+gridded(spg) &lt;- TRUE
+# coerce to raster
+raster_idw &lt;- raster(spg)
+# sets projection to British National Grid
+projection(raster_idw) &lt;- crs(shp)</code></pre>
+<p>we can quickly plot the raster to check if its okay.</p>
+<pre class="r"><code>plot(raster_idw, main= &quot;Carbon content&quot;)</code></pre>
+<p><img src="lesson3_files/figure-html/idw5-1.png" width="672" /></p>
+<p>Even 3D plots can be used to visualize the predictions using the <code>raster::persp()</code> function..</p>
+<pre class="r"><code>persp(raster_idw, col=terrain.colors(100, rev = TRUE))</code></pre>
+<p><img src="lesson3_files/figure-html/idw6-1.png" width="672" /></p>
+<pre class="r"><code># this package lets us create interactive 3d visualisations
+pacman::p_load(rgl) 
+# we need to first convert the raster to a matrix object type
+idw2 &lt;- as.matrix(raster_idw)
+persp3d(idw2, col = &quot;red&quot;)</code></pre>
+<p>Now we are ready to plot the raster. We will use the functionality of the tmap package, using the tm_raster() function. The instructions below will create a smoothed surface. In the example we have created 100 colour breaks and turned the legend off, this will create a smoothed colour effect. You can experiment by changing the breaks (n) to 7 and turning the legend back on (legend.show) to make the predicted values easier to interpret.</p>
+<pre class="r"><code>pacman::p_load(tmap) 
+tm_shape(raster_idw) + tm_raster(&quot;prediction&quot;, style = &quot;quantile&quot;, n = 100, palette = &quot;Reds&quot;, legend.show = FALSE) +
+#Overlay the  boundary to provide some orientation
+tm_shape(bdy) + tm_borders(alpha=1, col = &quot;blue&quot;)</code></pre>
+<p><img src="lesson3_files/figure-html/idw7-1.png" width="672" /></p>
+<p>Overlay the original carbon data as this provides a good demonstration of how the IDW is distributed.</p>
+<pre class="r"><code>tm_shape(raster_idw) + tm_raster(&quot;prediction&quot;, style = &quot;quantile&quot;, n = 100, palette = &quot;-Reds&quot;,legend.show = FALSE) +
+tm_shape(bdy) + tm_borders(alpha=1, col=&quot;black&quot;) + 
+tm_shape(shp) + tm_bubbles(size = &quot;Carbon&quot;, col = &quot;Carbon&quot;, palette = &quot;-Purples&quot;, contrast=1, style = &quot;quantile&quot;, legend.size.show = FALSE, title.col = &quot;Carbon&quot;) +
+tm_layout(legend.position = c(&quot;left&quot;, &quot;top&quot;),  legend.text.size = 1.1, legend.title.size = 1.4, frame = FALSE, legend.bg.color = &quot;white&quot;, legend.bg.alpha = 0.5)</code></pre>
+<p><img src="lesson3_files/figure-html/idw8-1.png" width="672" /></p>
 </div>
 </div>
 <div id="references" class="section level2">
