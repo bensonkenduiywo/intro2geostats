@@ -42,7 +42,7 @@ In this lesson we cover the first category (non-geostatistical).
 Load the packages and data we will use.
 
 ```{r n1, message=FALSE}
-pacman::p_load(sp,rgdal,rgeos,tmap,raster) 
+pacman::p_load(sp, rgdal,rgeos,tmap,raster) 
 shp <- readOGR("soil_data_CIAT.shp")
 plot(shp, pch = 19, col = "red")
 ```
@@ -119,4 +119,91 @@ tm_shape(shp) + tm_dots(col = "black", scale = 2.5) +
 tm_layout(legend.position = c("left", "top"),  legend.text.size = 1.05, legend.title.size = 1.2, frame = FALSE)
 
 ```
+
+
+## Inverse Distance Weighting (IDW)
+
+- IDW is a means of converting point data of numerical values into a continuous surface to visualise how the *data* may be distributed across space. 
+- The technique interpolates point data by using a weighted average of a variable from nearby points to predict the value of that variable for each location (de Smith et al, 2018). 
+- The weighting of the points is determined by their inverse distances drawing on Tobler's first law of geography.
+
+Load necessary packages and define sample grid based on the extent of data.
+
+```{r idw1, webgl=TRUE, message=FALSE}
+unloadNamespace("spatstat")
+pacman::p_load(gstat) 
+grid <-spsample(bdy, type = 'regular', n = 10000)
+```
+
+Perform carbon content interpolation using IDW fucntion in Gstat package.
+
+```{r idw2}
+idw <- idw(shp$Carbon ~ 1, shp, newdata= grid)
+```
+
+
+Before we visualize the IDW result we transform the data into a data frame object. We can then rename the column headers.
+
+```{r idw3}
+idw.output = as.data.frame(idw)
+names(idw.output)[1:3] <- c("long", "lat", "prediction")
+```
+
+Convert the output into a raster in order to visualize the output. 
+
+```{r idw4, message=FALSE}
+pacman::p_load(raster) 
+# create spatial points data frame
+spg <- idw.output
+coordinates(spg) <- ~ long + lat
+# coerce to SpatialPixelsDataFrame
+gridded(spg) <- TRUE
+# coerce to raster
+raster_idw <- raster(spg)
+# sets projection to British National Grid
+projection(raster_idw) <- crs(shp)
+```
+
+we can quickly plot the raster to check if its okay.
+
+```{r idw5}
+plot(raster_idw, main= "Carbon content")
+```
+
+Even 3D plots can be used to visualize the predictions using the `raster::persp()` function..
+
+```{r idw6}
+persp(raster_idw, col=terrain.colors(100, rev = TRUE))
+# this package lets us create interactive 3d visualisations
+pacman::p_load(rgl) 
+# we need to first convert the raster to a matrix object type
+idw2 <- as.matrix(raster_idw)
+persp3d(idw2, col = "red")
+```
+
+Now we are ready to plot the raster. We will use the functionality of the tmap package, using the tm_raster() function. The instructions below will create a smoothed surface. In the example we have created 100 colour breaks and turned the legend off, this will create a smoothed colour effect. You can experiment by changing the breaks (n) to 7 and turning the legend back on (legend.show) to make the predicted values easier to interpret.
+
+
+```{r idw7, message=FALSE}
+pacman::p_load(tmap) 
+tm_shape(raster_idw) + tm_raster("prediction", style = "quantile", n = 100, palette = "Reds", legend.show = FALSE) +
+#Overlay the  boundary to provide some orientation
+tm_shape(bdy) + tm_borders(alpha=1, col = "blue")
+```
+
+
+Overlay the original carbon data as this provides a good demonstration of how the IDW is distributed. 
+
+```{r idw8}
+tm_shape(raster_idw) + tm_raster("prediction", style = "quantile", n = 100, palette = "-Reds",legend.show = FALSE) +
+tm_shape(bdy) + tm_borders(alpha=1, col="black") + 
+tm_shape(shp) + tm_bubbles(size = "Carbon", col = "Carbon", palette = "-Purples", contrast=1, style = "quantile", legend.size.show = FALSE, title.col = "Carbon") +
+tm_layout(legend.position = c("left", "top"),  legend.text.size = 1.1, legend.title.size = 1.4, frame = FALSE, legend.bg.color = "white", legend.bg.alpha = 0.5)
+
+```
+
+
+## References
+
+De Smith, M. J., Goodchild, M. F., & Longley, P. (2018). [*Geospatial analysis: a comprehensive guide to principles, techniques and software tools*](https://www.spatialanalysisonline.com/HTML/index.html). Troubador publishing ltd.
 
