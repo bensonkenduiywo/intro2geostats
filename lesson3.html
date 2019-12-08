@@ -369,7 +369,7 @@ shp &lt;- readOGR(&quot;soil_data_CIAT.shp&quot;)</code></pre>
 <h3>Thiessen polygons</h3>
 <ul>
 <li>Thiessen polygons are formed to assign boundaries of the areas closest to each unique point. Therefore, for every point in a dataset, it has a corresponding Thiessen polygon.</li>
-<li>We will create Thiessen polygons for the soil data, then use the polygons to map the carbon at their corresponding locations.</li>
+<li>We will create Thiessen polygons for the soil data, then use the polygons to map the Clay at their corresponding locations.</li>
 <li>The <em>spatstat</em> package provides the functionality to produce Thiessen polygons via its dirichlet tessellation of spatial point patterns function (dirichlet()).</li>
 <li>We also need to first convert the data to a ppp (point pattern) object class. The <em>maptools</em> package will help us achive this via as.ppp() function.</li>
 </ul>
@@ -391,16 +391,16 @@ plot(dat.pp, pch = 19)</code></pre>
 <pre class="r"><code>dat.pp &lt;- intersect(dat.pp, bdy)
 plot(dat.pp, pch = 19)</code></pre>
 <p><img src="lesson3_files/figure-html/n4b-1.png" width="672" /></p>
-<p>Assign to each polygon the carbon information.</p>
-<pre class="r"><code>int.Z &lt;- over(dat.pp, shp[,&quot;Carbon&quot;], fn=mean, na.rm=TRUE) </code></pre>
-<p>Map Thiessen polygons and Carbon sampled points.</p>
+<p>Assign to each polygon the Clay information.</p>
+<pre class="r"><code>int.Z &lt;- over(dat.pp, shp[,&quot;Clay&quot;], fn=mean, na.rm=TRUE) </code></pre>
+<p>Map Thiessen polygons and Clay sampled points.</p>
 <pre class="r"><code>tm_shape(dat.pp) +  tm_borders(alpha=.5, col = &quot;black&quot;) +
   tm_shape(shp) + tm_dots(col = &quot;red&quot;, scale = 2.5, shape = 16)</code></pre>
 <p><img src="lesson3_files/figure-html/n6-1.png" width="672" /></p>
-<p>Create a <em>SpatialPolygonsDataFrame</em> object with Carbon content,</p>
+<p>Create a <em>SpatialPolygonsDataFrame</em> object with Clay content,</p>
 <pre class="r"><code>thiessen &lt;- SpatialPolygonsDataFrame(dat.pp, int.Z)</code></pre>
 <p>then visualize our point data using the newly formed Thiessen polygons.</p>
-<pre class="r"><code>tm_shape(thiessen) + tm_fill(col = &quot;Carbon&quot;, style = &quot;quantile&quot;, palette = &quot;Reds&quot;, title = &quot;Carbon content&quot;) + tm_borders(alpha=.3, col = &quot;black&quot;) +
+<pre class="r"><code>tm_shape(thiessen) + tm_fill(col = &quot;Clay&quot;, style = &quot;quantile&quot;, palette = &quot;Reds&quot;, title = &quot;Clay content&quot;) + tm_borders(alpha=.3, col = &quot;black&quot;) +
 tm_shape(shp) + tm_dots(col = &quot;black&quot;, scale = 2.5) +
 tm_layout(legend.position = c(&quot;left&quot;, &quot;top&quot;),  legend.text.size = 1.05, legend.title.size = 1.2, frame = FALSE)</code></pre>
 <p><img src="lesson3_files/figure-html/n7-1.png" width="672" /></p>
@@ -416,8 +416,8 @@ tm_layout(legend.position = c(&quot;left&quot;, &quot;top&quot;),  legend.text.s
 <pre class="r"><code>unloadNamespace(&quot;spatstat&quot;)
 pacman::p_load(gstat) 
 grid &lt;-spsample(bdy, type = &#39;regular&#39;, n = 10000)</code></pre>
-<p>Perform carbon content interpolation using IDW fucntion in Gstat package.</p>
-<pre class="r"><code>idw &lt;- idw(shp$Carbon ~ 1, shp, newdata= grid)</code></pre>
+<p>Perform Clay content interpolation using IDW fucntion in Gstat package.</p>
+<pre class="r"><code>idw &lt;- idw(shp$Clay ~ 1, shp, newdata= grid)</code></pre>
 <pre><code>## [inverse distance weighted interpolation]</code></pre>
 <p>Before we visualize the IDW result we transform the data into a data frame object. We can then rename the column headers.</p>
 <pre class="r"><code>idw.output = as.data.frame(idw)
@@ -434,7 +434,7 @@ raster_idw &lt;- raster(spg)
 # sets projection to British National Grid
 projection(raster_idw) &lt;- crs(shp)</code></pre>
 <p>we can quickly plot the raster to check if its okay.</p>
-<pre class="r"><code>plot(raster_idw, main= &quot;Carbon content&quot;)</code></pre>
+<pre class="r"><code>plot(raster_idw, main= &quot;Clay content&quot;)</code></pre>
 <p><img src="lesson3_files/figure-html/idw5-1.png" width="672" /></p>
 <p>Even 3D plots can be used to visualize the predictions using the <code>raster::persp()</code> function..</p>
 <pre class="r"><code>persp(raster_idw, col=terrain.colors(100, rev = TRUE))</code></pre>
@@ -450,12 +450,233 @@ tm_shape(raster_idw) + tm_raster(&quot;prediction&quot;, style = &quot;quantile&
 #Overlay the  boundary to provide some orientation
 tm_shape(bdy) + tm_borders(alpha=1, col = &quot;blue&quot;)</code></pre>
 <p><img src="lesson3_files/figure-html/idw7-1.png" width="672" /></p>
-<p>Overlay the original carbon data as this provides a good demonstration of how the IDW is distributed.</p>
+<p>Overlay the original Clay data as this provides a good demonstration of how the IDW is distributed.</p>
 <pre class="r"><code>tm_shape(raster_idw) + tm_raster(&quot;prediction&quot;, style = &quot;quantile&quot;, n = 100, palette = &quot;-Reds&quot;,legend.show = FALSE) +
 tm_shape(bdy) + tm_borders(alpha=1, col=&quot;black&quot;) + 
-tm_shape(shp) + tm_bubbles(size = &quot;Carbon&quot;, col = &quot;Carbon&quot;, palette = &quot;-Purples&quot;, contrast=1, style = &quot;quantile&quot;, legend.size.show = FALSE, title.col = &quot;Carbon&quot;) +
+tm_shape(shp) + tm_bubbles(size = &quot;Clay&quot;, col = &quot;Clay&quot;, palette = &quot;-Purples&quot;, contrast=1, style = &quot;quantile&quot;, legend.size.show = FALSE, title.col = &quot;Clay&quot;) +
 tm_layout(legend.position = c(&quot;left&quot;, &quot;top&quot;),  legend.text.size = 1.1, legend.title.size = 1.4, frame = FALSE, legend.bg.color = &quot;white&quot;, legend.bg.alpha = 0.5)</code></pre>
 <p><img src="lesson3_files/figure-html/idw8-1.png" width="672" /></p>
+</div>
+<div id="optimizing-idw-predictions" class="section level3">
+<h3>Optimizing IDW predictions</h3>
+<p>The choice of power function <code>idp</code> can be subjective. To fine-tune the choice of the power parameter, you can perform a leave-one-out cross validation routine to measure the error in the interpolated values.</p>
+<pre class="r"><code>IDW.out &lt;- vector(length = length(shp))
+for (i in 1:length(shp)) {
+  IDW.out[i] &lt;- idw(Clay ~ 1, shp[-i,], shp[i,], idp=2.0)$var1.pred
+}</code></pre>
+<pre><code>## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]</code></pre>
+<p>Plot the differences in a scatterplot to evaluate accuracy. If not sufficient you can change the <code>idp</code> parameter and evaluate again.</p>
+<pre class="r"><code>OP &lt;- par(pty=&quot;s&quot;, mar=c(4,3,0,0))
+  plot(IDW.out ~ shp$Clay, asp=1, xlab=&quot;Observed&quot;, ylab=&quot;Predicted&quot;, pch=16,
+       col=rgb(0,0,0,0.5))
+  abline(lm(IDW.out ~ shp$Clay), col=&quot;red&quot;, lw=2,lty=2)
+  abline(0,1)</code></pre>
+<p><img src="lesson3_files/figure-html/o2-1.png" width="672" /></p>
+<pre class="r"><code>par(OP)</code></pre>
+<p>We can also compute Root Mean Square Error (RMSE) can be computed from <code>IDW.out</code>.</p>
+<pre class="r"><code>sqrt( sum((idw.output$prediction - shp$Clay)^2) / length(shp$Clay))</code></pre>
+<pre><code>## Warning in idw.output$prediction - shp$Clay: longer object length is not a
+## multiple of shorter object length</code></pre>
+<pre><code>## [1] 64.43427</code></pre>
 </div>
 </div>
 <div id="references" class="section level2">

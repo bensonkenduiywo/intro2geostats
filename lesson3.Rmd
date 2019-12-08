@@ -28,7 +28,7 @@ extent(shp)
 ### Thiessen polygons
 
 - Thiessen polygons are formed to assign boundaries of the areas closest to each unique point. Therefore, for every point in a dataset, it has a corresponding Thiessen polygon.
-- We will create Thiessen polygons for the soil data, then use the polygons to map the carbon at their corresponding locations. 
+- We will create Thiessen polygons for the soil data, then use the polygons to map the Clay at their corresponding locations. 
 - The *spatstat* package provides the functionality to produce Thiessen polygons via its dirichlet tessellation of spatial point patterns function (dirichlet()). 
 - We also need to first convert the data to a ppp (point pattern) object class. The *maptools* package will help us achive this via  as.ppp() function.
 
@@ -59,14 +59,14 @@ plot(dat.pp, pch = 19)
 ```
 
 
-Assign to each polygon the carbon information.
+Assign to each polygon the Clay information.
 
 ```{r n5, message=FALSE}
-int.Z <- over(dat.pp, shp[,"Carbon"], fn=mean, na.rm=TRUE) 
+int.Z <- over(dat.pp, shp[,"Clay"], fn=mean, na.rm=TRUE) 
 
 ```
 
-Map Thiessen polygons and Carbon sampled points.
+Map Thiessen polygons and Clay sampled points.
 
 ```{r n6}
 tm_shape(dat.pp) +  tm_borders(alpha=.5, col = "black") +
@@ -74,7 +74,7 @@ tm_shape(dat.pp) +  tm_borders(alpha=.5, col = "black") +
 
 ```
 
-Create a *SpatialPolygonsDataFrame* object with Carbon content,
+Create a *SpatialPolygonsDataFrame* object with Clay content,
 
 ```{r n6a}
 thiessen <- SpatialPolygonsDataFrame(dat.pp, int.Z)
@@ -84,7 +84,7 @@ thiessen <- SpatialPolygonsDataFrame(dat.pp, int.Z)
 then visualize our point data using the newly formed Thiessen polygons.
 
 ```{r n7}
-tm_shape(thiessen) + tm_fill(col = "Carbon", style = "quantile", palette = "Reds", title = "Carbon content") + tm_borders(alpha=.3, col = "black") +
+tm_shape(thiessen) + tm_fill(col = "Clay", style = "quantile", palette = "Reds", title = "Clay content") + tm_borders(alpha=.3, col = "black") +
 tm_shape(shp) + tm_dots(col = "black", scale = 2.5) +
 tm_layout(legend.position = c("left", "top"),  legend.text.size = 1.05, legend.title.size = 1.2, frame = FALSE)
 
@@ -105,10 +105,10 @@ pacman::p_load(gstat)
 grid <-spsample(bdy, type = 'regular', n = 10000)
 ```
 
-Perform carbon content interpolation using IDW fucntion in Gstat package.
+Perform Clay content interpolation using IDW fucntion in Gstat package.
 
 ```{r idw2}
-idw <- idw(shp$Carbon ~ 1, shp, newdata= grid)
+idw <- idw(shp$Clay ~ 1, shp, newdata= grid)
 ```
 
 
@@ -118,6 +118,7 @@ Before we visualize the IDW result we transform the data into a data frame objec
 idw.output = as.data.frame(idw)
 names(idw.output)[1:3] <- c("long", "lat", "prediction")
 ```
+
 
 Convert the output into a raster in order to visualize the output. 
 
@@ -137,7 +138,7 @@ projection(raster_idw) <- crs(shp)
 we can quickly plot the raster to check if its okay.
 
 ```{r idw5}
-plot(raster_idw, main= "Carbon content")
+plot(raster_idw, main= "Clay content")
 ```
 
 Even 3D plots can be used to visualize the predictions using the `raster::persp()` function..
@@ -162,17 +163,48 @@ tm_shape(bdy) + tm_borders(alpha=1, col = "blue")
 ```
 
 
-Overlay the original carbon data as this provides a good demonstration of how the IDW is distributed. 
+Overlay the original Clay data as this provides a good demonstration of how the IDW is distributed. 
 
 ```{r idw8}
 tm_shape(raster_idw) + tm_raster("prediction", style = "quantile", n = 100, palette = "-Reds",legend.show = FALSE) +
 tm_shape(bdy) + tm_borders(alpha=1, col="black") + 
-tm_shape(shp) + tm_bubbles(size = "Carbon", col = "Carbon", palette = "-Purples", contrast=1, style = "quantile", legend.size.show = FALSE, title.col = "Carbon") +
+tm_shape(shp) + tm_bubbles(size = "Clay", col = "Clay", palette = "-Purples", contrast=1, style = "quantile", legend.size.show = FALSE, title.col = "Clay") +
 tm_layout(legend.position = c("left", "top"),  legend.text.size = 1.1, legend.title.size = 1.4, frame = FALSE, legend.bg.color = "white", legend.bg.alpha = 0.5)
 
 ```
 
 
+
+### Optimizing IDW predictions
+
+The choice of power function `idp` can be subjective. To fine-tune the choice of the power parameter, you can perform a leave-one-out cross validation routine to measure the error in the interpolated values.
+
+```{r o1, message=1}
+IDW.out <- vector(length = length(shp))
+for (i in 1:length(shp)) {
+  IDW.out[i] <- idw(Clay ~ 1, shp[-i,], shp[i,], idp=2.0)$var1.pred
+}
+
+```
+
+Plot the differences in a scatterplot to evaluate accuracy. If not sufficient you can change the `idp` parameter and evaluate again.
+
+```{r o2}
+OP <- par(pty="s", mar=c(4,3,0,0))
+  plot(IDW.out ~ shp$Clay, asp=1, xlab="Observed", ylab="Predicted", pch=16,
+       col=rgb(0,0,0,0.5))
+  abline(lm(IDW.out ~ shp$Clay), col="red", lw=2,lty=2)
+  abline(0,1)
+par(OP)
+
+```
+
+We can also compute Root Mean Square Error (RMSE) can be computed from `IDW.out`.
+
+```{r rmse}
+sqrt( sum((idw.output$prediction - shp$Clay)^2) / length(shp$Clay))
+
+```
 ## References
 
 De Smith, M. J., Goodchild, M. F., & Longley, P. (2018). [*Geospatial analysis: a comprehensive guide to principles, techniques and software tools*](https://www.spatialanalysisonline.com/HTML/index.html). Troubador publishing ltd.

@@ -413,16 +413,16 @@ plot(v, plot.numbers=T,pch=3)</code></pre>
 <li>Sill: is the maximum semi-variance. It represents variability in the absence of spatial dependence, and</li>
 <li>Nugget: is the semi-variance as the separation approaches zero. It represents variability at a point that cant be explained by spatial structure.</li>
 </ol>
-<p>Let us extract these properties from our variogram.</p>
-<pre class="r"><code>nugget &lt;- v$gamma[v$np==95]
+<p>Let us define these properties using our variogram.</p>
+<pre class="r"><code>nugget &lt;- 38
 cat(&quot;Nugget is &quot;, nugget)</code></pre>
-<pre><code>## Nugget is  39.03987</code></pre>
-<pre class="r"><code>sill &lt;- v$gamma[v$np==962]
-cat(&quot;Nugget is &quot;, sill)</code></pre>
-<pre><code>## Nugget is  72.32733</code></pre>
-<pre class="r"><code>range &lt;- v$dist[v$np==829]
-cat(&quot;Nugget is &quot;, range, &quot; m&quot;)</code></pre>
-<pre><code>## Nugget is  2631.411  m</code></pre>
+<pre><code>## Nugget is  38</code></pre>
+<pre class="r"><code>sill &lt;- v$gamma[v$np==671]
+cat(&quot;Sill is &quot;, sill)</code></pre>
+<pre><code>## Sill is  70.58303</code></pre>
+<pre class="r"><code>range &lt;- v$dist[v$np==671]
+cat(&quot;range is &quot;, range, &quot; m&quot;)</code></pre>
+<pre><code>## range is  2229.411  m</code></pre>
 </div>
 <div id="defining-variogram-bins" class="section level3">
 <h3>Defining variogram bins</h3>
@@ -464,10 +464,80 @@ for (bw in seq(20, 220, by = 40)) {
 <li>Compute the semi-variance between any point-pair, separated by any vector which is used in an optimal interpolator (kriging) to predict at unsampled locations. The kriging algorithm will need access to semi-variogram values for lag distances other than those used in the empirical semi-variogram.</li>
 <li>More importantly, the semivariogram models used in the kriging process need to obey certain numerical properties (the 4 features stated before) in order for the kriging equations to be solvable</li>
 </ul>
-<p>The following are the existing models in R.</p>
-<pre class="r"><code>show.vgms(as.groups=TRUE, models=c(&quot;Nug&quot;, &quot;Sph&quot;, &quot;Exp&quot;, &quot;Gau&quot;, &quot;Pow&quot;, &quot;Pen&quot;), plot=TRUE)</code></pre>
+<p>The following are the existing variogram models in R.</p>
+<pre class="r"><code>show.vgms(as.groups=F, models=c(&quot;Nug&quot;, &quot;Sph&quot;, &quot;Exp&quot;, &quot;Gau&quot;, &quot;Pow&quot;, &quot;Pen&quot;), plot=TRUE)</code></pre>
 <p><img src="lesson4_files/figure-html/v7-1.png" width="672" /></p>
-<p>In this case, the eye estimation did a pretty good job <span class="math inline">\(\dots\)</span>.</p>
+<p>To fit a variogram model on clay content data we need to Calculate the experimental variogram and display it first.</p>
+<pre class="r"><code>v &lt;- variogram(Clay~1, d, cressie=TRUE); 
+plot(v, plot.numbers=T)</code></pre>
+<p><img src="lesson4_files/figure-html/v8-1.png" width="672" /></p>
+<p>Now lets us fit a suitable by eye using earlier variogram properties and display the fit.</p>
+<pre class="r"><code># Fit by eye, display fit
+m1 &lt;- vgm(sill, &quot;Exp&quot;, range, nugget); 
+plot(v, plot.numbers=T, model=m1)</code></pre>
+<p><img src="lesson4_files/figure-html/v9-1.png" width="672" /></p>
+<pre class="r"><code># Let gstat adjust the parameters automatically, display fit
+m2 &lt;- fit.variogram(v, m1); 
+cat(&quot;Parameters determined automatically are: &quot;)</code></pre>
+<pre><code>## Parameters determined automatically are:</code></pre>
+<pre class="r"><code>m2</code></pre>
+<pre><code>##   model    psill    range
+## 1   Nug 39.42727    0.000
+## 2   Exp 41.82577 2660.205</code></pre>
+<pre class="r"><code>plot(v, plot.numbers=T, model=m2)</code></pre>
+<p><img src="lesson4_files/figure-html/v9-2.png" width="672" /></p>
+<pre class="r"><code># Fix the nugget, fit only the sill of Exponential model
+m2a &lt;- fit.variogram(v,m1,fit.sills=c(F,T),fit.range=F); 
+if (attr(m2a, &quot;singular&quot;)) stop(&quot;singular fit&quot;)
+cat(&quot;Parameters determined by eye are: &quot;)</code></pre>
+<pre><code>## Parameters determined by eye are:</code></pre>
+<pre class="r"><code>m2a</code></pre>
+<pre><code>##   model   psill    range
+## 1   Nug 38.0000    0.000
+## 2   Exp 40.6034 2229.411</code></pre>
+<p>The fitting method uses non-linear regression to fit the coefficients. For this, a weighted sum of square errors (SSE), let us check it. In this case, the eye estimation is comparable to the automatic on based on SSE outcome <span class="math inline">\(\dots\)</span>.</p>
+<pre class="r"><code>cat(&quot;SSE of automatic fit &quot;, attr(m2, &quot;SSErr&quot;))</code></pre>
+<pre><code>## SSE of automatic fit  0.0625947</code></pre>
+<pre class="r"><code>cat(&quot;SSE of manual fit &quot;, attr(m2a, &quot;SSErr&quot;))</code></pre>
+<pre><code>## SSE of manual fit  0.06389576</code></pre>
+</div>
+<div id="prediction-kriging" class="section level3">
+<h3>Prediction: Kriging</h3>
+<p>Now that we have modelled our variogram we can use it for prediction using Kriging. Kriging is used to interpolate a value <span class="math inline">\(Z(x_i + h)\)</span> of a random field <em>Z(x)</em> at unobserved location <span class="math inline">\(x_i + h\)</span>, using data from observed location <span class="math inline">\(x_i\)</span>. It allows variance to be non-constant, dependent on distance between points as modeled by the variogram <span class="math inline">\(\gamma(h)\)</span>. The kriging estimator is given by</p>
+<p><span class="math display">\[Z(x_i + h) = \sum_{j=1}^N w_i(x_i + h)Z(x_i) \]</span> referred to as ordinary kriging. Now lets is create an empty grid to hold our predictions.</p>
+<pre class="r"><code>library(raster)
+grid &lt;-as.data.frame(spsample(d, type = &#39;regular&#39;, n = 10000))
+names(grid)       &lt;- c(&quot;X&quot;, &quot;Y&quot;)
+coordinates(grid) &lt;- c(&quot;X&quot;, &quot;Y&quot;)
+gridded(grid)     &lt;- TRUE  # Create SpatialPixel object
+fullgrid(grid)    &lt;- TRUE  # Create SpatialGrid object
+# Add data&#39;s projection information to the empty grid
+crs(grid) &lt;- crs(d)</code></pre>
+<p>Get rid of duplicates and perform predictions using kriging and display output.</p>
+<pre class="r"><code>newdata &lt;- d[!duplicated(d$X),]
+lz.ok &lt;- krige(Clay ~ 1, newdata, grid, m2a)</code></pre>
+<pre><code>## [using ordinary kriging]</code></pre>
+<pre class="r"><code>spplot(lz.ok[&quot;var1.pred&quot;])</code></pre>
+<p><img src="lesson4_files/figure-html/k2-1.png" width="672" /></p>
+<p>The output does not correspond to our area onf interest, so convert it to raster and clip to boundary.</p>
+<pre class="r"><code>bdy &lt;- readOGR(&quot;soil_boundary.shp&quot;)</code></pre>
+<pre><code>## OGR data source with driver: ESRI Shapefile 
+## Source: &quot;D:\JKUAT\ShortCourses\Geostatistics\intro2geostats\soil_boundary.shp&quot;, layer: &quot;soil_boundary&quot;
+## with 1 features
+## It has 1 fields</code></pre>
+<pre class="r"><code>r &lt;- raster(lz.ok)
+rclip &lt;- mask(r, bdy)</code></pre>
+<p>Now display kriging results output.</p>
+<pre class="r"><code>pacman::p_load(tmap)
+spplot(rclip, &quot;var1.pred&quot;, scales = list(draw = TRUE),
+       sp.layout = list(&quot;sp.points&quot;, d, pch = 16, cex = 2, col = &quot;black&quot;))</code></pre>
+<p><img src="lesson4_files/figure-html/k5-1.png" width="672" /></p>
+<pre class="r"><code>tm_shape(rclip) + tm_raster(&quot;var1.pred&quot;, style = &quot;quantile&quot;, n = 100, palette = &quot;-Reds&quot;, legend.show = FALSE) +
+tm_shape(bdy) + tm_borders(alpha=1, col=&quot;black&quot;) + 
+tm_shape(d) + tm_bubbles(size = &quot;Clay&quot;, col = &quot;Clay&quot;, palette = &quot;-Purples&quot;, contrast=1, style = &quot;quantile&quot;, legend.size.show = FALSE, title.col = &quot;Clay&quot;) +
+tm_layout(legend.position = c(&quot;left&quot;, &quot;top&quot;),  legend.text.size = 1.1, legend.title.size = 1.4, frame = FALSE, legend.bg.color = &quot;white&quot;, legend.bg.alpha = 0.5)</code></pre>
+<p><img src="lesson4_files/figure-html/k5-2.png" width="672" /></p>
+<p>Compare the output with that of kriging visually, what do you think?</p>
 </div>
 </div>
 <div id="references" class="section level2">

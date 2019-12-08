@@ -90,15 +90,15 @@ Some key properties of the variogram amongst others include:
 2. Sill: is the maximum semi-variance. It represents variability in the absence of spatial dependence, and
 3. Nugget: is the semi-variance as the separation approaches zero. It represents variability at a point that cant be explained by spatial structure.
 
-Let us extract these properties from our variogram.
+Let us define these properties using our variogram.
 
 ```{r v5a}
-nugget <- v$gamma[v$np==95]
+nugget <- 38
 cat("Nugget is ", nugget)
-sill <- v$gamma[v$np==962]
-cat("Nugget is ", sill)
-range <- v$dist[v$np==829]
-cat("Nugget is ", range, " m")
+sill <- v$gamma[v$np==671]
+cat("Sill is ", sill)
+range <- v$dist[v$np==671]
+cat("range is ", range, " m")
 
 ```
 
@@ -141,18 +141,95 @@ form and its parameters;
 - Compute the semi-variance between any point-pair, separated by any vector which is used in an optimal interpolator (kriging) to predict at unsampled locations. The kriging algorithm will need access to semi-variogram values for lag distances other than those used in the empirical semi-variogram.
 - More importantly, the semivariogram models used in the kriging process need to obey certain numerical properties (the 4 features stated before) in order for the kriging equations to be solvable
 
-The following are the existing models in R.
+The following are the existing variogram models in R.
 
 ```{r v7}
-show.vgms(as.groups=TRUE, models=c("Nug", "Sph", "Exp", "Gau", "Pow", "Pen"), plot=TRUE)
+show.vgms(as.groups=F, models=c("Nug", "Sph", "Exp", "Gau", "Pow", "Pen"), plot=TRUE)
 
 ```
 
+To fit a variogram model on clay content data we need to Calculate the experimental variogram and display it first.
+
+```{r v8}
+v <- variogram(Clay~1, d, cressie=TRUE); 
+plot(v, plot.numbers=T)
+```
+
+Now lets us fit a suitable by eye using earlier variogram properties and display the fit.
+
+```{r v9}
+# Fit by eye, display fit
+m1 <- vgm(sill, "Exp", range, nugget); 
+plot(v, plot.numbers=T, model=m1)
+# Let gstat adjust the parameters automatically, display fit
+m2 <- fit.variogram(v, m1); 
+cat("Parameters determined automatically are: ")
+m2
+plot(v, plot.numbers=T, model=m2)
+# Fix the nugget, fit only the sill of Exponential model
+m2a <- fit.variogram(v,m1,fit.sills=c(F,T),fit.range=F); 
+if (attr(m2a, "singular")) stop("singular fit")
+cat("Parameters determined by eye are: ")
+m2a
+```
+
+The fitting method uses non-linear regression to fit the coefficients. For this, a weighted sum of square errors (SSE), let us check it. In this case, the eye estimation is comparable to the automatic on based on SSE outcome $\dots$.
+
+```{r v10}
+cat("SSE of automatic fit ", attr(m2, "SSErr"))
+cat("SSE of manual fit ", attr(m2a, "SSErr"))
+```
+
+### Prediction: Kriging
+
+Now that we have modelled our variogram we can use it for prediction using Kriging. Kriging is used to interpolate a value $Z(x_i + h)$ of a random field *Z(x)* at unobserved location $x_i + h$, using data from observed location $x_i$. It allows variance to be non-constant, dependent on distance between points as modeled by the variogram  $\gamma(h)$. The kriging estimator is given by
+
+$$Z(x_i + h) = \sum_{j=1}^N w_i(x_i + h)Z(x_i) $$
+referred to as ordinary kriging. Now lets is create an empty grid to hold our predictions. 
+
+```{r k1, message=FALSE}
+library(raster)
+grid <-as.data.frame(spsample(d, type = 'regular', n = 10000))
+names(grid)       <- c("X", "Y")
+coordinates(grid) <- c("X", "Y")
+gridded(grid)     <- TRUE  # Create SpatialPixel object
+fullgrid(grid)    <- TRUE  # Create SpatialGrid object
+# Add data's projection information to the empty grid
+crs(grid) <- crs(d)
+
+```
+
+Get rid of duplicates and perform predictions using kriging and display output.
+
+```{r k2}
+newdata <- d[!duplicated(d$X),]
+lz.ok <- krige(Clay ~ 1, newdata, grid, m2a)
+spplot(lz.ok["var1.pred"])
+```
+
+The output does not correspond to our area onf interest, so convert it to raster and clip to boundary.
+
+```{r k4}
+bdy <- readOGR("soil_boundary.shp")
+r <- raster(lz.ok)
+rclip <- mask(r, bdy)
+```
+
+Now display kriging results output.
+
+```{r k5, message=FALSE}
+pacman::p_load(tmap)
+spplot(rclip, "var1.pred", scales = list(draw = TRUE),
+       sp.layout = list("sp.points", d, pch = 16, cex = 2, col = "black"))
+
+tm_shape(rclip) + tm_raster("var1.pred", style = "quantile", n = 100, palette = "-Reds", legend.show = FALSE) +
+tm_shape(bdy) + tm_borders(alpha=1, col="black") + 
+tm_shape(d) + tm_bubbles(size = "Clay", col = "Clay", palette = "-Purples", contrast=1, style = "quantile", legend.size.show = FALSE, title.col = "Clay") +
+tm_layout(legend.position = c("left", "top"),  legend.text.size = 1.1, legend.title.size = 1.4, frame = FALSE, legend.bg.color = "white", legend.bg.alpha = 0.5)
+```
 
 
-
-In this case, the eye estimation did a pretty good job $\dots$.
-
+Compare the output with that of kriging visually, what do you think?
 
 ## References
 
