@@ -12,6 +12,8 @@ knitr::opts_chunk$set(echo = TRUE)
 Load the packages and data we will use.
 
 ```{r n1, message=FALSE}
+rm(list=ls(all=TRUE))
+unlink(".RData")
 pacman::p_load(sp, rgdal,rgeos,tmap,raster) 
 shp <- readOGR("soil_data_CIAT.shp")
 plot(shp, pch = 19, col = "red")
@@ -35,7 +37,10 @@ extent(shp)
 Load necessary packages and convert data to point pattern.
 
 ```{r n3, message=FALSE}
-pacman::p_load(spatstat, maptools) 
+library(spatstat)  # Used for the dirichlet tessellation function
+library(maptools)  # Used for conversion from SPDF to ppp
+library(raster)    # Used to clip out thiessen polygons
+
 # Create a tessellated surface
 dat.pp <- as(dirichlet(as.ppp(shp)), "SpatialPolygons")
 dat.pp <- as(dat.pp,"SpatialPolygons")
@@ -177,9 +182,9 @@ tm_layout(legend.position = c("left", "top"),  legend.text.size = 1.1, legend.ti
 
 ### Optimizing IDW predictions
 
-The choice of power function `idp` can be subjective. To fine-tune the choice of the power parameter, you can perform a leave-one-out cross validation routine to measure the error in the interpolated values.
+The choice of power function `idp` can be subjective. To fine-tune the choice of the power parameter, you can perform a **leave-one-out cross validation** routine to measure the error in the interpolated values.
 
-```{r o1, message=1}
+```{r o1, message=FALSE, results='hide'}
 IDW.out <- vector(length = length(shp))
 for (i in 1:length(shp)) {
   IDW.out[i] <- idw(Clay ~ 1, shp[-i,], shp[i,], idp=2.0)$var1.pred
@@ -205,6 +210,68 @@ We can also compute Root Mean Square Error (RMSE) can be computed from `IDW.out`
 sqrt( sum((idw.output$prediction - shp$Clay)^2) / length(shp$Clay))
 
 ```
+
+### Cross-validation
+
+We can also create a 95% confidence interval map of the interpolation model to illustrate uncertainity around it. Here we’ll use jackknife technique to estimate a confidence interval at each unsampled point. Frist create an interpolation surface.
+
+```{r cv1}
+img <- gstat::idw(Clay~1, shp, newdata=grid, idp=2.0)
+n   <- length(shp)
+Zi  <- matrix(nrow = length(img$var1.pred), ncol = n)
+
+```
+
+Leave out a point then perform interpolation (do this *n* times for each point).
+
+```{r cv2, message=FALSE, results='hide'}
+st <- stack()
+for (i in 1:n){
+  Z1 <- gstat::idw(Clay~1, shp[-i,], newdata=grid, idp=2.0)
+  # coerce to SpatialPixelsDataFrame
+  gridded(Z1) <- TRUE
+  # coerce to raster
+  st <- addLayer(st, raster(Z1, layer=1))
+  # Calculated pseudo-value Z at j
+  Zi[,i] <- n * img$var1.pred - (n-1) * Z1$var1.pred
+}
+
+```
+
+
+Compute jackknife estimator of parameter *Z* at location j.
+
+```{r cv3}
+Zj <- as.matrix(apply(Zi, 1, sum, na.rm=T) / n )
+
+# Compute (Zi* - Zj)^2
+c1 <- apply(Zi,2,'-',Zj)            # Compute the difference
+c1 <- apply(c1^2, 1, sum, na.rm=T ) # Sum the square of the difference
+
+# Compute the confidence interval
+CI <- sqrt( 1/(n*(n-1)) * c1)
+
+# Create (CI / interpolated value) raster
+gridded(img) <- TRUE
+img.sig   <- img
+img.sig$v <- CI /img$var1.pred 
+
+```
+
+Clip the confidence raster to boundary and plot the map.
+ 
+```{r cv4}
+r <- raster(img.sig,  layer="v")
+r.m <- mask(r, bdy)
+
+# Plot the map
+tm_shape(r.m) + tm_raster(n = 10, style = "kmeans", palette = "-Blues",title="95% confidence interval \n(Clay [%])") +
+  tm_shape(shp) + tm_dots(size=0.2) +
+  tm_legend(legend.outside=TRUE)
+```
+ 
+ 
+
 ## References
 
 De Smith, M. J., Goodchild, M. F., & Longley, P. (2018). [*Geospatial analysis: a comprehensive guide to principles, techniques and software tools*](https://www.spatialanalysisonline.com/HTML/index.html). Troubador publishing ltd.

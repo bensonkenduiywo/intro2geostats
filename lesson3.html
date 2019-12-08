@@ -345,7 +345,9 @@ $(document).ready(function () {
 <div id="non-geostatistical-prediction" class="section level2">
 <h2>Non-geostatistical prediction</h2>
 <p>Load the packages and data we will use.</p>
-<pre class="r"><code>pacman::p_load(sp, rgdal,rgeos,tmap,raster) 
+<pre class="r"><code>rm(list=ls(all=TRUE))
+unlink(&quot;.RData&quot;)
+pacman::p_load(sp, rgdal,rgeos,tmap,raster) 
 shp &lt;- readOGR(&quot;soil_data_CIAT.shp&quot;)</code></pre>
 <pre><code>## OGR data source with driver: ESRI Shapefile 
 ## Source: &quot;D:\JKUAT\ShortCourses\Geostatistics\intro2geostats\soil_data_CIAT.shp&quot;, layer: &quot;soil_data_CIAT&quot;
@@ -374,7 +376,10 @@ shp &lt;- readOGR(&quot;soil_data_CIAT.shp&quot;)</code></pre>
 <li>We also need to first convert the data to a ppp (point pattern) object class. The <em>maptools</em> package will help us achive this via as.ppp() function.</li>
 </ul>
 <p>Load necessary packages and convert data to point pattern.</p>
-<pre class="r"><code>pacman::p_load(spatstat, maptools) 
+<pre class="r"><code>library(spatstat)  # Used for the dirichlet tessellation function
+library(maptools)  # Used for conversion from SPDF to ppp
+library(raster)    # Used to clip out thiessen polygons
+
 # Create a tessellated surface
 dat.pp &lt;- as(dirichlet(as.ppp(shp)), &quot;SpatialPolygons&quot;)
 dat.pp &lt;- as(dat.pp,&quot;SpatialPolygons&quot;)</code></pre>
@@ -459,211 +464,11 @@ tm_layout(legend.position = c(&quot;left&quot;, &quot;top&quot;),  legend.text.s
 </div>
 <div id="optimizing-idw-predictions" class="section level3">
 <h3>Optimizing IDW predictions</h3>
-<p>The choice of power function <code>idp</code> can be subjective. To fine-tune the choice of the power parameter, you can perform a leave-one-out cross validation routine to measure the error in the interpolated values.</p>
+<p>The choice of power function <code>idp</code> can be subjective. To fine-tune the choice of the power parameter, you can perform a <strong>leave-one-out cross validation</strong> routine to measure the error in the interpolated values.</p>
 <pre class="r"><code>IDW.out &lt;- vector(length = length(shp))
 for (i in 1:length(shp)) {
   IDW.out[i] &lt;- idw(Clay ~ 1, shp[-i,], shp[i,], idp=2.0)$var1.pred
 }</code></pre>
-<pre><code>## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]
-## [inverse distance weighted interpolation]</code></pre>
 <p>Plot the differences in a scatterplot to evaluate accuracy. If not sufficient you can change the <code>idp</code> parameter and evaluate again.</p>
 <pre class="r"><code>OP &lt;- par(pty=&quot;s&quot;, mar=c(4,3,0,0))
   plot(IDW.out ~ shp$Clay, asp=1, xlab=&quot;Observed&quot;, ylab=&quot;Predicted&quot;, pch=16,
@@ -676,7 +481,49 @@ for (i in 1:length(shp)) {
 <pre class="r"><code>sqrt( sum((idw.output$prediction - shp$Clay)^2) / length(shp$Clay))</code></pre>
 <pre><code>## Warning in idw.output$prediction - shp$Clay: longer object length is not a
 ## multiple of shorter object length</code></pre>
-<pre><code>## [1] 64.43427</code></pre>
+<pre><code>## [1] 64.73792</code></pre>
+</div>
+<div id="cross-validation" class="section level3">
+<h3>Cross-validation</h3>
+<p>We can also create a 95% confidence interval map of the interpolation model to illustrate uncertainity around it. Here we’ll use jackknife technique to estimate a confidence interval at each unsampled point. Frist create an interpolation surface.</p>
+<pre class="r"><code>img &lt;- gstat::idw(Clay~1, shp, newdata=grid, idp=2.0)</code></pre>
+<pre><code>## [inverse distance weighted interpolation]</code></pre>
+<pre class="r"><code>n   &lt;- length(shp)
+Zi  &lt;- matrix(nrow = length(img$var1.pred), ncol = n)</code></pre>
+<p>Leave out a point then perform interpolation (do this <em>n</em> times for each point).</p>
+<pre class="r"><code>st &lt;- stack()
+for (i in 1:n){
+  Z1 &lt;- gstat::idw(Clay~1, shp[-i,], newdata=grid, idp=2.0)
+  # coerce to SpatialPixelsDataFrame
+  gridded(Z1) &lt;- TRUE
+  # coerce to raster
+  st &lt;- addLayer(st, raster(Z1, layer=1))
+  # Calculated pseudo-value Z at j
+  Zi[,i] &lt;- n * img$var1.pred - (n-1) * Z1$var1.pred
+}</code></pre>
+<p>Compute jackknife estimator of parameter <em>Z</em> at location j.</p>
+<pre class="r"><code>Zj &lt;- as.matrix(apply(Zi, 1, sum, na.rm=T) / n )
+
+# Compute (Zi* - Zj)^2
+c1 &lt;- apply(Zi,2,&#39;-&#39;,Zj)            # Compute the difference
+c1 &lt;- apply(c1^2, 1, sum, na.rm=T ) # Sum the square of the difference
+
+# Compute the confidence interval
+CI &lt;- sqrt( 1/(n*(n-1)) * c1)
+
+# Create (CI / interpolated value) raster
+gridded(img) &lt;- TRUE
+img.sig   &lt;- img
+img.sig$v &lt;- CI /img$var1.pred </code></pre>
+<p>Clip the confidence raster to boundary and plot the map.</p>
+<pre class="r"><code>r &lt;- raster(img.sig,  layer=&quot;v&quot;)
+r.m &lt;- mask(r, bdy)
+
+# Plot the map
+tm_shape(r.m) + tm_raster(n = 10, style = &quot;kmeans&quot;, palette = &quot;-Blues&quot;,title=&quot;95% confidence interval \n(Clay [%])&quot;) +
+  tm_shape(shp) + tm_dots(size=0.2) +
+  tm_legend(legend.outside=TRUE)</code></pre>
+<p><img src="lesson3_files/figure-html/cv4-1.png" width="672" /></p>
 </div>
 </div>
 <div id="references" class="section level2">

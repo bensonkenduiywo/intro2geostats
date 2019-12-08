@@ -360,6 +360,7 @@ $(document).ready(function () {
 <p><span class="math display">\[\hat{\gamma}(h) =\frac{1}{2N}\sum_{i=1}^{N}\left\{Z(\textbf{x}_i+h)-Z(\textbf{x}_i)\right\}^2 \]</span> where <em>N</em> is the number of pair points seprated by lag <em>h</em> used to estimate <span class="math inline">\(\hat{\gamma}(h)\)</span>. This is also known as the <em>variogram cloud</em>, which shows the semivariances between all point pairs.</p>
 <p>Load the carbon data</p>
 <pre class="r"><code>rm(list=ls(all=TRUE))
+unlink(&quot;.RData&quot;)
 library(rgdal)
 d &lt;- readOGR(&quot;soil_data_CIAT.shp&quot;)</code></pre>
 <pre><code>## OGR data source with driver: ESRI Shapefile 
@@ -440,13 +441,7 @@ for (bw in seq(20, 220, by = 40)) {
   plot(v$dist, v$gamma, xlab=paste(&quot;bin width&quot;, bw))
   cat(bw, &quot; bin width has these np:&quot;, v$np) 
 }</code></pre>
-<pre><code>## 20  bin width has these np: 10 47 38 30 83 55 41 83 105 50 122 63 111 118 84 79 28 64 45 65 82 77 93 35 113 68 80 66 70 31 160 83 101 77 62 38 59 121 62 68 95 92 70 58 56 49 53 67 63 29 47 120 30 113 50 55 29 105 53 113 59 47 47 27 64 202 62 47 53 55 98 67 77 56 66 53 73 51 47 39 98 103 39 100 46 76 81 102 11 46 127 91 52 77 49 51 191 94 84 121 71 41 40 21 124 36 37 96 77 25 32 33 37 100 83 130 31 70 43 77 18 41 97 31 62 39 70 41 27 139 38 36 84 73 39 105 82 27 54 27 44 95 73 70 57 71 62 39 44 130 60 63 35 26 91 56 33 26 33 64 35 9 77 57 113 60</code></pre>
-<pre><code>## 60  bin width has these np: 10 47 38 30 83 55 41 83 105 50 185 111 118 84 79 28 109 65 159 93 148 148 66 70 191 83 178 159 121 130 257 114 49 120 92 167 143 105 29 271 59 94 91 264 100 153 67 199 126 98 137 103 185 76 183 57 218 129 100 191 178 121 71 102 160 210 57 70 183 231 43 136 190 150 166 38 193 144 163 27 212 127 133 83 190 124 147 92 108 247 60</code></pre>
-<pre><code>## 100  bin width has these np: 10 47 38 30 83 179 155 185 111 202 79 137 147 170 148 148 167 243 178 159 251 187 184 169 259 143 134 330 121 328 155 242 248 137 240 222 194 264 229 285 205 173 293 167 220 231 276 243 166 270 268 166 271 145 288 206 167 307</code></pre>
-<pre><code>## 140  bin width has these np: 10 47 38 113 179 105 346 118 163 202 252 216 216 274 240 348 257 216 326 248 300 244 364 297 299 287 342 286 320 369 273 391 227 314 369 316 375 190 410 275 331 277 230</code></pre>
-<pre><code>## 180  bin width has these np: 10 85 30 138 124 340 229 191 333 241 284 452 280 387 283 402 405 244 517 392 338 444 404 469 294 427 484 369 354 500 366 406 363 415</code></pre>
 <p><img src="lesson4_files/figure-html/v6-1.png" width="672" /></p>
-<pre><code>## 220  bin width has these np: 10 85 113 179 340 313 281 287 397 452 410 420 522 405 508 453 427 547 453 541 543 471 478 508 473 546 423 415</code></pre>
 <p>We observe that if the intervals are short &amp; the bins narrow then there will be many estimates of (<em>h</em>), which can lead to a ”noisy” variogram because the semi-variances are calculated from few comparisons. In contrast, if the intervals are large and the bins wide then there might be too few estimates of the semi-variances to reveal the form of the variogram. The choice is thus a compromise; cannot be automated.</p>
 </div>
 <div id="variogram-modelling-and-fitting" class="section level3">
@@ -538,6 +533,27 @@ tm_shape(d) + tm_bubbles(size = &quot;Clay&quot;, col = &quot;Clay&quot;, palett
 tm_layout(legend.position = c(&quot;left&quot;, &quot;top&quot;),  legend.text.size = 1.1, legend.title.size = 1.4, frame = FALSE, legend.bg.color = &quot;white&quot;, legend.bg.alpha = 0.5)</code></pre>
 <p><img src="lesson4_files/figure-html/k5-2.png" width="672" /></p>
 <p>Compare the output with that of kriging visually, what do you think?</p>
+</div>
+<div id="variance-and-confidence-interval-maps" class="section level3">
+<h3>Variance and confidence interval maps</h3>
+<p>The <code>lz.ok</code> object output from kiriging stores not just the interpolated values, but the variance values as well. These can be passed to the raster object for mapping.</p>
+<pre class="r"><code>r   &lt;- raster(lz.ok, layer=&quot;var1.var&quot;)
+r.m &lt;- mask(r, bdy)
+
+tm_shape(r.m) + 
+  tm_raster(n = 10, style = &quot;kmeans&quot;, palette = &quot;-Blues&quot;,
+            title=&quot;Variance map \n(Clay [%])&quot;) +tm_shape(d) + tm_dots(size=0.2) +
+  tm_legend(legend.outside=TRUE)</code></pre>
+<p><img src="lesson4_files/figure-html/c1-1.png" width="672" /></p>
+<p>Perhaps an easily interpretable map is the 95% confidence interval map which can be generated from the variance object (the map values should be interpreted as the percentage deviation from the estimated clay percentage amount).</p>
+<pre class="r"><code>r   &lt;- sqrt(raster(lz.ok, layer=&quot;var1.var&quot;)) * 1.96
+r.m &lt;- mask(r, bdy)
+
+tm_shape(r.m) + 
+  tm_raster(n = 10, style = &quot;kmeans&quot;, palette = &quot;-Blues&quot;,
+            title=&quot;95% CI map \n(Clay [%])&quot;) +tm_shape(d) + tm_dots(size=0.2) +
+  tm_legend(legend.outside=TRUE)</code></pre>
+<p><img src="lesson4_files/figure-html/c2-1.png" width="672" /></p>
 </div>
 </div>
 <div id="references" class="section level2">

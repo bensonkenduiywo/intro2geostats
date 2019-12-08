@@ -36,6 +36,7 @@ Load the carbon data
 
 ```{r v1, message=FALSE}
 rm(list=ls(all=TRUE))
+unlink(".RData")
 library(rgdal)
 d <- readOGR("soil_data_CIAT.shp")
 head(d, n=3)
@@ -113,7 +114,7 @@ Some notes:
 
 So we can use a loop to evaluate different bin sizes.
 
-```{r v6}
+```{r v6, results='hide'}
 par(mfrow = c(2,3), oma = c(2,2,0,0), mar = c(3,3,0,0), mgp = c(1.5,0.5,0),xpd = NA)
 for (bw in seq(20, 220, by = 40)) {
   v<-variogram(Clay~1, d, width=bw)
@@ -230,6 +231,37 @@ tm_layout(legend.position = c("left", "top"),  legend.text.size = 1.1, legend.ti
 
 
 Compare the output with that of kriging visually, what do you think?
+
+### Variance and confidence interval maps
+
+The `lz.ok` object output from kiriging stores not just the interpolated values, but the variance values as well. These can be passed to the raster object for mapping.
+
+```{r c1}
+
+r   <- raster(lz.ok, layer="var1.var")
+r.m <- mask(r, bdy)
+
+tm_shape(r.m) + 
+  tm_raster(n = 10, style = "kmeans", palette = "-Blues",
+            title="Variance map \n(Clay [%])") +tm_shape(d) + tm_dots(size=0.2) +
+  tm_legend(legend.outside=TRUE)
+```
+
+
+Perhaps an easily interpretable map is the 95% confidence interval map which can be generated from the variance object (the map values should be interpreted as the percentage deviation from the estimated clay percentage amount).
+
+
+```{r c2}
+r   <- sqrt(raster(lz.ok, layer="var1.var")) * 1.96
+r.m <- mask(r, bdy)
+
+tm_shape(r.m) + 
+  tm_raster(n = 10, style = "kmeans", palette = "-Blues",
+            title="95% CI map \n(Clay [%])") +tm_shape(d) + tm_dots(size=0.2) +
+  tm_legend(legend.outside=TRUE)
+
+```
+
 
 ## References
 
