@@ -38,7 +38,7 @@ The tutorial is organized into the following sections:
 
 ### Resources
 
-We will use R software. R software is opensource and can be downloaded from https://cran.r-project.org/. A suitable R user interface that we shall use is [R Studio](https://rstudio.com/products/rstudio/download/). First download and install the latest version of R followed by the editor (RStudio). Other editors are available and you are free to use depending on your preference or previous experience.
+We will use R software. R software is opensource and can be downloaded from https://cran.r-project.org/. A suitable R user interface that we shall use is [R Studio](https://rstudio.com/products/rstudio/download/). First download and install the latest version of R followed by the editor (RStudio). Other editors are available and you are free to use depending on your preference or previous experience. You will also need [Git](https://gitforwindows.org/) for version control in Rstudio and your [Github](https://github.com/) account
 
 ### References
 
