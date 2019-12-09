@@ -63,7 +63,8 @@ max(x)
 6. What is the average elevation of all clinics?
 
 ```{r 6}
-mean(d$ALTITUDE, na.rm=TRUE)
+x <- d$ALTITUDE[d$FACILITY.TYPE=="Clinic"]
+mean(x, na.rm=TRUE)
 
 
 ```

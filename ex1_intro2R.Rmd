@@ -39,8 +39,8 @@ See [data exploration](https://rspatial.org/intr/7-explore.html#data-exploration
 > min(_________)<br> 
 
 6. What is the average elevation of all clinics?
-
-> mean(_________, na.rm=_________)
+> x <- d$ALTITUDE[________=="Clinic"]
+> mean(x, na.rm=_________)
 
 
 7. Create a data.frame with four columns: ZONE, REGION, the number of facilities, and their average elevation (by REGION)

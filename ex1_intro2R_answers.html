@@ -488,8 +488,9 @@ names(which.min(x))</code></pre>
 <ol start="6" style="list-style-type: decimal">
 <li>What is the average elevation of all clinics?</li>
 </ol>
-<pre class="r"><code>mean(d$ALTITUDE, na.rm=TRUE)</code></pre>
-<pre><code>## [1] 1076.533</code></pre>
+<pre class="r"><code>x &lt;- d$ALTITUDE[d$FACILITY.TYPE==&quot;Clinic&quot;]
+mean(x, na.rm=TRUE)</code></pre>
+<pre><code>## [1] 480.7912</code></pre>
 <p>7a. Create a data.frame with four columns: ZONE, REGION, the number of facilities, and their average elevation (by REGION)</p>
 <blockquote>
 <p>we want something like this</p>
