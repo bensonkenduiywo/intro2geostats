@@ -301,6 +301,12 @@ $(document).ready(function () {
     <li>
       <a href="lesson4.html">Geostatistical spatial prediction</a>
     </li>
+    <li>
+      <a href="lesson5.html">Model-Based Geostatistics</a>
+    </li>
+    <li>
+      <a href="lesson6.html">Spatial geo-regression</a>
+    </li>
   </ul>
 </li>
       </ul>
@@ -509,7 +515,7 @@ fullgrid(grid)    &lt;- TRUE  # Create SpatialGrid object
 # Add data&#39;s projection information to the empty grid
 crs(grid) &lt;- crs(d)</code></pre>
 <p>Get rid of duplicates and perform predictions using kriging and display output.</p>
-<pre class="r"><code>newdata &lt;- d[!duplicated(d$X),]
+<pre class="r"><code>newdata &lt;- remove.duplicates(d)
 lz.ok &lt;- krige(Clay ~ 1, newdata, grid, m2a)</code></pre>
 <pre><code>## [using ordinary kriging]</code></pre>
 <pre class="r"><code>spplot(lz.ok[&quot;var1.pred&quot;])</code></pre>
@@ -554,10 +560,12 @@ tm_shape(r.m) +
             title=&quot;95% CI map \n(Clay [%])&quot;) +tm_shape(d) + tm_dots(size=0.2) +
   tm_legend(legend.outside=TRUE)</code></pre>
 <p><img src="lesson4_files/figure-html/c2-1.png" width="672" /></p>
+<p>Cross validation is useful in finding artefacts in data. However, results from it should be used with caution for confirmatory purposes: one needs to be careful not to conclude that a model is correct if cross validation does not lead to unexpected findings. It is for instance not good at finding what is not in the data <a href="https://www.springer.com/gp/book/9781461476177">(Bivand et al. 2013)</a>.</p>
 </div>
 </div>
 <div id="references" class="section level2">
 <h2>References</h2>
+<p>Bivand, R. S., Pebesma, E. J., Gomez-Rubio, V., &amp; Pebesma, E. J. (2013). <a href="https://www.springer.com/gp/book/9781461476177"><em>Applied spatial data analysis with R</em></a>. 2nd Eds. New York: Springer.</p>
 <p>Webster, R., &amp; Oliver, M. A. (2007). <a href="https://onlinelibrary.wiley.com/doi/book/10.1002/9780470517277"><em>Geostatistics for Environmental Scientists</em></a> (2nd ed.). West Sussex, England: John Wiley &amp; Sons Ltd.</p>
 <p>De Smith, M. J., Goodchild, M. F., &amp; Longley, P. (2018). <a href="https://www.spatialanalysisonline.com/HTML/index.html"><em>Geospatial analysis: a comprehensive guide to principles, techniques and software tools</em></a>. Troubador publishing ltd.</p>
 <p>Oliver, M. A., &amp; Webster, R. (2015). <a href="https://www.springer.com/gp/book/9783319158648"><em>Basic steps in geostatistics: the variogram and kriging</em></a> (1st ed., Vol. 106). Springer</p>

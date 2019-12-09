@@ -1,0 +1,16 @@
+---
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Spatial geo-regression
+
+Regression analysis is the term used to describe a family of methods that seek to model the relationship between one (or more) dependent or response variables and a number of independent or predictor variables. Spatial regression methods are similar, but take explicit account of the spatial structure of data, in particular the lack of independence that typically exists between measurements made at nearby locations. 
+
+## References
+
+De Smith, M. J., Goodchild, M. F., & Longley, P. (2018). [*Geospatial analysis: a comprehensive guide to principles, techniques and software tools*](https://www.spatialanalysisonline.com/HTML/index.html). Troubador publishing ltd.
+

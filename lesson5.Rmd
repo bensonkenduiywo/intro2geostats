@@ -1,0 +1,92 @@
+---
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Model-Based Geostatistics and Bayesian methods
+
+Thus far, we have made predictions with a kriging technique that assumes that the variogram model, fitted from sample data, is known a priori before kriging or simulation: any uncertainty about it is ignored. Diggle et al. (1998) proposed an approach, based on linear mixed and generalized linear mixed models, to provide what is termed as *model-based geostatistical predictions*. It incorporates the estimation error of the variogram coefficients.
+
+Uncertainty of the variogram an important in some cases like:
+
+1. where the sample is small, 
+2. when variogram modelling is problematic due to the presence of extreme observations or,
+3. when data has a strongly skewed distribution.
+
+Normally `geoR` and `automap` packages are used to aid automatic determination of variogram parameters (model-based geostatistical analysis) in R.
+
+We start with `automap` package that is based on `gstat`.
+
+```{r m1, message=FALSE}
+rm(list=ls(all=TRUE))
+unlink(".RData")
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load(automap)
+
+```
+
+Get the data.
+
+```{r m2}
+library(rgdal)
+d <- readOGR("soil_data_CIAT.shp", stringsAsFactors = FALSE)
+d <- remove.duplicates(d)
+
+```
+
+Create a prediction grid for the our data.
+
+```{r m3}
+d.grid <-as.data.frame(spsample(d, type = 'regular', n = 10000))
+names(d.grid)       <- c("X", "Y")
+coordinates(d.grid) <- c("X", "Y")
+gridded(d.grid)     <- TRUE  # Create SpatialPixel object
+fullgrid(d.grid)    <- TRUE  # Create SpatialGrid object
+# Add data's projection information to the empty grid
+library(raster)
+crs(d.grid) <- crs(d)
+```
+
+Display Clay content and the grid with points.
+
+```{r m4}
+spplot(d,"Clay",colorkey=TRUE, main="Clay content in [%]")
+
+plot(d.grid)
+points(d, pch=20, col="red")
+
+
+```
+
+Let us automatically fit variogram using `autofit` function in `automap` package.
+
+```{r m5}
+c.v <- autofitVariogram(Clay~1, d)
+summary(c.v)
+
+```
+
+We observe that variogram parameters (*sill, range and nugget*) have been determined automatically, unlike in the [previous section](lesson4.html). 
+
+Let us plot the experimental variogram.
+
+```{r m6}
+plot(c.v)
+```
+
+ We can see that the `automap` package is quite handy as it automatically determines variogram parameters and plots the variogram and tells you how many point pairs there are at each distance via `plot` and `summary` functions respectively. Not only can we autofit variograms, but we can autokrige surfaces as well. The following gives us the nice autofitted variogram from, as well as interpolated Clay content within grid area.
+
+```{r m7}
+c.krig <- autoKrige(Clay~1, d, d.grid)
+plot(c.krig)
+
+```
+
+
+You can observe that standard error of the interpolated values is lower in regions within the grid where there are more data points. However, it is higher outside the borders of the data points because of extrapolation.
+
+
+

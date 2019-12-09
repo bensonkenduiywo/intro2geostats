@@ -33,6 +33,8 @@ The tutorial is organized into the following sections:
 5. [Spatial prediction](lesson2.html)
 5. [Non-geostatistical spatial prediction](lesson3.html)
 6. [Geostatistical spatial prediction](lesson4.html)
+7. [Model-Based Geostatistics](lesson5.html)
+8. [Spatial geo-regression](lesson6.html)
 
 ### Resources
 

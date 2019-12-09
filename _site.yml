@@ -21,6 +21,11 @@ navbar:
           href: lesson3.html  
         - text: "Geostatistical spatial prediction"
           href: lesson4.html   
+        - text: "Model-Based Geostatistics"
+          href: lesson5.html   
+        - text: "Spatial geo-regression"
+          href: lesson6.html   
+                                        
   right:
     - icon: fa-envelope fa-lg
       href: mailto:bensonkemboi@gmail.com

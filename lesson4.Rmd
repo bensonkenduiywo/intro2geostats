@@ -203,7 +203,7 @@ crs(grid) <- crs(d)
 Get rid of duplicates and perform predictions using kriging and display output.
 
 ```{r k2}
-newdata <- d[!duplicated(d$X),]
+newdata <- remove.duplicates(d)
 lz.ok <- krige(Clay ~ 1, newdata, grid, m2a)
 spplot(lz.ok["var1.pred"])
 ```
@@ -262,8 +262,12 @@ tm_shape(r.m) +
 
 ```
 
+Cross validation is useful in finding artefacts in data. However, results from it should be used with caution for confirmatory purposes: one needs to be careful not to conclude that a model is correct if cross validation does not lead to unexpected findings. It is for instance not good at finding what is not in the data [(Bivand et al. 2013)](https://www.springer.com/gp/book/9781461476177).
+
 
 ## References
+
+Bivand, R. S., Pebesma, E. J., Gomez-Rubio, V., & Pebesma, E. J. (2013). [*Applied spatial data analysis with R*](https://www.springer.com/gp/book/9781461476177). 2nd Eds. New York: Springer.
 
 Webster, R., & Oliver, M. A. (2007). [*Geostatistics for Environmental
 Scientists*](https://onlinelibrary.wiley.com/doi/book/10.1002/9780470517277) (2nd ed.). West Sussex, England: John Wiley & Sons Ltd.

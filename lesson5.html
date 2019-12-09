@@ -12,7 +12,7 @@
 
 
 
-<title>lesson2.utf8.md</title>
+<title>lesson5.utf8.md</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -348,41 +348,77 @@ $(document).ready(function () {
 </div>
 
 
-<div id="spatial-interpolation-prediction" class="section level2">
-<h2>Spatial interpolation (prediction)</h2>
-<p>Spatial interpolation/prediction is necessary in various application because it helps:</p>
-<ol style="list-style-type: lower-alpha">
-<li>Predict a variable across space, including in areas where there are little to no data.</li>
-<li>To smooth the data across space so that we cannot interpret the results of individuals, but still, identify the general trends from the data. This is particularly useful when the data corresponds to individual persons and disclosing their locations is unethical.</li>
+<div id="model-based-geostatistics-and-bayesian-methods" class="section level2">
+<h2>Model-Based Geostatistics and Bayesian methods</h2>
+<p>Thus far, we have made predictions with a kriging technique that assumes that the variogram model, fitted from sample data, is known a priori before kriging or simulation: any uncertainty about it is ignored. Diggle et al. (1998) proposed an approach, based on linear mixed and generalized linear mixed models, to provide what is termed as <em>model-based geostatistical predictions</em>. It incorporates the estimation error of the variogram coefficients.</p>
+<p>Uncertainty of the variogram an important in some cases like:</p>
+<ol style="list-style-type: decimal">
+<li>where the sample is small,</li>
+<li>when variogram modelling is problematic due to the presence of extreme observations or,</li>
+<li>when data has a strongly skewed distribution.</li>
 </ol>
-<p>For instance, due to economic and time constraints measurements may be sampled and later prediction done at unobserved locations using spatial interpolation models. Spatial prediction models (algorithms) can be grouped according to the amount of statistical analysis i.e. amount of expert knowledge included in the analysis. The following are the main groupings of interpolation techniques:</p>
-<div id="deterministic-non-geostatistical-interpolationprediction-models" class="section level3">
-<h3>Deterministic (non-geostatistical) interpolation/prediction models</h3>
-<p>These are models where arbitrary or empirical model parameters are used. No estimate of the model error is available and usually no strict assumptions about the variability of a feature exist. The most common techniques that belong to this group are:</p>
-<ol style="list-style-type: lower-alpha">
-<li>Inverse distance weighted interpolation;</li>
-<li>Thiessen polygons;</li>
-<li>Natural neighbour interpolation;</li>
-<li>Polynomial trend surfaces;</li>
-<li>Splines;</li>
-<li>Radial Basis Function Interpolation</li>
-</ol>
-</div>
-<div id="geostatistical-interpolation-techniques." class="section level3">
-<h3>Geostatistical interpolation techniques.</h3>
-<p>in this case, the model parameters are commonly estimated in an objective way, following probability theory. The predictions are accompanied with an estimate of the prediction error. A drawback is that the input data set usually need to satisfy strict statistical assumptions. There are at least four groups of linear statistical models:</p>
-<ol style="list-style-type: lower-alpha">
-<li>kriging (plain geostatistics);</li>
-<li>environmental correlation (e.g. regression-based);</li>
-<li>Bayesian-based models (e.g. Bayesian Maximum Entropy);</li>
-<li>hybrid models (e.g. regression-kriging).</li>
-</ol>
-<p>In the next lesson we cover the first category (non-geostatistical).</p>
-</div>
-</div>
-<div id="references" class="section level2">
-<h2>References</h2>
-<p>De Smith, M. J., Goodchild, M. F., &amp; Longley, P. (2018). <a href="https://www.spatialanalysisonline.com/HTML/index.html"><em>Geospatial analysis: a comprehensive guide to principles, techniques and software tools</em></a>. Troubador publishing ltd.</p>
+<p>Normally <code>geoR</code> and <code>automap</code> packages are used to aid automatic determination of variogram parameters (model-based geostatistical analysis) in R.</p>
+<p>We start with <code>automap</code> package that is based on <code>gstat</code>.</p>
+<pre class="r"><code>rm(list=ls(all=TRUE))
+unlink(&quot;.RData&quot;)
+if (!require(&quot;pacman&quot;)) install.packages(&quot;pacman&quot;)
+pacman::p_load(automap)</code></pre>
+<p>Get the data.</p>
+<pre class="r"><code>library(rgdal)
+d &lt;- readOGR(&quot;soil_data_CIAT.shp&quot;, stringsAsFactors = FALSE)</code></pre>
+<pre><code>## OGR data source with driver: ESRI Shapefile 
+## Source: &quot;D:\JKUAT\ShortCourses\Geostatistics\intro2geostats\soil_data_CIAT.shp&quot;, layer: &quot;soil_data_CIAT&quot;
+## with 200 features
+## It has 7 fields
+## Integer64 fields read as strings:  X Y</code></pre>
+<pre class="r"><code>d &lt;- remove.duplicates(d)</code></pre>
+<p>Create a prediction grid for the our data.</p>
+<pre class="r"><code>d.grid &lt;-as.data.frame(spsample(d, type = &#39;regular&#39;, n = 10000))
+names(d.grid)       &lt;- c(&quot;X&quot;, &quot;Y&quot;)
+coordinates(d.grid) &lt;- c(&quot;X&quot;, &quot;Y&quot;)
+gridded(d.grid)     &lt;- TRUE  # Create SpatialPixel object
+fullgrid(d.grid)    &lt;- TRUE  # Create SpatialGrid object
+# Add data&#39;s projection information to the empty grid
+library(raster)
+crs(d.grid) &lt;- crs(d)</code></pre>
+<p>Display Clay content and the grid with points.</p>
+<pre class="r"><code>spplot(d,&quot;Clay&quot;,colorkey=TRUE, main=&quot;Clay content in [%]&quot;)</code></pre>
+<p><img src="lesson5_files/figure-html/m4-1.png" width="672" /></p>
+<pre class="r"><code>plot(d.grid)
+points(d, pch=20, col=&quot;red&quot;)</code></pre>
+<p><img src="lesson5_files/figure-html/m4-2.png" width="672" /></p>
+<p>Let us automatically fit variogram using <code>autofit</code> function in <code>automap</code> package.</p>
+<pre class="r"><code>c.v &lt;- autofitVariogram(Clay~1, d)
+summary(c.v)</code></pre>
+<pre><code>## Experimental variogram:
+##      np      dist    gamma dir.hor dir.ver   id
+## 1    36  250.0000 29.42281       0       0 var1
+## 2    31  353.5534 49.80763       0       0 var1
+## 3    97  543.1980 69.21790       0       0 var1
+## 4    86  725.0621 47.44695       0       0 var1
+## 5   175  850.7280 57.05185       0       0 var1
+## 6   919 1297.7331 53.96572       0       0 var1
+## 7   952 1948.8853 62.51598       0       0 var1
+## 8  1795 2728.1925 71.54363       0       0 var1
+## 9  1995 3690.6582 72.58655       0       0 var1
+## 10 1987 4641.4518 70.27130       0       0 var1
+## 11 2685 5757.7100 71.04165       0       0 var1
+## 
+## Fitted variogram model:
+##   model    psill    range
+## 1   Nug  0.00000   0.0000
+## 2   Gau 62.31814 300.3173
+## Sums of squares betw. var. model and sample var.[1] 0.1602768</code></pre>
+<p>We observe that variogram parameters (<em>sill, range and nugget</em>) have been determined automatically, unlike in the <a href="lesson4.html">previous section</a>.</p>
+<p>Let us plot the experimental variogram.</p>
+<pre class="r"><code>plot(c.v)</code></pre>
+<p><img src="lesson5_files/figure-html/m6-1.png" width="672" /></p>
+<p>We can see that the <code>automap</code> package is quite handy as it automatically determines variogram parameters and plots the variogram and tells you how many point pairs there are at each distance via <code>plot</code> and <code>summary</code> functions respectively. Not only can we autofit variograms, but we can autokrige surfaces as well. The following gives us the nice autofitted variogram from, as well as interpolated Clay content within grid area.</p>
+<pre class="r"><code>c.krig &lt;- autoKrige(Clay~1, d, d.grid)</code></pre>
+<pre><code>## [using ordinary kriging]</code></pre>
+<pre class="r"><code>plot(c.krig)</code></pre>
+<p><img src="lesson5_files/figure-html/m7-1.png" width="672" /></p>
+<p>You can observe that standard error of the interpolated values is lower in regions within the grid where there are more data points. However, it is higher outside the borders of the data points because of extrapolation.</p>
 </div>
 
 
