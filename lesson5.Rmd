@@ -30,7 +30,7 @@ pacman::p_load(automap)
 
 Get the data.
 
-```{r m2}
+```{r m2, message=FALSE, results= "hide"}
 library(rgdal)
 d <- readOGR("soil_data_CIAT.shp", stringsAsFactors = FALSE)
 d <- remove.duplicates(d)

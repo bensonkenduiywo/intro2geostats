@@ -8,7 +8,146 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Spatial geo-regression
 
-Regression analysis is the term used to describe a family of methods that seek to model the relationship between one (or more) dependent or response variables and a number of independent or predictor variables. Spatial regression methods are similar, but take explicit account of the spatial structure of data, in particular the lack of independence that typically exists between measurements made at nearby locations. 
+**Regression analysis** is the term used to describe a family of methods that seek to model the relationship between one (or more) dependent or response variables and a number of independent or predictor variables. **Spatial regression methods** are similar, but take explicit account of the spatial structure of data, in particular the lack of independence that typically exists between measurements made at nearby locations (see Tobler's law). 
+
+We will explore ordinary regression and explore Geographical Weighted Regression.
+
+## Geographically weighted regression (GWR)
+
+Geographically weighted regression (GWR) is an exploratory technique mainly intended to indicate where **non-stationarity** is taking place on the map, that is where locally weighted regression coefficients move away from their global values. Its basis is the concern that the fitted coefficient values of a global model, fitted to all the data, may not represent detailed local variations in the data adequately - in this it follows other local regression implementations. It differs, however, in not looking for local variation in 'data' space, but by moving a weighted window over the data, estimating one set of coefficient values at every chosen 'fit' point. The fit points are very often the points at which observations were made, but do not have to be. If the local coefficients vary in space, it can be taken as an indication of non-stationarity.
+
+The technique involves first selecting a bandwidth for an isotropic spatial weights kernel, typically a Gaussian kernel with a fixed bandwidth chosen by leave-one-out cross-validation. Choice of the bandwidth can be very demanding, as n regressions must be fitted at each step. Alternative techniques are available, for example for adaptive bandwidths, but they may often be even more compute-intensive.
+
+In this tutorial we will:
+
+1. Run a linear model to predict the occurrence of a variable across small areas
+2. Run a geographically weighted regression to understand how models may vary across space
+3. Print multiple maps in one graphic using `gridExtra()` with `tmap`
+
+First, you need to load the practical data ([source](https://data.cdrc.ac.uk/tutorial)).
+
+```{r g1, message=FALSE, results= "hide"}
+Census.Data <-read.csv("practical_data.csv")
+library(rgdal)
+Output.Areas <- readOGR(".", "Camden_oa11")
+# join our census data to the shapefile
+OA.Census <- merge(Output.Areas, Census.Data, by.x="OA11CD", by.y="OA")
+```
+
+
+## Linear regression
+
+We start with a linear regression model to understand the global relationship between our variables in our study area. In this case, the percentage of people with qualifications is our dependent variable, and the percentages of unemployed economically active adults and White British ethnicity are our two independent (or predictor) variables.
+
+```{r g2}
+model <- lm(Qualification ~ Unemployed+White_British, data=OA.Census)
+summary(model)
+
+```
+
+### Intepretation of the linear regression model
+
+This model has an adjusted *R*$^2$ value of 0.46. So we can assume 46% of the variance can be explained by the model. We can also observe the influences of each of the variables. However, the overall fit of the model and each of the coefficients may vary across space if we consider different parts of our study area. It is, therefore, worth considering the standardised residuals from the model to help us understand and improve our future models.
+
+A **residual** is the difference between the predicted and observed values for an observation in the model. Models with lower *R*$^2$ values would have greater residuals on average as the data would not fit the modelled regression line as well. Standardised residuals are represented as Z-scores where 0 represent the predicted values.
+
+If you plot a linear model (i.e. our model object), R will print out four different plots of which are useful for evaluating the model fit. These are very briefly summarised as:
+
+1. **Residuals vs Fitted** - considers the relationship between the actual and the predicted data. The more dispersed the residuals are, the weaker the *R*$^2$ should be. This can be useful to identify outliers too. The fit also tells us if the residuals are non-linearly distributed.
+2. **Normal Q-Q** - Demonstrates the extent to which the residuals are normally distributed. Normal residuals should fit the straight line well.
+3. **Scale-Location** - Shows if the residuals are spread equally across the full range of the predictors. If the values in this chart display a linear positive relationship, it suggests that the residuals spread wider and wider for greater values (this is known as heteroscedasticity).
+4. **Residuals vs Leverage** - this graph identifies outliers, high-leverage points and influential observations. This plot is pretty difficult to interpret and there are other means of identifying these values.
+
+A good description of these plots and how to interpret them can be found [here](http://data.library.virginia.edu/diagnostic-plots/).
+
+```{r g3}
+plot(model)
+```
+
+If you want to print just one of the plots you can enter `which = n` within the `plot()` function, i.e. `plot(model, which = 3)`.
+
+### Mapping the residuals
+
+We can also map the residuals to see if there is a spatial distribution of them across the study area using the `quickmap` function from `tmap`.
+
+```{r g4, message=FALSE}
+library(tmap)
+resids<-residuals(model)
+map.resids <- cbind(OA.Census, resids) 
+names(map.resids)[6] <- "resids"
+qtm(map.resids, fill = "resids")
+```
+
+
+If you notice a geographic pattern to the residuals, it is possible that an unobserved variable may also be influencing our dependent variable in the model.
+
+## Running GWR
+
+Prior to running the GWR model we need to calculate a kernel bandwidth. This will determine now the GWR subsets the data when its test multiple models across space.
+
+```{r  g6, message=FALSE}
+pacman::p_load(spgwr)
+GWRbandwidth <- gwr.sel(OA.Census$Qualification ~ OA.Census$Unemployed+OA.Census$White_British, data=OA.Census,adapt=T)
+```
+
+Next, we can run the model and view the results.
+
+```{r g7}
+gwr.model = gwr(OA.Census$Qualification ~ OA.Census$Unemployed+OA.Census$White_British, data=OA.Census, adapt=GWRbandwidth, hatmatrix=TRUE, se.fit=TRUE) 
+#print the results of the model
+gwr.model
+```
+
+Upon first glance, much of the outputs of this model are identical to the outputs of the linear model. However, we can explore the coefficients of this model across each area unit.
+
+We create a results output from the model which contains a number of attributes which correspond with each unique output area from our OA.Census file. We have printed the names of each of the new variables in the example below. They include a local *R*$^2$  value, the predicted values (for % qualifications) and local coefficients for each variable. We will then bind the outputs to our OA.Census polygon so we can map them.
+```{r g8}
+results <-as.data.frame(gwr.model$SDF)
+names(results)
+```
+
+```{r g9}
+gwr.map <- cbind(OA.Census, as.matrix(results))
+```
+
+The variable names followed by the name of our original data frame (i.e. OA.Census.Unemployed) are the coefficients of the model.
+
+```{r g10}
+qtm(gwr.map, fill = "localR2")
+```
+
+### Display using gridExtra
+
+We will now consider some of the other outputs. We will create four maps in one image to show the original distributions of our unemployed and White British variables and their coefficients in the GWR model.
+
+To facet four maps in `tmap` we can use functions from the `grid` and `gridExtra` packages which allow us to split the output window into segments. We will divide the output into four and print a map in each window.
+
+Firstly, we will create four map objects using `tmap`. Instead of printing them directly as we have done usually, we all assign each map an object ID so it can be called later.
+
+
+```{r g11}
+# create tmap objects
+map1 <- tm_shape(gwr.map) + tm_fill("White_British", n = 5, style = "quantile")  + tm_layout(frame = FALSE, legend.text.size = 0.5, legend.title.size = 0.6)
+map2 <- tm_shape(gwr.map) + tm_fill("OA.Census.White_British", n = 5, style = "quantile", title = "WB Coefficient") + tm_layout(frame = FALSE, legend.text.size = 0.5, legend.title.size = 0.6)
+map3 <- tm_shape(gwr.map) + tm_fill("Unemployed", n = 5, style = "quantile") + tm_layout(frame = FALSE, legend.text.size = 0.5, legend.title.size = 0.6)
+map4 <- tm_shape(gwr.map) + tm_fill("OA.Census.Unemployed", n = 5, style = "quantile", title = "Ue Coefficient") + tm_layout(frame = FALSE, legend.text.size = 0.5, legend.title.size = 0.6)
+```
+
+With the four maps ready to be printed, we will now create a grid to print them into. From now on every time we wish to recreate the maps we will need to run the `grid.newpage()` function to clear the existing grid window.
+
+```{r g12}
+pacman::p_load(grid,gridExtra)
+# creates a clear grid
+grid.newpage()
+# assigns the cell size of the grid, in this case 2 by 2
+pushViewport(viewport(layout=grid.layout(2,2)))
+
+# prints a map object into a defined cell   
+print(map1, vp=viewport(layout.pos.col = 1, layout.pos.row =1))
+print(map2, vp=viewport(layout.pos.col = 2, layout.pos.row =1))
+print(map3, vp=viewport(layout.pos.col = 1, layout.pos.row =2))
+print(map4, vp=viewport(layout.pos.col = 2, layout.pos.row =2))
+```
 
 ## References
 

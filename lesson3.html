@@ -354,13 +354,8 @@ $(document).ready(function () {
 <pre class="r"><code>rm(list=ls(all=TRUE))
 unlink(&quot;.RData&quot;)
 pacman::p_load(sp, rgdal,rgeos,tmap,raster) 
-shp &lt;- readOGR(&quot;soil_data_CIAT.shp&quot;)</code></pre>
-<pre><code>## OGR data source with driver: ESRI Shapefile 
-## Source: &quot;D:\JKUAT\ShortCourses\Geostatistics\intro2geostats\soil_data_CIAT.shp&quot;, layer: &quot;soil_data_CIAT&quot;
-## with 200 features
-## It has 7 fields
-## Integer64 fields read as strings:  X Y</code></pre>
-<pre class="r"><code>plot(shp, pch = 19, col = &quot;red&quot;)</code></pre>
+shp &lt;- readOGR(&quot;soil_data_CIAT.shp&quot;)
+plot(shp, pch = 19, col = &quot;red&quot;)</code></pre>
 <p><img src="lesson3_files/figure-html/n1-1.png" width="672" /></p>
 <p>View coordinate reference system and extents of the shapefile.</p>
 <pre class="r"><code>crs(shp)</code></pre>
@@ -394,12 +389,8 @@ dat.pp &lt;- as(dat.pp,&quot;SpatialPolygons&quot;)</code></pre>
 plot(dat.pp, pch = 19)</code></pre>
 <p><img src="lesson3_files/figure-html/n4-1.png" width="672" /></p>
 <p>The Polygons are extended beyond points boundary so get the boundary and clip the Thiesen polygon</p>
-<pre class="r"><code>bdy &lt;- readOGR(&quot;soil_boundary.shp&quot;)</code></pre>
-<pre><code>## OGR data source with driver: ESRI Shapefile 
-## Source: &quot;D:\JKUAT\ShortCourses\Geostatistics\intro2geostats\soil_boundary.shp&quot;, layer: &quot;soil_boundary&quot;
-## with 1 features
-## It has 1 fields</code></pre>
-<pre class="r"><code>dat.pp &lt;- intersect(dat.pp, bdy)
+<pre class="r"><code>bdy &lt;- readOGR(&quot;soil_boundary.shp&quot;)
+dat.pp &lt;- intersect(dat.pp, bdy)
 plot(dat.pp, pch = 19)</code></pre>
 <p><img src="lesson3_files/figure-html/n4b-1.png" width="672" /></p>
 <p>Assign to each polygon the Clay information.</p>
@@ -487,7 +478,7 @@ for (i in 1:length(shp)) {
 <pre class="r"><code>sqrt( sum((idw.output$prediction - shp$Clay)^2) / length(shp$Clay))</code></pre>
 <pre><code>## Warning in idw.output$prediction - shp$Clay: longer object length is not a
 ## multiple of shorter object length</code></pre>
-<pre><code>## [1] 64.50769</code></pre>
+<pre><code>## [1] 64.5259</code></pre>
 </div>
 <div id="cross-validation" class="section level3">
 <h3>Cross-validation</h3>

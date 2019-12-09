@@ -11,7 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 Load the packages and data we will use.
 
-```{r n1, message=FALSE}
+```{r n1, message=FALSE, results= "hide"}
 rm(list=ls(all=TRUE))
 unlink(".RData")
 pacman::p_load(sp, rgdal,rgeos,tmap,raster) 
@@ -56,7 +56,7 @@ plot(dat.pp, pch = 19)
 
 The Polygons are extended beyond points boundary so get the boundary and clip the Thiesen polygon
 
-```{r n4b, message=FALSE}
+```{r n4b, message=FALSE, results= "hide"}
 bdy <- readOGR("soil_boundary.shp")
 dat.pp <- intersect(dat.pp, bdy)
 plot(dat.pp, pch = 19)

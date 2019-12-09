@@ -368,17 +368,8 @@ $(document).ready(function () {
 <pre class="r"><code>rm(list=ls(all=TRUE))
 unlink(&quot;.RData&quot;)
 library(rgdal)
-d &lt;- readOGR(&quot;soil_data_CIAT.shp&quot;)</code></pre>
-<pre><code>## OGR data source with driver: ESRI Shapefile 
-## Source: &quot;D:\JKUAT\ShortCourses\Geostatistics\intro2geostats\soil_data_CIAT.shp&quot;, layer: &quot;soil_data_CIAT&quot;
-## with 200 features
-## It has 7 fields
-## Integer64 fields read as strings:  X Y</code></pre>
-<pre class="r"><code>head(d, n=3)</code></pre>
-<pre><code>##       LAB_ID      X     Y Bulk_densi Carbon     Clay     Sand
-## 1 CT258-6711 714875 72875   1.454268  2.472 43.54774 40.47143
-## 2 CT258-6697 713625 73125   1.171975  2.298 51.57937 32.42703
-## 3 CT258-6797 706625 73375   1.398217  1.510 35.93126 54.07674</code></pre>
+d &lt;- readOGR(&quot;soil_data_CIAT.shp&quot;)
+head(d, n=3)</code></pre>
 <p>How many point pairs are there in our data given the formula as <span class="math display">\[N= [n · (n − 1)]/2\]</span></p>
 <pre class="r"><code>(dim(d)[1] * (dim(d)[1] - 1))/2</code></pre>
 <pre><code>## [1] 19900</code></pre>
@@ -521,12 +512,8 @@ lz.ok &lt;- krige(Clay ~ 1, newdata, grid, m2a)</code></pre>
 <pre class="r"><code>spplot(lz.ok[&quot;var1.pred&quot;])</code></pre>
 <p><img src="lesson4_files/figure-html/k2-1.png" width="672" /></p>
 <p>The output does not correspond to our area onf interest, so convert it to raster and clip to boundary.</p>
-<pre class="r"><code>bdy &lt;- readOGR(&quot;soil_boundary.shp&quot;)</code></pre>
-<pre><code>## OGR data source with driver: ESRI Shapefile 
-## Source: &quot;D:\JKUAT\ShortCourses\Geostatistics\intro2geostats\soil_boundary.shp&quot;, layer: &quot;soil_boundary&quot;
-## with 1 features
-## It has 1 fields</code></pre>
-<pre class="r"><code>r &lt;- raster(lz.ok)
+<pre class="r"><code>bdy &lt;- readOGR(&quot;soil_boundary.shp&quot;)
+r &lt;- raster(lz.ok)
 rclip &lt;- mask(r, bdy)</code></pre>
 <p>Now display kriging results output.</p>
 <pre class="r"><code>pacman::p_load(tmap)

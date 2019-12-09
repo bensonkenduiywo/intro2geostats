@@ -365,13 +365,8 @@ if (!require(&quot;pacman&quot;)) install.packages(&quot;pacman&quot;)
 pacman::p_load(automap)</code></pre>
 <p>Get the data.</p>
 <pre class="r"><code>library(rgdal)
-d &lt;- readOGR(&quot;soil_data_CIAT.shp&quot;, stringsAsFactors = FALSE)</code></pre>
-<pre><code>## OGR data source with driver: ESRI Shapefile 
-## Source: &quot;D:\JKUAT\ShortCourses\Geostatistics\intro2geostats\soil_data_CIAT.shp&quot;, layer: &quot;soil_data_CIAT&quot;
-## with 200 features
-## It has 7 fields
-## Integer64 fields read as strings:  X Y</code></pre>
-<pre class="r"><code>d &lt;- remove.duplicates(d)</code></pre>
+d &lt;- readOGR(&quot;soil_data_CIAT.shp&quot;, stringsAsFactors = FALSE)
+d &lt;- remove.duplicates(d)</code></pre>
 <p>Create a prediction grid for the our data.</p>
 <pre class="r"><code>d.grid &lt;-as.data.frame(spsample(d, type = &#39;regular&#39;, n = 10000))
 names(d.grid)       &lt;- c(&quot;X&quot;, &quot;Y&quot;)
