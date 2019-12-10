@@ -455,7 +455,7 @@ tm_shape(bdy) + tm_borders(alpha=1, col = &quot;blue&quot;)</code></pre>
 <p>Overlay the original Clay data as this provides a good demonstration of how the IDW is distributed.</p>
 <pre class="r"><code>tm_shape(raster_idw) + tm_raster(&quot;prediction&quot;, style = &quot;quantile&quot;, n = 100, palette = &quot;-Reds&quot;,legend.show = FALSE) +
 tm_shape(bdy) + tm_borders(alpha=1, col=&quot;black&quot;) + 
-tm_shape(shp) + tm_bubbles(size = &quot;Clay&quot;, col = &quot;Clay&quot;, palette = &quot;-Purples&quot;, contrast=1, style = &quot;quantile&quot;, legend.size.show = FALSE, title.col = &quot;Clay&quot;) +
+tm_shape(shp) + tm_bubbles(size = &quot;Clay&quot;, col = &quot;Clay&quot;, palette = &quot;-Purples&quot;, contrast=1, style = &quot;quantile&quot;, legend.size.show = FALSE, title.col = &quot;Clay content (%)&quot;) +
 tm_layout(legend.position = c(&quot;left&quot;, &quot;top&quot;),  legend.text.size = 1.1, legend.title.size = 1.4, frame = FALSE, legend.bg.color = &quot;white&quot;, legend.bg.alpha = 0.5)</code></pre>
 <p><img src="lesson3_files/figure-html/idw8-1.png" width="672" /></p>
 </div>
@@ -478,7 +478,7 @@ for (i in 1:length(shp)) {
 <pre class="r"><code>sqrt( sum((idw.output$prediction - shp$Clay)^2) / length(shp$Clay))</code></pre>
 <pre><code>## Warning in idw.output$prediction - shp$Clay: longer object length is not a
 ## multiple of shorter object length</code></pre>
-<pre><code>## [1] 64.5259</code></pre>
+<pre><code>## [1] 64.62995</code></pre>
 </div>
 <div id="cross-validation" class="section level3">
 <h3>Cross-validation</h3>

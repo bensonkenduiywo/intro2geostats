@@ -477,7 +477,7 @@ head(d, n=3)</code></pre>
 ## 2 CT258-6697 713625 73125     1.171975  2.298 51.57937 32.42703
 ## 3 CT258-6797 706625 73375     1.398217  1.510 35.93126 54.07674</code></pre>
 <p>Examine the spatial trend of the variables (Bulk density, Carbon, Sand and Clay).</p>
-<pre class="r"><code>p_load(gridExtra)
+<pre class="r"><code>pacman::p_load(gridExtra)
 coordinates(d) &lt;- c(&quot;X&quot;, &quot;Y&quot;)
 plots = lapply(names(d)[2:5], function(.x) spplot(d,.x,do.log = T, main=.x))
 do.call(grid.arrange, plots)</code></pre>

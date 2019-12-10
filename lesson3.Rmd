@@ -173,7 +173,7 @@ Overlay the original Clay data as this provides a good demonstration of how the 
 ```{r idw8}
 tm_shape(raster_idw) + tm_raster("prediction", style = "quantile", n = 100, palette = "-Reds",legend.show = FALSE) +
 tm_shape(bdy) + tm_borders(alpha=1, col="black") + 
-tm_shape(shp) + tm_bubbles(size = "Clay", col = "Clay", palette = "-Purples", contrast=1, style = "quantile", legend.size.show = FALSE, title.col = "Clay") +
+tm_shape(shp) + tm_bubbles(size = "Clay", col = "Clay", palette = "-Purples", contrast=1, style = "quantile", legend.size.show = FALSE, title.col = "Clay content (%)") +
 tm_layout(legend.position = c("left", "top"),  legend.text.size = 1.1, legend.title.size = 1.4, frame = FALSE, legend.bg.color = "white", legend.bg.alpha = 0.5)
 
 ```

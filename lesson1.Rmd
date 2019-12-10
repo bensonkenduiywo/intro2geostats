@@ -160,7 +160,7 @@ head(d, n=3)
 Examine the spatial trend of the variables (Bulk density, Carbon, Sand and Clay).
 
 ```{r t2, out.width="100%"}
-p_load(gridExtra)
+pacman::p_load(gridExtra)
 coordinates(d) <- c("X", "Y")
 plots = lapply(names(d)[2:5], function(.x) spplot(d,.x,do.log = T, main=.x))
 do.call(grid.arrange, plots)
