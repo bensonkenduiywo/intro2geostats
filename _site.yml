@@ -1,6 +1,7 @@
 name: "Dr. -Ing. Benson Kenduiywo"
 output_dir: "."
 author: https://www.linkedin.com/in/benson-kenduiywo-1a218137
+google_analytics: UA-154446467-1
 navbar:
   title: "Geostatistics in R"
   type: inverse

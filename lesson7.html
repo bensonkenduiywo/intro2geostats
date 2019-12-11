@@ -358,9 +358,9 @@ $(document).ready(function () {
 <h3>Data &amp; library set-up</h3>
 <pre class="r"><code>rm(list=ls(all=TRUE)) 
 library(rgdal)
-Census.Data &lt;-read.csv(&quot;practical_data.csv&quot;)
-Output.Areas &lt;- readOGR(&quot;.&quot;, &quot;Camden_oa11&quot;)
-House.Points &lt;- readOGR(&quot;.&quot;, &quot;Camden_house_sales&quot;)</code></pre>
+Census.Data &lt;-read.csv(&quot;./data/practical_data.csv&quot;)
+Output.Areas &lt;- readOGR(&quot;./data/Camden_oa11.shp&quot;)
+House.Points &lt;- readOGR(&quot;./data/Camden_house_sales.shp&quot;)</code></pre>
 <p>Merge census data with the shapefile.</p>
 <pre class="r"><code>OA.Census &lt;- merge(Output.Areas, Census.Data, by.x=&quot;OA11CD&quot;, by.y=&quot;OA&quot;)</code></pre>
 <p>We will be working to view the distribution of the <strong>qualification</strong> variable. We can first map it to see its spatial distribution across our study area.</p>

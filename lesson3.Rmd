@@ -15,7 +15,7 @@ Load the packages and data we will use.
 rm(list=ls(all=TRUE))
 unlink(".RData")
 pacman::p_load(sp, rgdal,rgeos,tmap,raster) 
-shp <- readOGR("soil_data_CIAT.shp")
+shp <- readOGR("./data/soil_data_CIAT.shp")
 plot(shp, pch = 19, col = "red")
 ```
 
@@ -57,7 +57,7 @@ plot(dat.pp, pch = 19)
 The Polygons are extended beyond points boundary so get the boundary and clip the Thiesen polygon
 
 ```{r n4b, message=FALSE, results= "hide"}
-bdy <- readOGR("soil_boundary.shp")
+bdy <- readOGR("./data/soil_boundary.shp")
 dat.pp <- intersect(dat.pp, bdy)
 plot(dat.pp, pch = 19)
 

@@ -152,7 +152,7 @@ models; first we will go through simple, **non-geostatistical interpolation** ap
 Let us first look at another example before we go to **non-geostatistical interpolation**. Here we use data from [Piikki et al.] 2019(https://www.mdpi.com/2071-1050/11/15/4038).
 
 ```{r t1}
-d <- read.csv("soil_data_CIAT.csv", stringsAsFactors=FALSE)
+d <- read.csv("./data/soil_data_CIAT.csv", stringsAsFactors=FALSE)
 head(d, n=3)
 
 ```

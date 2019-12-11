@@ -16,9 +16,9 @@ This practical will cover how to run various measures of spatial autocorrelation
 ```{r sa1, message=FALSE, results="hide"}
 rm(list=ls(all=TRUE)) 
 library(rgdal)
-Census.Data <-read.csv("practical_data.csv")
-Output.Areas <- readOGR(".", "Camden_oa11")
-House.Points <- readOGR(".", "Camden_house_sales")
+Census.Data <-read.csv("./data/practical_data.csv")
+Output.Areas <- readOGR("./data/Camden_oa11.shp")
+House.Points <- readOGR("./data/Camden_house_sales.shp")
 ```
 
 Merge census data with the shapefile.

@@ -367,9 +367,9 @@ $(document).ready(function () {
 <li>Print multiple maps in one graphic using <code>gridExtra()</code> with <code>tmap</code></li>
 </ol>
 <p>First, you need to load the practical data (<a href="https://data.cdrc.ac.uk/tutorial">source</a>).</p>
-<pre class="r"><code>Census.Data &lt;-read.csv(&quot;practical_data.csv&quot;)
+<pre class="r"><code>Census.Data &lt;-read.csv(&quot;./data/practical_data.csv&quot;)
 library(rgdal)
-Output.Areas &lt;- readOGR(&quot;.&quot;, &quot;Camden_oa11&quot;)
+Output.Areas &lt;- readOGR(&quot;./data/Camden_oa11.shp&quot;)
 # join our census data to the shapefile
 OA.Census &lt;- merge(Output.Areas, Census.Data, by.x=&quot;OA11CD&quot;, by.y=&quot;OA&quot;)</code></pre>
 </div>

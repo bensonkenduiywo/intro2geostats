@@ -38,7 +38,7 @@ Load the carbon data
 rm(list=ls(all=TRUE))
 unlink(".RData")
 library(rgdal)
-d <- readOGR("soil_data_CIAT.shp")
+d <- readOGR("./data/soil_data_CIAT.shp")
 head(d, n=3)
 
 ```
@@ -211,7 +211,7 @@ spplot(lz.ok["var1.pred"])
 The output does not correspond to our area onf interest, so convert it to raster and clip to boundary.
 
 ```{r k4, message=FALSE, results= "hide"}
-bdy <- readOGR("soil_boundary.shp")
+bdy <- readOGR("./data/soil_boundary.shp")
 r <- raster(lz.ok)
 rclip <- mask(r, bdy)
 ```

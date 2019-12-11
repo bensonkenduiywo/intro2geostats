@@ -473,7 +473,7 @@ spplot(meuse, c(&quot;fitted.s&quot;, &quot;residuals&quot;))</code></pre>
 <p><img src="lesson1_files/figure-html/sp3-1.png" width="672" /></p>
 <p>These plots reveal that although the trend removes a large part of the variability, the residuals do not appear to behave as spatially unstructured (spatially independent) or white noise. We see that <strong>residuals</strong> with a similar value occur regularly close to another. This indicates some degree of <strong>spatial dependency</strong> with distance. More analysis will take place when we further analyse these data in the context of geostatistical models; first we will go through simple, <strong>non-geostatistical interpolation</strong> approaches.</p>
 <p>Let us first look at another example before we go to <strong>non-geostatistical interpolation</strong>. Here we use data from [Piikki et al.] 2019(<a href="https://www.mdpi.com/2071-1050/11/15/4038" class="uri">https://www.mdpi.com/2071-1050/11/15/4038</a>).</p>
-<pre class="r"><code>d &lt;- read.csv(&quot;soil_data_CIAT.csv&quot;, stringsAsFactors=FALSE)
+<pre class="r"><code>d &lt;- read.csv(&quot;./data/soil_data_CIAT.csv&quot;, stringsAsFactors=FALSE)
 head(d, n=3)</code></pre>
 <pre><code>##       LAB_ID      X     Y Bulk_density Carbon     Clay     Sand
 ## 1 CT258-6711 714875 72875     1.454268  2.472 43.54774 40.47143

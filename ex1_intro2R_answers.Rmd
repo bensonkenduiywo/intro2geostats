@@ -17,7 +17,7 @@ Feel free to use materials of Introduction to R in: http://rspatial.org/intr/.
 1. Read the file into a data.frame.
 
 ```{r d1}
-d <- read.csv("Operating-Health-Facilities-with-location-2014.csv", stringsAsFactors=FALSE)
+d <- read.csv("./data/Operating-Health-Facilities-with-location-2014.csv", stringsAsFactors=FALSE)
 
 ```
 
@@ -157,7 +157,7 @@ write.csv(a, paste0(tempdir(),'\\test.csv'), row.names=FALSE)
 8. Also read file "Tanzania-All-Waterpoints-July-2015.csv"
 
 ```{r 8}
-w <- read.csv("Tanzania-All-Waterpoints-July-2015.csv", stringsAsFactors=FALSE)
+w <- read.csv("./data/Tanzania-All-Waterpoints-July-2015.csv", stringsAsFactors=FALSE)
 
 ```
 

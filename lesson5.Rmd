@@ -32,7 +32,7 @@ Get the data.
 
 ```{r m2, message=FALSE, results= "hide"}
 library(rgdal)
-d <- readOGR("soil_data_CIAT.shp", stringsAsFactors = FALSE)
+d <- readOGR("./data/soil_data_CIAT.shp", stringsAsFactors = FALSE)
 d <- remove.duplicates(d)
 
 ```

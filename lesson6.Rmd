@@ -27,9 +27,9 @@ In this tutorial we will:
 First, you need to load the practical data ([source](https://data.cdrc.ac.uk/tutorial)).
 
 ```{r g1, message=FALSE, results= "hide"}
-Census.Data <-read.csv("practical_data.csv")
+Census.Data <-read.csv("./data/practical_data.csv")
 library(rgdal)
-Output.Areas <- readOGR(".", "Camden_oa11")
+Output.Areas <- readOGR("./data/Camden_oa11.shp")
 # join our census data to the shapefile
 OA.Census <- merge(Output.Areas, Census.Data, by.x="OA11CD", by.y="OA")
 ```

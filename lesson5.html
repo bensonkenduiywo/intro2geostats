@@ -368,7 +368,7 @@ if (!require(&quot;pacman&quot;)) install.packages(&quot;pacman&quot;)
 pacman::p_load(automap)</code></pre>
 <p>Get the data.</p>
 <pre class="r"><code>library(rgdal)
-d &lt;- readOGR(&quot;soil_data_CIAT.shp&quot;, stringsAsFactors = FALSE)
+d &lt;- readOGR(&quot;./data/soil_data_CIAT.shp&quot;, stringsAsFactors = FALSE)
 d &lt;- remove.duplicates(d)</code></pre>
 <p>Create a prediction grid for the our data.</p>
 <pre class="r"><code>d.grid &lt;-as.data.frame(spsample(d, type = &#39;regular&#39;, n = 10000))
