@@ -25,7 +25,8 @@ navbar:
           href: lesson5.html   
         - text: "Spatial geo-regression"
           href: lesson6.html   
-                                        
+        - text: "Analyzing spatial trend"
+          href: lesson7.html                                          
   right:
     - icon: fa-envelope fa-lg
       href: mailto:bensonkemboi@gmail.com

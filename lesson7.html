@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>lesson7.utf8.md</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/yeti.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 45px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h2 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h3 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h4 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h5 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h6 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Geostatistics in R</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-home"></span>
+     
+    Home
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="ex1_intro2R.html">Manipulating data in R Exercise</a>
+    </li>
+    <li>
+      <a href="ex1_intro2R_answers.html">Manipulating data in R Solutions</a>
+    </li>
+    <li>
+      <a href="lesson1.html">Exploratory data analysis</a>
+    </li>
+    <li>
+      <a href="lesson2.html">Spatial prediction</a>
+    </li>
+    <li>
+      <a href="lesson3.html">Non-geostatistical spatial prediction</a>
+    </li>
+    <li>
+      <a href="lesson4.html">Geostatistical spatial prediction</a>
+    </li>
+    <li>
+      <a href="lesson5.html">Model-Based Geostatistics</a>
+    </li>
+    <li>
+      <a href="lesson6.html">Spatial geo-regression</a>
+    </li>
+    <li>
+      <a href="lesson7.html">Analyzing spatial trend</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="mailto:bensonkemboi@gmail.com">
+    <span class="fa fa-envelope fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="http://github.com/bensonkenduiywo">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://twitter.com/bensonkenduiywo">
+    <span class="fa fa-twitter fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://www.linkedin.com/in/benson-kenduiywo-1a218137">
+    <span class="fa fa-linkedin fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+
+</div>
+
+
+<div id="analysis-of-trend-spatial-autocorrelaton" class="section level2">
+<h2>Analysis of trend: Spatial autocorrelaton</h2>
+<p>This practical will cover how to run various measures of spatial autocorrelation in R. We will consider both statistics of global spatial autocorrelation and how to identify spatial clustering across our study area.</p>
+<div id="data-library-set-up" class="section level3">
+<h3>Data &amp; library set-up</h3>
+<pre class="r"><code>rm(list=ls(all=TRUE)) 
+library(rgdal)
+Census.Data &lt;-read.csv(&quot;practical_data.csv&quot;)
+Output.Areas &lt;- readOGR(&quot;.&quot;, &quot;Camden_oa11&quot;)
+House.Points &lt;- readOGR(&quot;.&quot;, &quot;Camden_house_sales&quot;)</code></pre>
+<p>Merge census data with the shapefile.</p>
+<pre class="r"><code>OA.Census &lt;- merge(Output.Areas, Census.Data, by.x=&quot;OA11CD&quot;, by.y=&quot;OA&quot;)</code></pre>
+<p>We will be working to view the distribution of the <strong>qualification</strong> variable. We can first map it to see its spatial distribution across our study area.</p>
+<pre class="r"><code>library(tmap)
+tm_shape(OA.Census) + tm_fill(&quot;Qualification&quot;, palette = &quot;-Reds&quot;, style = &quot;quantile&quot;, title = &quot;% with a Qualification&quot;) + tm_borders(alpha=.4)  </code></pre>
+<p><img src="lesson7_files/figure-html/sa3-1.png" width="672" /></p>
+</div>
+<div id="spatial-autocorrelation" class="section level3">
+<h3>Spatial autocorrelation</h3>
+<p><strong>Spatial autocorrelation</strong> measures how distance influences a particular variable. In other words, <em>it quantifies the degree of which objects are similar to nearby objects</em>. Variables are said to have a positive spaital autocorrelation when similar values tend to be nearer together than dissimilar values.</p>
+<p><strong>Waldo Tober</strong>’s first law of geography is that <em>“Everything is related to everything else, but near things are more related than distant things.”</em> So we would expect most geographic phenomena to exert a spatial autocorrelation of some kind. In population data this is often the case as persons of similar characteristics tend to reside in similar neighbourhoods due to a range of reasons including house prices, proximity to work places and cultural factors.</p>
+<p>We will be using the spatial autocorrelation functions available from the <code>spdep</code> package. So load the package.</p>
+<pre class="r"><code>library(spdep) </code></pre>
+</div>
+<div id="defining-neighbourhood" class="section level3">
+<h3>Defining neighbourhood</h3>
+<p>In order for the spatial autocorrelation models to work, we need to work out what polygons neighbour each other. The following code will calculate neighbours for our <em>OA.Census polygon</em> and print out the results below. We will use <code>poly2nb</code> function which builds a neighbours list based on regions with contiguous boundaries, that is sharing one or more boundary point.</p>
+<pre class="r"><code>neighbours &lt;- poly2nb(OA.Census)
+neighbours</code></pre>
+<pre><code>## Neighbour list object:
+## Number of regions: 749 
+## Number of nonzero links: 4342 
+## Percentage nonzero weights: 0.7739737 
+## Average number of links: 5.797063</code></pre>
+<p>We can plot the links between neighbours to visualise their distribution across space.</p>
+<pre class="r"><code>plot(OA.Census, border = &#39;lightgrey&#39;)
+plot(neighbours, coordinates(OA.Census), add=TRUE, col=&#39;red&#39;)</code></pre>
+<p><img src="lesson7_files/figure-html/sa5b-1.png" width="672" /></p>
+<p>We can also use another approach of determining neighbours termed as the Rook’s case neighbours (neigbours with direct contact to a cell or polygon except the diagonals).</p>
+<pre class="r"><code>#see https://gis.stackexchange.com/questions/172998/queen-vs-rook-neighborhood
+neighbours2 &lt;- poly2nb(OA.Census, queen = FALSE)
+neighbours2</code></pre>
+<pre><code>## Neighbour list object:
+## Number of regions: 749 
+## Number of nonzero links: 4176 
+## Percentage nonzero weights: 0.7443837 
+## Average number of links: 5.575434</code></pre>
+<p>We can already see that this approach has identified fewer links between neighbours. By plotting both neighbour outputs we can interpret their differences.</p>
+<pre class="r"><code>plot(OA.Census, border = &#39;lightgrey&#39;)
+plot(neighbours, coordinates(OA.Census), add=TRUE, col=&#39;blue&#39;)
+plot(neighbours2, coordinates(OA.Census), add=TRUE, col=&#39;red&#39;)</code></pre>
+<p><img src="lesson7_files/figure-html/sa7-1.png" width="672" /></p>
+<p>We can represent spatial autocorrelation in two ways; globally or locally. Global models will create a single measure which represent the entire data whilst local models let us explore spatial clustering across space.</p>
+</div>
+<div id="global-spatial-autocorrelation" class="section level3">
+<h3>Global spatial autocorrelation</h3>
+<p>With the neighbours defined. We can now run a model. First we need to convert the neighbours object to a list. This file will be used to determine how the neighbours are weighted.</p>
+<pre class="r"><code>listw &lt;- nb2listw(neighbours2)
+listw</code></pre>
+<pre><code>## Characteristics of weights list object:
+## Neighbour list object:
+## Number of regions: 749 
+## Number of nonzero links: 4176 
+## Percentage nonzero weights: 0.7443837 
+## Average number of links: 5.575434 
+## 
+## Weights style: W 
+## Weights constants summary:
+##     n     nn  S0       S1       S2
+## W 749 561001 749 285.3793 3113.982</code></pre>
+<p>We can now run the model. This type of model is known as a <strong>Moran</strong>’s test. This will create a correlation score between -1 and 1. Much like a correlation coefficient, <strong>1</strong> depicts perfect positive spatial autocorrelation (so our data is clustered), <strong>0</strong> identifies the data is randomly distributed and <strong>-1</strong> represents negative spatial autocorrelation (so dissimilar values are next to each other).</p>
+<pre class="r"><code>moran.test(OA.Census$Qualification, listw)</code></pre>
+<pre><code>## 
+##  Moran I test under randomisation
+## 
+## data:  OA.Census$Qualification  
+## weights: listw    
+## 
+## Moran I statistic standard deviate = 24.292, p-value &lt; 2.2e-16
+## alternative hypothesis: greater
+## sample estimates:
+## Moran I statistic       Expectation          Variance 
+##      0.5448699398     -0.0013368984      0.0005055733</code></pre>
+<p>The <strong>Moran I</strong> statistic is 0.54, we can therefore determine that there our qualification variable is positively autocorrelated in Camden. In other words, the data does spatially cluster. We can also consider the p-value as a measure of the statistical significance of the model.</p>
+</div>
+<div id="local-spatial-autocorrelation" class="section level3">
+<h3>Local spatial autocorrelation</h3>
+<p>We will first create a Moran plot which looks at each of the values plotted against their spatially lagged values. A spatially lagged variable is a <em>weighted sum or a weighted average of the neighbouring values</em> for that variable. It basically explores the relationship between the data and their neighbours as a scatter plot. The style refers to how the weights are coded. “W” weights are row standardised (sums over all links to n).</p>
+<pre class="r"><code>moran &lt;- moran.plot(OA.Census$Qualification, listw = nb2listw(neighbours2, style = &quot;W&quot;), xlab = &quot;Qualification&quot;, ylab = &quot;Spatially lagged qualification&quot;)
+text(70, 20, &quot;high values surrounded by low\n values&quot;, col=&quot;blue&quot;)
+text(70, 75, &quot;high values surrounded by high\n values&quot;, col=&quot;red&quot;)
+text(35, 75, &quot;low values surrounded by high\n values&quot;, col=&quot;red&quot;)
+text(35, 20, &quot;low values surrounded by low\n values&quot;, col=&quot;blue&quot;)</code></pre>
+<p><img src="lesson7_files/figure-html/sa10-1.png" width="672" height="100%" /></p>
+<p>Is it possible to determine a positive relationship from observing the scatter plot?</p>
+<pre class="r"><code>local &lt;- localmoran(x = OA.Census$Qualification, listw = nb2listw(neighbours2, style = &quot;W&quot;))</code></pre>
+<p>By considering the help page for the <code>localmoran</code> function (run <code>?localmoran</code> in R) we can observe the arguments and outputs. We get a number of useful statistics from the model which are as defined:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="right"><strong>Name</strong></th>
+<th align="right"><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">Ii</td>
+<td align="right">local moran statistic</td>
+</tr>
+<tr class="even">
+<td align="right">E.Ii</td>
+<td align="right">expectation of local moran statistic</td>
+</tr>
+<tr class="odd">
+<td align="right">Var.Ii</td>
+<td align="right">variance of local moran statistic</td>
+</tr>
+<tr class="even">
+<td align="right">Z.Ii</td>
+<td align="right">standard deviate of local moran statistic</td>
+</tr>
+<tr class="odd">
+<td align="right">Pr()</td>
+<td align="right">p-value of local moran statistic</td>
+</tr>
+</tbody>
+</table>
+<p>First we will map the local moran statistic (<code>Ii</code>). A positive value for <code>Ii</code> <em>indicates that the unit is surrounded by units with similar values</em>. Therefore, combine the results with the polygon shapefile,</p>
+<pre class="r"><code>moran.map &lt;- cbind(OA.Census, local)</code></pre>
+<p>then map the variable <code>Ii</code>.</p>
+<pre class="r"><code>map1 &lt;- tm_shape(moran.map) + tm_fill(col = &quot;Ii&quot;, style = &quot;quantile&quot;, title = &quot;local moran statistic&quot;)
+print(map1)</code></pre>
+<pre><code>## Variable &quot;Ii&quot; contains positive and negative values, so midpoint is set to 0. Set midpoint = NA to show the full spectrum of the color palette.</code></pre>
+<p><img src="lesson7_files/figure-html/sa13-1.png" width="672" /></p>
+<p>From the map it is possible to observe the variations in autocorrelation across space. We can interpret that there seems to be a geographic pattern to the autocorrelation. However, it is not possible to understand if these are clusters of high or low values.</p>
+<p>Why not try to make a map of the <em>P-value</em> to observe variances in significance across Camden? Use <code>names(moran.map@data)</code> to find the column headers.</p>
+<pre class="r"><code>map2 &lt;- tm_shape(moran.map) + tm_fill(col = &quot;Pr.z...0.&quot;, style = &quot;quantile&quot;, title = &quot;p-value of moran statistic&quot;) 
+print(map2)</code></pre>
+<p><img src="lesson7_files/figure-html/sa14a-1.png" width="672" /></p>
+<p>Or better we can compare the local moran statistic with the significant values side by side.</p>
+<pre class="r"><code>library(grid,gridExtra)
+library(gridExtra)
+grid.newpage()
+pushViewport(viewport(layout=grid.layout(1,2)))
+print(map1, vp=viewport(layout.pos.col = 1, layout.pos.row =1))
+print(map2, vp=viewport(layout.pos.col = 2, layout.pos.row =1))</code></pre>
+<p><img src="lesson7_files/figure-html/sa14-1.png" width="672" /></p>
+<p>We could also try to create a map which labels the features based on the types of relationships they share with their neighbours (i.e. high and high, low and low, insignificant, etc.). The following code will run this for you. Source: <a href="https://uk.sagepub.com/en-gb/eur/an-introduction-to-r-for-spatial-analysis-and-mapping/book241031#contents">Brunsdon and Comber (2015)</a></p>
+<pre class="r"><code>### to create LISA cluster map ### 
+quadrant &lt;- vector(mode=&quot;numeric&quot;,length=nrow(local))
+# centers the variable of interest around its mean
+m.qualification &lt;- OA.Census$Qualification - mean(OA.Census$Qualification)     
+# centers the local Moran&#39;s around the mean
+m.local &lt;- local[,1] - mean(local[,1])    
+# significance threshold
+signif &lt;- 0.1 
+# builds a data quadrant
+quadrant[m.qualification &gt;0 &amp; m.local&gt;0] &lt;- 4  
+quadrant[m.qualification &lt;0 &amp; m.local&lt;0] &lt;- 1      
+quadrant[m.qualification &lt;0 &amp; m.local&gt;0] &lt;- 2
+quadrant[m.qualification &gt;0 &amp; m.local&lt;0] &lt;- 3
+quadrant[local[,5]&gt;signif] &lt;- 0   
+# plot in r
+brks &lt;- c(0,1,2,3,4)
+colors &lt;- c(&quot;white&quot;,&quot;blue&quot;,rgb(0,0,1,alpha=0.4),rgb(1,0,0,alpha=0.4),&quot;red&quot;)
+plot(OA.Census,border=&quot;lightgray&quot;,col=colors[findInterval(quadrant,brks,all.inside=FALSE)])
+box()
+legend(&quot;bottomleft&quot;,legend=c(&quot;insignificant&quot;,&quot;low-low&quot;,&quot;low-high&quot;,&quot;high-low&quot;,&quot;high-high&quot;),fill=colors,bty=&quot;n&quot;)</code></pre>
+<p><img src="lesson7_files/figure-html/sa15a-1.png" width="672" /></p>
+<p>It is apparent that there is a statistically significant geographic pattern to the clustering of our qualification variable in Camden.</p>
+</div>
+<div id="getis-ord-hot-spot-detection" class="section level3">
+<h3>Getis-Ord: hot-spot detection</h3>
+<p>Another approach we can take is <strong>hot-spot analysis</strong>. The Getis-Ord Gi Statistic looks at neighbours within a defined proximity to identify where either high or low values cluster spatially. Here statistically significant hot-spots are recognised as areas of high values where other areas within a neighbourhood range also share high values too.</p>
+<p>First, we need to define a new set of neighbours. Whilst the spatial autocorrection considered units which shared borders, for Getis-Ord we are defining neighbours based on proximity.</p>
+<pre class="r"><code># creates centroid and joins neighbours within 0 and x units
+nb &lt;- dnearneigh(coordinates(OA.Census),0,800)
+nb_lw &lt;- nb2listw(nb, style = &#39;B&#39;)
+# plot the data and neighbours
+plot(OA.Census, border = &#39;lightgrey&#39;)
+plot(nb, coordinates(OA.Census), add=TRUE, col = &#39;red&#39;)</code></pre>
+<p><img src="lesson7_files/figure-html/sa15b-1.png" width="672" /></p>
+<p>Plot the data and neighbours.</p>
+<pre class="r"><code>plot(OA.Census, border = &#39;lightgrey&#39;)
+plot(nb, coordinates(OA.Census), add=TRUE, col = &#39;red&#39;)</code></pre>
+<p><img src="lesson7_files/figure-html/sa15-1.png" width="672" /></p>
+<p>With a set of neighbourhoods established we can now run the test and bind the results to our polygon file.</p>
+<p>On some machines the <code>cbind</code> function may not work with a spatial data file, in this case you will need to change OA.Census to <code>OA.Census@data</code> so that R knows which part of the spatial data file to join. If you take this approach the subsequent column ordering may be different to what is shown in the example below. First compute Getis-Ord Gi statistic,</p>
+<pre class="r"><code>local_g &lt;- localG(OA.Census$Qualification, nb_lw)
+local_g &lt;- cbind(OA.Census, as.matrix(local_g))
+names(local_g)[6] &lt;- &quot;gstat&quot;
+
+# map the results
+tm_shape(local_g) + tm_fill(&quot;gstat&quot;, palette = &quot;RdBu&quot;, style = &quot;pretty&quot;) + tm_borders(alpha=.4)</code></pre>
+<pre><code>## Variable &quot;gstat&quot; contains positive and negative values, so midpoint is set to 0. Set midpoint = NA to show the full spectrum of the color palette.</code></pre>
+<p><img src="lesson7_files/figure-html/sa16-1.png" width="672" /></p>
+<p>then map the results.</p>
+<pre class="r"><code>tm_shape(local_g) + tm_fill(&quot;gstat&quot;, palette = &quot;RdBu&quot;, style = &quot;pretty&quot;) + tm_borders(alpha=.4)</code></pre>
+<pre><code>## Variable &quot;gstat&quot; contains positive and negative values, so midpoint is set to 0. Set midpoint = NA to show the full spectrum of the color palette.</code></pre>
+<p><img src="lesson7_files/figure-html/sa17-1.png" width="672" /></p>
+<p>The Gi Statistic is represented as a <em>Z-score</em>. <em>Greater values represent a greater intensity of clustering</em> and the direction (positive or negative) indicates high or low clusters. The final map should indicate the location of hot-spots across Camden.</p>
+</div>
+</div>
+<div id="exercise" class="section level2">
+<h2>Exercise</h2>
+<p><strong>Class exercise: Repeat this for another variable in the data or use your own data</strong>.</p>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
