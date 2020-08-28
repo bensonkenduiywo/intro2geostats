@@ -4,6 +4,9 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+rm(list=ls(all=TRUE))	#Clears R memory
+unlink(".RData") 
+
 ```
 
 ## Exploratory data analysis
