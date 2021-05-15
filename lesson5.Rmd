@@ -1,12 +1,18 @@
 ---
-output: html_document
+title: "Model-Based Geostatistics and Bayesian methods"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    toc_collapsed: true
+    toc_depth: 3
+    number_sections: false
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Model-Based Geostatistics and Bayesian methods
 
 Thus far, we have made predictions with a kriging technique that assumes that the variogram model, fitted from sample data, is known a priori before kriging or simulation: any uncertainty about it is ignored. Diggle et al. (1998) proposed an approach, based on linear mixed and generalized linear mixed models, to provide what is termed as *model-based geostatistical predictions*. It incorporates the estimation error of the variogram coefficients.
 
@@ -17,6 +23,8 @@ Uncertainty of the variogram an important in some cases like:
 3. when data has a strongly skewed distribution.
 
 Normally `geoR` and `automap` packages are used to aid automatic determination of variogram parameters (model-based geostatistical analysis) in R.
+
+## Excercise
 
 We start with `automap` package that is based on `gstat`.
 

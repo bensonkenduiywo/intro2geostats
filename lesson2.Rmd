@@ -1,12 +1,18 @@
 ---
-output: html_document
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    toc_collapsed: true
+    toc_depth: 3
+    number_sections: false
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Spatial interpolation (prediction)
+# Spatial interpolation (prediction)
 
 Spatial interpolation/prediction is necessary in various application because it helps:
 
@@ -15,7 +21,7 @@ Spatial interpolation/prediction is necessary in various application because it 
   
 For instance, due to economic and time constraints measurements may be sampled and later prediction done at unobserved locations using spatial interpolation models. Spatial prediction models (algorithms) can be grouped according to the amount of statistical analysis i.e. amount of expert knowledge included in the analysis. The following are the main groupings of interpolation techniques:
 
-### Deterministic (non-geostatistical) interpolation/prediction models 
+## Deterministic (non-geostatistical) models 
 
 These are models where arbitrary or empirical model parameters are used. No estimate of the model error is available and usually no strict assumptions about the variability of a feature exist. The most common techniques that belong to this group are:
 
@@ -26,7 +32,7 @@ These are models where arbitrary or empirical model parameters are used. No esti
   e. Splines;
   f. Radial Basis Function Interpolation
 
-### Geostatistical interpolation techniques.
+## Geostatistical techniques
 
 in this case, the model parameters are commonly estimated in an objective way, following probability theory. The predictions are accompanied with an estimate of the prediction error. A drawback is that the input data set usually need to satisfy strict statistical assumptions. There are at least four groups of linear statistical models:
 
@@ -37,7 +43,7 @@ in this case, the model parameters are commonly estimated in an objective way, f
   
 In the next lesson we cover the first category (non-geostatistical).
 
-## References
+# References
 
 De Smith, M. J., Goodchild, M. F., & Longley, P. (2018). [*Geospatial analysis: a comprehensive guide to principles, techniques and software tools*](https://www.spatialanalysisonline.com/HTML/index.html). Troubador publishing ltd.
 

@@ -1,18 +1,17 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
 
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
 
 
-<title>lesson4.utf8.md</title>
+<title>Geostatistical prediction/prediction</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -20,18 +19,34 @@
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
 
-<style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
-  pre:not([class]) {
-    background-color: white;
-  }
-</style>
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
 <script type="text/javascript">
 if (window.hljs) {
   hljs.configure({languages: []});
@@ -44,32 +59,7 @@ if (window.hljs) {
 
 
 
-<style type="text/css">
-h1 {
-  font-size: 34px;
-}
-h1.title {
-  font-size: 38px;
-}
-h2 {
-  font-size: 30px;
-}
-h3 {
-  font-size: 24px;
-}
-h4 {
-  font-size: 18px;
-}
-h5 {
-  font-size: 16px;
-}
-h6 {
-  font-size: 12px;
-}
-.table th:not([align]) {
-  text-align: left;
-}
-</style>
+
 
 <link rel="stylesheet" href="styles.css" type="text/css" />
 
@@ -80,10 +70,6 @@ h6 {
   max-width: 940px;
   margin-left: auto;
   margin-right: auto;
-}
-code {
-  color: inherit;
-  background-color: rgba(0, 0, 0, 0.04);
 }
 img {
   max-width:100%;
@@ -100,40 +86,13 @@ button.code-folding-btn:focus {
 summary {
   display: list-item;
 }
+pre code {
+  padding: 0;
+}
 </style>
 
 
 <style type="text/css">
-/* padding for bootstrap navbar */
-body {
-  padding-top: 45px;
-  padding-bottom: 40px;
-}
-/* offset scroll position for anchor links (for fixed navbar)  */
-.section h1 {
-  padding-top: 50px;
-  margin-top: -50px;
-}
-.section h2 {
-  padding-top: 50px;
-  margin-top: -50px;
-}
-.section h3 {
-  padding-top: 50px;
-  margin-top: -50px;
-}
-.section h4 {
-  padding-top: 50px;
-  margin-top: -50px;
-}
-.section h5 {
-  padding-top: 50px;
-  margin-top: -50px;
-}
-.section h6 {
-  padding-top: 50px;
-  margin-top: -50px;
-}
 .dropdown-submenu {
   position: relative;
 }
@@ -161,7 +120,7 @@ body {
   margin-right: -10px;
 }
 .dropdown-submenu:hover>a:after {
-  border-left-color: #ffffff;
+  border-left-color: #adb5bd;
 }
 .dropdown-submenu.pull-left {
   float: none;
@@ -173,7 +132,7 @@ body {
 }
 </style>
 
-<script>
+<script type="text/javascript">
 // manage active state of menu based on current page
 $(document).ready(function () {
   // active menu anchor
@@ -184,10 +143,23 @@ $(document).ready(function () {
   var menuAnchor = $('a[href="' + href + '"]');
 
   // mark it active
-  menuAnchor.parent().addClass('active');
+  menuAnchor.tab('show');
 
   // if it's got a parent navbar menu mark it active as well
   menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
 });
 </script>
 
@@ -199,7 +171,6 @@ $(document).ready(function () {
   max-height: 500px;
   min-height: 44px;
   overflow-y: auto;
-  background: white;
   border: 1px solid #ddd;
   border-radius: 4px;
 }
@@ -235,6 +206,7 @@ $(document).ready(function () {
   border: none;
   display: inline-block;
   border-radius: 4px;
+  background-color: transparent;
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li {
@@ -251,6 +223,69 @@ $(document).ready(function () {
 
 
 
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
 
 </head>
 
@@ -258,6 +293,16 @@ $(document).ready(function () {
 
 
 <div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
 
 
 
@@ -276,7 +321,7 @@ $(document).ready(function () {
       <ul class="nav navbar-nav">
         <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    <span class="fa fa-home"></span>
+    <span class="fas fa-home"></span>
      
     Home
      
@@ -316,25 +361,25 @@ $(document).ready(function () {
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="mailto:bensonkemboi@gmail.com">
-    <span class="fa fa-envelope fa-lg"></span>
+    <span class="fas fa-envelope fa-lg"></span>
      
   </a>
 </li>
 <li>
   <a href="http://github.com/bensonkenduiywo">
-    <span class="fa fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
 <li>
   <a href="https://twitter.com/bensonkenduiywo">
-    <span class="fa fa-twitter fa-lg"></span>
+    <span class="fab fa-twitter fa-lg"></span>
      
   </a>
 </li>
 <li>
   <a href="https://www.linkedin.com/in/benson-kenduiywo-1a218137">
-    <span class="fa fa-linkedin fa-lg"></span>
+    <span class="fab fa-linkedin fa-lg"></span>
      
   </a>
 </li>
@@ -343,16 +388,15 @@ $(document).ready(function () {
   </div><!--/.container -->
 </div><!--/.navbar -->
 
-<div class="fluid-row" id="header">
+<div id="header">
 
 
 
+<h1 class="title toc-ignore">Geostatistical prediction/prediction</h1>
 
 </div>
 
 
-<div id="geostatistical-predictionprediction" class="section level2">
-<h2>Geostatistical prediction/prediction</h2>
 <p>Geostatistical interpolation differs from <a href="lesson1.html">non-geostatistical interpolation</a> approaches in that it assumes the data point values represent a sample from some underlying true population. By analyzing the sample it is possible to derive a general model that describes how the sample values vary with distance (and optionally, direction). A generalized model used conventional to describe spatial correlation of phenomena with respect to distance and direction is term as the <strong>Variogram</strong>. The variogram model may then be used to interpolate, or predict (a process called kriging), values at unsampled locations, in much the same way as with deterministic interpolation. If the samples meet various additional conditions it may also be possible to provide estimated confidence intervals for these predictions. Geostatistical interpolation methods attempt to address questions like:</p>
 <ul>
 <li>how many points are needed to compute the local average?</li>
@@ -360,8 +404,8 @@ $(document).ready(function () {
 <li>what model and weights should be used to compute the local average?</li>
 <li>what errors (uncertainties) are associated with interpolated values?</li>
 </ul>
-<div id="estimating-spatial-correlation-the-variogram" class="section level3">
-<h3>Estimating Spatial correlation: the Variogram</h3>
+<div id="estimating-spatial-correlation-the-variogram" class="section level2">
+<h2>Estimating Spatial correlation: the Variogram</h2>
 <p>In geostatistics, spatial correlation has traditionally been modelled by a <strong>variogram</strong>. The variogram (semi-variogram) explains the degree to which nearby locations have similar values using <em>semi-variance</em>.</p>
 <p>In standard statistical problems, correlation can be estimated from a scatterplot, when several data pairs {a, b} are available. The spatial correlation between two observations of a variable <em>z(x)</em> at locations <span class="math inline">\(x\)</span> and <span class="math inline">\(x+h\)</span>, where <em>h</em> is the separating distance (lag), cannot be estimated, as only a single pair is available i.e. correlations can not be computed from two variables with a single observations. Geostatistics adopt <strong>stationarity</strong> assumption in order to compute spatial correlation. Stationarity underpins the practicality of geostatistics; it is assumption enables us to treat data as though they have the same degree of variation over a region of interest <a href="https://www.springer.com/gp/book/9783319158648">(Oliver &amp; Webster, 2015)</a>. A commonly used form of stationarity is termed as <strong>intrinsic stationarity</strong>, which assumes that the process that generated the samples is a random function <em>Z(x)</em> composed of a mean and residual</p>
 <p><span class="math display">\[Z(x) = m + e(x),\]</span> with a constant mean</p>
@@ -377,8 +421,8 @@ head(d, n=3)</code></pre>
 <pre class="r"><code>(dim(d)[1] * (dim(d)[1] - 1))/2</code></pre>
 <pre><code>## [1] 19900</code></pre>
 </div>
-<div id="variogram-cloud" class="section level3">
-<h3>Variogram cloud</h3>
+<div id="variogram-cloud" class="section level2">
+<h2>Variogram cloud</h2>
 <p>Let us plot a variogram cloud of Clay content. A variogram cloud is a scatterplot of data pairs, in which the semivariance is plotted against interpoint distance.</p>
 <pre class="r"><code>library(gstat)
 vc &lt;- variogram(d$Clay~1, data=d, cloud = T)
@@ -391,23 +435,23 @@ head(vc, n=3)</code></pre>
 <p><img src="lesson4_files/figure-html/v3-1.png" width="672" /></p>
 <p>Note that the formula <code>d$Clay~1</code> indicates the form of the spatial dependence. The right-hand side 1 means to model the left-hand side <code>d$Clay</code> only as local spatial dependence, i.e. without any trend or other explanatory factors.</p>
 </div>
-<div id="variogram-map" class="section level3">
-<h3>Variogram map</h3>
+<div id="variogram-map" class="section level2">
+<h2>Variogram map</h2>
 <p>We can also show the variogram map. The maps provide another means of looking at directional dependence in semivariograms. The map is centered around (0, 0), as <em>h</em> is geographical distance rather than geographical location. Cutoff and width correspond to some extent to map extent and cell size; the semivariance map is point symmetric around (0, 0), as <span class="math inline">\(\gamma(h) = \gamma(−h)\)</span>. We will set a threshold of 5 to ensure that only semivariogram map values based on at least 5 point pairs are shown, removing too noisy estimation.</p>
 <pre class="r"><code>v.map = variogram(Clay~1, d, cutoff = 1500, width = 100, map = TRUE)
 plot(v.map, threshold = 5)</code></pre>
 <p><img src="lesson4_files/figure-html/v4-1.png" width="672" /></p>
 <p>From the map we can see that there is there si strong spatial depency in clay content in the direction NE to SW.</p>
 </div>
-<div id="empirical-variogram" class="section level3">
-<h3>Empirical variogram</h3>
+<div id="empirical-variogram" class="section level2">
+<h2>Empirical variogram</h2>
 <p>This variogram can be plotted as semi-variance <span class="math inline">\(\gamma(h)\)</span> (the squared difference of a certain property between locations) against average separation distance (<em>h</em>) along with the number of points that contributed to each estimate. Empirical here is used to refer to an experimental/sample variogram i.e. based on data test.</p>
 <pre class="r"><code>v &lt;- variogram(Clay~1, data=d)
 plot(v, plot.numbers=T,pch=3)</code></pre>
 <p><img src="lesson4_files/figure-html/v5-1.png" width="672" /></p>
 </div>
-<div id="main-properties-of-variogram" class="section level3">
-<h3>Main properties of Variogram</h3>
+<div id="main-properties-of-variogram" class="section level2">
+<h2>Main properties of Variogram</h2>
 <p>Some key properties of the variogram amongst others include:</p>
 <ol style="list-style-type: decimal">
 <li>Range: the critical distance beyond which there is no further correlation in the variogram,</li>
@@ -425,8 +469,8 @@ cat(&quot;Sill is &quot;, sill)</code></pre>
 cat(&quot;range is &quot;, range, &quot; m&quot;)</code></pre>
 <pre><code>## range is  2229.411  m</code></pre>
 </div>
-<div id="defining-variogram-bins" class="section level3">
-<h3>Defining variogram bins</h3>
+<div id="defining-variogram-bins" class="section level2">
+<h2>Defining variogram bins</h2>
 <p>Some notes:</p>
 <ol style="list-style-type: decimal">
 <li>Distance interval, specifying the centres. E.g. <span class="math inline">\((0, 100, 200, \dots)\)</span> means intervals of <span class="math inline">\([0,\dots,50]\)</span>, <span class="math inline">\([50, \dots, 150]\)</span>, . . .</li>
@@ -444,8 +488,8 @@ for (bw in seq(20, 220, by = 40)) {
 <p><img src="lesson4_files/figure-html/v6-1.png" width="672" /></p>
 <p>We observe that if the intervals are short &amp; the bins narrow then there will be many estimates of (<em>h</em>), which can lead to a ”noisy” variogram because the semi-variances are calculated from few comparisons. In contrast, if the intervals are large and the bins wide then there might be too few estimates of the semi-variances to reveal the form of the variogram. The choice is thus a compromise; cannot be automated.</p>
 </div>
-<div id="variogram-modelling-and-fitting" class="section level3">
-<h3>Variogram modelling and fitting</h3>
+<div id="variogram-modelling-and-fitting" class="section level2">
+<h2>Variogram modelling and fitting</h2>
 <p>In order to be able to define characteristics of the empirical variogram we parameterise it using different semi-variogram models. To do this authorized functions that are conditional negative semi-definite (positive definite) to the experimental values are used. There are a few principal features that the function must be able to represent <a href="https://onlinelibrary.wiley.com/doi/book/10.1002/9780470517277">(Webster and Oliver, 2007)</a>:</p>
 <ol style="list-style-type: decimal">
 <li>a monotonic increase with increasing lag distance from the ordinate of appropriate shape;</li>
@@ -496,8 +540,8 @@ cat(&quot;Parameters determined by eye are: &quot;)</code></pre>
 <pre class="r"><code>cat(&quot;SSE of manual fit &quot;, attr(m2a, &quot;SSErr&quot;))</code></pre>
 <pre><code>## SSE of manual fit  0.06389576</code></pre>
 </div>
-<div id="prediction-kriging" class="section level3">
-<h3>Prediction: Kriging</h3>
+<div id="prediction-kriging" class="section level2">
+<h2>Prediction: Kriging</h2>
 <p>Now that we have modelled our variogram we can use it for prediction using Kriging. Kriging is used to interpolate a value <span class="math inline">\(Z(x_i + h)\)</span> of a random field <em>Z(x)</em> at unobserved location <span class="math inline">\(x_i + h\)</span>, using data from observed location <span class="math inline">\(x_i\)</span>. It allows variance to be non-constant, dependent on distance between points as modeled by the variogram <span class="math inline">\(\gamma(h)\)</span>. The kriging estimator is given by</p>
 <p><span class="math display">\[Z(x_i + h) = \sum_{j=1}^N w_i(x_i + h)Z(x_i) \]</span> referred to as ordinary kriging. Now lets is create an empty grid to hold our predictions.</p>
 <pre class="r"><code>library(raster)
@@ -530,8 +574,8 @@ tm_layout(legend.position = c(&quot;left&quot;, &quot;top&quot;),  legend.text.s
 <p><img src="lesson4_files/figure-html/k5-2.png" width="672" /></p>
 <p>Compare the output with that of kriging visually, what do you think?</p>
 </div>
-<div id="variance-and-confidence-interval-maps" class="section level3">
-<h3>Variance and confidence interval maps</h3>
+<div id="variance-and-confidence-interval-maps" class="section level2">
+<h2>Variance and confidence interval maps</h2>
 <p>The <code>lz.ok</code> object output from kiriging stores not just the interpolated values, but the variance values as well. These can be passed to the raster object for mapping.</p>
 <pre class="r"><code>r   &lt;- raster(lz.ok, layer=&quot;var1.var&quot;)
 r.m &lt;- mask(r, bdy)
@@ -552,7 +596,6 @@ tm_shape(r.m) +
 <p><img src="lesson4_files/figure-html/c2-1.png" width="672" /></p>
 <p>Cross validation is useful in finding artefacts in data. However, results from it should be used with caution for confirmatory purposes: one needs to be careful not to conclude that a model is correct if cross validation does not lead to unexpected findings. It is for instance not good at finding what is not in the data <a href="https://www.springer.com/gp/book/9781461476177">(Bivand et al. 2013)</a>.</p>
 </div>
-</div>
 <div id="references" class="section level2">
 <h2>References</h2>
 <p>Bivand, R. S., Pebesma, E. J., Gomez-Rubio, V., &amp; Pebesma, E. J. (2013). <a href="https://www.springer.com/gp/book/9781461476177"><em>Applied spatial data analysis with R</em></a>. 2nd Eds. New York: Springer.</p>
@@ -563,6 +606,8 @@ tm_shape(r.m) +
 
 
 
+</div>
+</div>
 
 </div>
 
@@ -570,7 +615,7 @@ tm_shape(r.m) +
 
 // add bootstrap table styles to pandoc tables
 function bootstrapStylePandocTables() {
-  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
 }
 $(document).ready(function () {
   bootstrapStylePandocTables();
@@ -588,13 +633,39 @@ $(document).ready(function () {
 
 $(document).ready(function () {
   $('.tabset-dropdown > .nav-tabs > li').click(function () {
-    $(this).parent().toggleClass('nav-tabs-open')
+    $(this).parent().toggleClass('nav-tabs-open');
   });
 });
 </script>
 
 <!-- code folding -->
 
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
 <script>

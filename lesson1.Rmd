@@ -1,5 +1,11 @@
 ---
-output: html_document
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    toc_collapsed: true
+    toc_depth: 3
+    number_sections: false
 ---
 
 ```{r setup, include=FALSE}
@@ -9,13 +15,13 @@ unlink(".RData")
 
 ```
 
-## Exploratory data analysis
+# Exploratory data analysis
 
 It is important prior to starting any analysis to inspect data This can be done to check for any departures from normality or any existing trend. Principle plots like histogram, boxplots and measures of central tendency and dispersion can help detect distributions of data that deviates from the normal. In additions maps can aid illustrate any spatial trends.
 
-### Load data
+## Data
 
-We will mostly use the meuse dataset available in **sp** package. The meuse data set provided by package sp is a data set comprising of four heavy metals measured in the top soil in a flood plain along the river Meuse, along with a handful of covariates. The process governing heavy metal distribution seems that polluted sediment is carried by the river, and mostly deposited close to the river bank, and areas with low elevation. This document shows a Geostatistical analysis of this data set. The data set was introduced by Burrough and McDonnell, 1998.
+We will mostly use the meuse dataset available in **sp** package. The meuse data set provided by package **sp** is a data set comprising of four heavy metals measured in the top soil in a flood plain along the river Meuse, along with a handful of covariates. The process governing heavy metal distribution seems that polluted sediment is carried by the river, and mostly deposited close to the river bank, and areas with low elevation. This document shows a Geostatistical analysis of this data set. The data set was introduced by Burrough and McDonnell, 1998.
 
 ```{r d1, message=FALSE}
 rm(list=ls(all=TRUE)) # Clear memory
@@ -28,11 +34,11 @@ head(df, n=3)
 
 ```
 
-### Measures of Cental Tendency
+## Measures of Cental Tendency
 
 Measures of of center of tendency include: mean. median and mode. For example, using the topsoil copper concentration data in Meuses dataset these measures can be computed as follows in R.
 
-#### Mean and Median
+### Mean and Median
 
 See below.
 
@@ -43,7 +49,7 @@ vMedian <- median(df$copper)
 cat("The median is ", vMedian)
 ```
 
-#### Mode
+### Mode
 
 There are several ways of finding the mode. We will illustrate here using a designed function and an inbuilt function in modeest library.
 
@@ -64,11 +70,11 @@ cat("The mode using modeest package is ", vMode)
 ```
 
 
-### Measures of Dispersion
+## Measures of Dispersion
 
 Measures of dispersion include: variance, standard deviation, kurtosis, coefficient of variation and kurtosis. To illustrate this we still use meuse data in sp package.
 
-#### Variance and standard deviation
+### Variance and standard deviation
 
 ```{r m3, message=FALSE}
 data(meuse)
@@ -82,7 +88,7 @@ sd(copper)==sqrt(var(copper))
 
 ```
 
-#### Kurtosis and skewness
+### Kurtosis and skewness
 
 Intuitively, the kurtosis describes the tail shape of the data distribution. The normal distribution has zero kurtosis and thus the standard tail shape. For instance the copper data is more peaked than the normal distribution since the kurtosis > 0. This is also illustrated by a histogram plot overlaid with the normal distribution curve.
 
@@ -101,7 +107,7 @@ cat("Skewness of copper is ", skewness(copper), " . This means that the data is 
 ```
 
 
-### Normal Distribution
+# Normal Distribution
 
 Here we illustrate how normal distribution looks like. In R you can generate a the normal distribution using a specified mean and standard deviation. 
 
@@ -112,7 +118,7 @@ abline(v=10, lwd=5)
 abline(v=c(4,6,8,12,14,16), lwd=3,lty=3)
 ```
 
-### Exploring spatial trend
+# Exploring spatial trend
 
 Spatial exploratory data analysis starts with the plotting of maps with a
 measured variable.
@@ -201,6 +207,6 @@ plot(Carbon ~ Clay + Sand , d)
 
 We have seen how to explore data using plots and some measures. Next lesson illustrates how to analyze the data using **non-geostatistical interpolation**. 
 
-### References
+# References
 
 Piikki, K.; Söderström, M.; Sommer, R.; Da Silva, M.; Munialo, S.; Abera, W. [A Boundary Plane Approach to Map Hotspots for Achievable Soil Carbon Sequestration and Soil Fertility Improvement.](https://www.mdpi.com/2071-1050/11/15/4038) *Sustainability* 2019, 11, 4038.

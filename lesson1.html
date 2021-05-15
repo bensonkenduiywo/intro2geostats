@@ -1,18 +1,17 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
 
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
 
 
-<title>lesson1.utf8.md</title>
+<title>lesson1.knit</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -20,18 +19,34 @@
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
 
-<style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
-  pre:not([class]) {
-    background-color: white;
-  }
-</style>
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
 <script type="text/javascript">
 if (window.hljs) {
   hljs.configure({languages: []});
@@ -44,32 +59,7 @@ if (window.hljs) {
 
 
 
-<style type="text/css">
-h1 {
-  font-size: 34px;
-}
-h1.title {
-  font-size: 38px;
-}
-h2 {
-  font-size: 30px;
-}
-h3 {
-  font-size: 24px;
-}
-h4 {
-  font-size: 18px;
-}
-h5 {
-  font-size: 16px;
-}
-h6 {
-  font-size: 12px;
-}
-.table th:not([align]) {
-  text-align: left;
-}
-</style>
+
 
 <link rel="stylesheet" href="styles.css" type="text/css" />
 
@@ -80,10 +70,6 @@ h6 {
   max-width: 940px;
   margin-left: auto;
   margin-right: auto;
-}
-code {
-  color: inherit;
-  background-color: rgba(0, 0, 0, 0.04);
 }
 img {
   max-width:100%;
@@ -100,40 +86,13 @@ button.code-folding-btn:focus {
 summary {
   display: list-item;
 }
+pre code {
+  padding: 0;
+}
 </style>
 
 
 <style type="text/css">
-/* padding for bootstrap navbar */
-body {
-  padding-top: 45px;
-  padding-bottom: 40px;
-}
-/* offset scroll position for anchor links (for fixed navbar)  */
-.section h1 {
-  padding-top: 50px;
-  margin-top: -50px;
-}
-.section h2 {
-  padding-top: 50px;
-  margin-top: -50px;
-}
-.section h3 {
-  padding-top: 50px;
-  margin-top: -50px;
-}
-.section h4 {
-  padding-top: 50px;
-  margin-top: -50px;
-}
-.section h5 {
-  padding-top: 50px;
-  margin-top: -50px;
-}
-.section h6 {
-  padding-top: 50px;
-  margin-top: -50px;
-}
 .dropdown-submenu {
   position: relative;
 }
@@ -161,7 +120,7 @@ body {
   margin-right: -10px;
 }
 .dropdown-submenu:hover>a:after {
-  border-left-color: #ffffff;
+  border-left-color: #adb5bd;
 }
 .dropdown-submenu.pull-left {
   float: none;
@@ -173,7 +132,7 @@ body {
 }
 </style>
 
-<script>
+<script type="text/javascript">
 // manage active state of menu based on current page
 $(document).ready(function () {
   // active menu anchor
@@ -184,10 +143,23 @@ $(document).ready(function () {
   var menuAnchor = $('a[href="' + href + '"]');
 
   // mark it active
-  menuAnchor.parent().addClass('active');
+  menuAnchor.tab('show');
 
   // if it's got a parent navbar menu mark it active as well
   menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
 });
 </script>
 
@@ -199,7 +171,6 @@ $(document).ready(function () {
   max-height: 500px;
   min-height: 44px;
   overflow-y: auto;
-  background: white;
   border: 1px solid #ddd;
   border-radius: 4px;
 }
@@ -235,6 +206,7 @@ $(document).ready(function () {
   border: none;
   display: inline-block;
   border-radius: 4px;
+  background-color: transparent;
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li {
@@ -251,6 +223,69 @@ $(document).ready(function () {
 
 
 
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
 
 </head>
 
@@ -258,6 +293,16 @@ $(document).ready(function () {
 
 
 <div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
 
 
 
@@ -274,11 +319,18 @@ $(document).ready(function () {
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-        <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    <span class="fa fa-home"></span>
+        <li>
+  <a href="index.html">
+    <span class="fas fa-home"></span>
      
     Home
+  </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fas fa-gear"></span>
+     
+    More
      
     <span class="caret"></span>
   </a>
@@ -316,25 +368,25 @@ $(document).ready(function () {
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="mailto:bensonkemboi@gmail.com">
-    <span class="fa fa-envelope fa-lg"></span>
+    <span class="fas fa-envelope fa-lg"></span>
      
   </a>
 </li>
 <li>
   <a href="http://github.com/bensonkenduiywo">
-    <span class="fa fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
 <li>
   <a href="https://twitter.com/bensonkenduiywo">
-    <span class="fa fa-twitter fa-lg"></span>
+    <span class="fab fa-twitter fa-lg"></span>
      
   </a>
 </li>
 <li>
   <a href="https://www.linkedin.com/in/benson-kenduiywo-1a218137">
-    <span class="fa fa-linkedin fa-lg"></span>
+    <span class="fab fa-linkedin fa-lg"></span>
      
   </a>
 </li>
@@ -343,7 +395,7 @@ $(document).ready(function () {
   </div><!--/.container -->
 </div><!--/.navbar -->
 
-<div class="fluid-row" id="header">
+<div id="header">
 
 
 
@@ -351,12 +403,12 @@ $(document).ready(function () {
 </div>
 
 
-<div id="exploratory-data-analysis" class="section level2">
-<h2>Exploratory data analysis</h2>
+<div id="exploratory-data-analysis" class="section level1">
+<h1>Exploratory data analysis</h1>
 <p>It is important prior to starting any analysis to inspect data This can be done to check for any departures from normality or any existing trend. Principle plots like histogram, boxplots and measures of central tendency and dispersion can help detect distributions of data that deviates from the normal. In additions maps can aid illustrate any spatial trends.</p>
-<div id="load-data" class="section level3">
-<h3>Load data</h3>
-<p>We will mostly use the meuse dataset available in <strong>sp</strong> package. The meuse data set provided by package sp is a data set comprising of four heavy metals measured in the top soil in a flood plain along the river Meuse, along with a handful of covariates. The process governing heavy metal distribution seems that polluted sediment is carried by the river, and mostly deposited close to the river bank, and areas with low elevation. This document shows a Geostatistical analysis of this data set. The data set was introduced by Burrough and McDonnell, 1998.</p>
+<div id="data" class="section level2">
+<h2>Data</h2>
+<p>We will mostly use the meuse dataset available in <strong>sp</strong> package. The meuse data set provided by package <strong>sp</strong> is a data set comprising of four heavy metals measured in the top soil in a flood plain along the river Meuse, along with a handful of covariates. The process governing heavy metal distribution seems that polluted sediment is carried by the river, and mostly deposited close to the river bank, and areas with low elevation. This document shows a Geostatistical analysis of this data set. The data set was introduced by Burrough and McDonnell, 1998.</p>
 <pre class="r"><code>rm(list=ls(all=TRUE)) # Clear memory
 #Load existing/install missing libraries
 if (!require(&quot;pacman&quot;)) install.packages(&quot;pacman&quot;)
@@ -364,20 +416,20 @@ pacman::p_load(gstat,sp)
 data(meuse)
 df &lt;- meuse
 head(df, n=3)</code></pre>
-<pre><code>##        x      y cadmium copper lead zinc  elev       dist   om ffreq soil
-## 1 181072 333611    11.7     85  299 1022 7.909 0.00135803 13.6     1    1
-## 2 181025 333558     8.6     81  277 1141 6.983 0.01222430 14.0     1    1
-## 3 181165 333537     6.5     68  199  640 7.800 0.10302900 13.0     1    1
-##   lime landuse dist.m
-## 1    1      Ah     50
-## 2    1      Ah     30
-## 3    1      Ah    150</code></pre>
+<pre><code>##        x      y cadmium copper lead zinc  elev       dist   om ffreq soil lime
+## 1 181072 333611    11.7     85  299 1022 7.909 0.00135803 13.6     1    1    1
+## 2 181025 333558     8.6     81  277 1141 6.983 0.01222430 14.0     1    1    1
+## 3 181165 333537     6.5     68  199  640 7.800 0.10302900 13.0     1    1    1
+##   landuse dist.m
+## 1      Ah     50
+## 2      Ah     30
+## 3      Ah    150</code></pre>
 </div>
-<div id="measures-of-cental-tendency" class="section level3">
-<h3>Measures of Cental Tendency</h3>
+<div id="measures-of-cental-tendency" class="section level2">
+<h2>Measures of Cental Tendency</h2>
 <p>Measures of of center of tendency include: mean. median and mode. For example, using the topsoil copper concentration data in Meuses dataset these measures can be computed as follows in R.</p>
-<div id="mean-and-median" class="section level4">
-<h4>Mean and Median</h4>
+<div id="mean-and-median" class="section level3">
+<h3>Mean and Median</h3>
 <p>See below.</p>
 <pre class="r"><code>vMean   &lt;- mean(df$copper)
 cat(&quot;The mean is &quot;, vMean)</code></pre>
@@ -386,8 +438,8 @@ cat(&quot;The mean is &quot;, vMean)</code></pre>
 cat(&quot;The median is &quot;, vMedian)</code></pre>
 <pre><code>## The median is  31</code></pre>
 </div>
-<div id="mode" class="section level4">
-<h4>Mode</h4>
+<div id="mode" class="section level3">
+<h3>Mode</h3>
 <p>There are several ways of finding the mode. We will illustrate here using a designed function and an inbuilt function in modeest library.</p>
 <pre class="r"><code>pacman::p_load(modeest)
 attach(df)
@@ -407,11 +459,11 @@ str(vMode) #Chec structure</code></pre>
 <pre><code>## The mode using modeest package is  22</code></pre>
 </div>
 </div>
-<div id="measures-of-dispersion" class="section level3">
-<h3>Measures of Dispersion</h3>
+<div id="measures-of-dispersion" class="section level2">
+<h2>Measures of Dispersion</h2>
 <p>Measures of dispersion include: variance, standard deviation, kurtosis, coefficient of variation and kurtosis. To illustrate this we still use meuse data in sp package.</p>
-<div id="variance-and-standard-deviation" class="section level4">
-<h4>Variance and standard deviation</h4>
+<div id="variance-and-standard-deviation" class="section level3">
+<h3>Variance and standard deviation</h3>
 <pre class="r"><code>data(meuse)
 attach(meuse)
 #compute variance of copper
@@ -424,8 +476,8 @@ sd(copper)</code></pre>
 sd(copper)==sqrt(var(copper))</code></pre>
 <pre><code>## [1] TRUE</code></pre>
 </div>
-<div id="kurtosis-and-skewness" class="section level4">
-<h4>Kurtosis and skewness</h4>
+<div id="kurtosis-and-skewness" class="section level3">
+<h3>Kurtosis and skewness</h3>
 <p>Intuitively, the kurtosis describes the tail shape of the data distribution. The normal distribution has zero kurtosis and thus the standard tail shape. For instance the copper data is more peaked than the normal distribution since the kurtosis &gt; 0. This is also illustrated by a histogram plot overlaid with the normal distribution curve.</p>
 <p>On the other hand, skewness is a measure of symmetry. As a rule, negative skewness indicates that the mean of the data values is less than the median, and the data distribution is left-skewed. Positive skewness would indicate that the mean of the data values is larger than the median, and the data distribution is right-skewed.</p>
 <pre class="r"><code>pacman::p_load(e1071)
@@ -442,8 +494,9 @@ text(median(copper),0.04,&quot;Median&quot;, col = &quot;blue&quot;, adj = c(1, 
 <pre><code>## Skewness of copper is  1.386803  . This means that the data is positively skewed as illustrated on the histogram plot.</code></pre>
 </div>
 </div>
-<div id="normal-distribution" class="section level3">
-<h3>Normal Distribution</h3>
+</div>
+<div id="normal-distribution" class="section level1">
+<h1>Normal Distribution</h1>
 <p>Here we illustrate how normal distribution looks like. In R you can generate a the normal distribution using a specified mean and standard deviation.</p>
 <pre class="r"><code>x&lt;-rnorm(100000,mean=10, sd=2) 
 hist(x,breaks=150,xlim=c(0,20),freq=FALSE)
@@ -451,8 +504,8 @@ abline(v=10, lwd=5)
 abline(v=c(4,6,8,12,14,16), lwd=3,lty=3)</code></pre>
 <p><img src="lesson1_files/figure-html/m5-1.png" width="672" /></p>
 </div>
-<div id="exploring-spatial-trend" class="section level3">
-<h3>Exploring spatial trend</h3>
+<div id="exploring-spatial-trend" class="section level1">
+<h1>Exploring spatial trend</h1>
 <p>Spatial exploratory data analysis starts with the plotting of maps with a measured variable.</p>
 <pre class="r"><code>coordinates(meuse) &lt;- c(&quot;x&quot;, &quot;y&quot;)
 spplot(meuse, &quot;zinc&quot;, do.log = T)</code></pre>
@@ -508,14 +561,15 @@ plot(Carbon ~ Clay + Sand , d)</code></pre>
 <p><img src="lesson1_files/figure-html/t3-1.png" width="672" /></p>
 <p>We have seen how to explore data using plots and some measures. Next lesson illustrates how to analyze the data using <strong>non-geostatistical interpolation</strong>.</p>
 </div>
-<div id="references" class="section level3">
-<h3>References</h3>
+<div id="references" class="section level1">
+<h1>References</h1>
 <p>Piikki, K.; Söderström, M.; Sommer, R.; Da Silva, M.; Munialo, S.; Abera, W. <a href="https://www.mdpi.com/2071-1050/11/15/4038">A Boundary Plane Approach to Map Hotspots for Achievable Soil Carbon Sequestration and Soil Fertility Improvement.</a> <em>Sustainability</em> 2019, 11, 4038.</p>
 </div>
+
+
+
 </div>
-
-
-
+</div>
 
 </div>
 
@@ -523,7 +577,7 @@ plot(Carbon ~ Clay + Sand , d)</code></pre>
 
 // add bootstrap table styles to pandoc tables
 function bootstrapStylePandocTables() {
-  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
 }
 $(document).ready(function () {
   bootstrapStylePandocTables();
@@ -541,13 +595,39 @@ $(document).ready(function () {
 
 $(document).ready(function () {
   $('.tabset-dropdown > .nav-tabs > li').click(function () {
-    $(this).parent().toggleClass('nav-tabs-open')
+    $(this).parent().toggleClass('nav-tabs-open');
   });
 });
 </script>
 
 <!-- code folding -->
 
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
 <script>

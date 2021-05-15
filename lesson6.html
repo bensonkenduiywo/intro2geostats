@@ -1,18 +1,17 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
 
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
 
 
-<title>lesson6.utf8.md</title>
+<title>Spatial geo-regression</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -20,18 +19,34 @@
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
 
-<style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
-  pre:not([class]) {
-    background-color: white;
-  }
-</style>
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
 <script type="text/javascript">
 if (window.hljs) {
   hljs.configure({languages: []});
@@ -44,32 +59,7 @@ if (window.hljs) {
 
 
 
-<style type="text/css">
-h1 {
-  font-size: 34px;
-}
-h1.title {
-  font-size: 38px;
-}
-h2 {
-  font-size: 30px;
-}
-h3 {
-  font-size: 24px;
-}
-h4 {
-  font-size: 18px;
-}
-h5 {
-  font-size: 16px;
-}
-h6 {
-  font-size: 12px;
-}
-.table th:not([align]) {
-  text-align: left;
-}
-</style>
+
 
 <link rel="stylesheet" href="styles.css" type="text/css" />
 
@@ -80,10 +70,6 @@ h6 {
   max-width: 940px;
   margin-left: auto;
   margin-right: auto;
-}
-code {
-  color: inherit;
-  background-color: rgba(0, 0, 0, 0.04);
 }
 img {
   max-width:100%;
@@ -100,40 +86,13 @@ button.code-folding-btn:focus {
 summary {
   display: list-item;
 }
+pre code {
+  padding: 0;
+}
 </style>
 
 
 <style type="text/css">
-/* padding for bootstrap navbar */
-body {
-  padding-top: 45px;
-  padding-bottom: 40px;
-}
-/* offset scroll position for anchor links (for fixed navbar)  */
-.section h1 {
-  padding-top: 50px;
-  margin-top: -50px;
-}
-.section h2 {
-  padding-top: 50px;
-  margin-top: -50px;
-}
-.section h3 {
-  padding-top: 50px;
-  margin-top: -50px;
-}
-.section h4 {
-  padding-top: 50px;
-  margin-top: -50px;
-}
-.section h5 {
-  padding-top: 50px;
-  margin-top: -50px;
-}
-.section h6 {
-  padding-top: 50px;
-  margin-top: -50px;
-}
 .dropdown-submenu {
   position: relative;
 }
@@ -161,7 +120,7 @@ body {
   margin-right: -10px;
 }
 .dropdown-submenu:hover>a:after {
-  border-left-color: #ffffff;
+  border-left-color: #adb5bd;
 }
 .dropdown-submenu.pull-left {
   float: none;
@@ -173,7 +132,7 @@ body {
 }
 </style>
 
-<script>
+<script type="text/javascript">
 // manage active state of menu based on current page
 $(document).ready(function () {
   // active menu anchor
@@ -184,10 +143,23 @@ $(document).ready(function () {
   var menuAnchor = $('a[href="' + href + '"]');
 
   // mark it active
-  menuAnchor.parent().addClass('active');
+  menuAnchor.tab('show');
 
   // if it's got a parent navbar menu mark it active as well
   menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
 });
 </script>
 
@@ -199,7 +171,6 @@ $(document).ready(function () {
   max-height: 500px;
   min-height: 44px;
   overflow-y: auto;
-  background: white;
   border: 1px solid #ddd;
   border-radius: 4px;
 }
@@ -235,6 +206,7 @@ $(document).ready(function () {
   border: none;
   display: inline-block;
   border-radius: 4px;
+  background-color: transparent;
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li {
@@ -251,6 +223,69 @@ $(document).ready(function () {
 
 
 
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
 
 </head>
 
@@ -258,6 +293,16 @@ $(document).ready(function () {
 
 
 <div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
 
 
 
@@ -276,7 +321,7 @@ $(document).ready(function () {
       <ul class="nav navbar-nav">
         <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    <span class="fa fa-home"></span>
+    <span class="fas fa-home"></span>
      
     Home
      
@@ -316,25 +361,25 @@ $(document).ready(function () {
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="mailto:bensonkemboi@gmail.com">
-    <span class="fa fa-envelope fa-lg"></span>
+    <span class="fas fa-envelope fa-lg"></span>
      
   </a>
 </li>
 <li>
   <a href="http://github.com/bensonkenduiywo">
-    <span class="fa fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
 <li>
   <a href="https://twitter.com/bensonkenduiywo">
-    <span class="fa fa-twitter fa-lg"></span>
+    <span class="fab fa-twitter fa-lg"></span>
      
   </a>
 </li>
 <li>
   <a href="https://www.linkedin.com/in/benson-kenduiywo-1a218137">
-    <span class="fa fa-linkedin fa-lg"></span>
+    <span class="fab fa-linkedin fa-lg"></span>
      
   </a>
 </li>
@@ -343,19 +388,17 @@ $(document).ready(function () {
   </div><!--/.container -->
 </div><!--/.navbar -->
 
-<div class="fluid-row" id="header">
+<div id="header">
 
 
 
+<h1 class="title toc-ignore">Spatial geo-regression</h1>
 
 </div>
 
 
-<div id="spatial-geo-regression" class="section level2">
-<h2>Spatial geo-regression</h2>
 <p><strong>Regression analysis</strong> is the term used to describe a family of methods that seek to model the relationship between one (or more) dependent or response variables and a number of independent or predictor variables. <strong>Spatial regression methods</strong> are similar, but take explicit account of the spatial structure of data, in particular the lack of independence that typically exists between measurements made at nearby locations (see Tobler’s law).</p>
 <p>We will explore ordinary regression and explore Geographical Weighted Regression.</p>
-</div>
 <div id="geographically-weighted-regression-gwr" class="section level2">
 <h2>Geographically weighted regression (GWR)</h2>
 <p>Geographically weighted regression (GWR) is an exploratory technique mainly intended to indicate where <strong>non-stationarity</strong> is taking place on the map, that is where locally weighted regression coefficients move away from their global values. Its basis is the concern that the fitted coefficient values of a global model, fitted to all the data, may not represent detailed local variations in the data adequately - in this it follows other local regression implementations. It differs, however, in not looking for local variation in ‘data’ space, but by moving a weighted window over the data, estimating one set of coefficient values at every chosen ‘fit’ point. The fit points are very often the points at which observations were made, but do not have to be. If the local coefficients vary in space, it can be taken as an indication of non-stationarity.</p>
@@ -369,8 +412,11 @@ $(document).ready(function () {
 <p>First, you need to load the practical data (<a href="https://data.cdrc.ac.uk/tutorial">source</a>).</p>
 <pre class="r"><code>Census.Data &lt;-read.csv(&quot;./data/practical_data.csv&quot;)
 library(rgdal)
-Output.Areas &lt;- readOGR(&quot;./data/Camden_oa11.shp&quot;)
-# join our census data to the shapefile
+Output.Areas &lt;- readOGR(&quot;./data/Camden_oa11.shp&quot;)</code></pre>
+<pre><code>## Warning in OGRSpatialRef(dsn, layer, morphFromESRI = morphFromESRI, dumpSRS =
+## dumpSRS, : Discarded datum OSGB_1936 in Proj4 definition: +proj=tmerc +lat_0=49
+## +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +units=m +no_defs</code></pre>
+<pre class="r"><code># join our census data to the shapefile
 OA.Census &lt;- merge(Output.Areas, Census.Data, by.x=&quot;OA11CD&quot;, by.y=&quot;OA&quot;)</code></pre>
 </div>
 <div id="linear-regression" class="section level2">
@@ -451,8 +497,12 @@ GWRbandwidth &lt;- gwr.sel(OA.Census$Qualification ~ OA.Census$Unemployed+OA.Cen
 ## Adaptive q: 0.01473006 CV score: 82835.89 
 ## Adaptive q: 0.01468774 CV score: 82823.82</code></pre>
 <p>Next, we can run the model and view the results.</p>
-<pre class="r"><code>gwr.model = gwr(OA.Census$Qualification ~ OA.Census$Unemployed+OA.Census$White_British, data=OA.Census, adapt=GWRbandwidth, hatmatrix=TRUE, se.fit=TRUE) 
-#print the results of the model
+<pre class="r"><code>gwr.model = gwr(OA.Census$Qualification ~ OA.Census$Unemployed+OA.Census$White_British, data=OA.Census, adapt=GWRbandwidth, hatmatrix=TRUE, se.fit=TRUE) </code></pre>
+<pre><code>## Warning in proj4string(data): CRS object has comment, which is lost in output</code></pre>
+<pre><code>## Warning in showSRID(uprojargs, format = &quot;PROJ&quot;, multiline = &quot;NO&quot;, prefer_proj
+## = prefer_proj): Discarded datum Unknown based on Airy 1830 ellipsoid in Proj4
+## definition</code></pre>
+<pre class="r"><code>#print the results of the model
 gwr.model</code></pre>
 <pre><code>## Call:
 ## gwr(formula = OA.Census$Qualification ~ OA.Census$Unemployed + 
@@ -461,14 +511,10 @@ gwr.model</code></pre>
 ## Kernel function: gwr.Gauss 
 ## Adaptive quantile: 0.01468774 (about 11 of 749 data points)
 ## Summary of GWR coefficient estimates at data points:
-##                             Min.  1st Qu.   Median  3rd Qu.     Max.
-## X.Intercept.            11.08183 34.43427 45.76862 59.75372 85.01866
-## OA.Census.Unemployed    -5.45291 -3.28308 -2.55398 -1.79413  0.77019
-## OA.Census.White_British -0.28046  0.19955  0.37788  0.53216  0.94678
-##                          Global
-## X.Intercept.            47.8670
-## OA.Census.Unemployed    -3.2946
-## OA.Census.White_British  0.4109
+##                             Min.  1st Qu.   Median  3rd Qu.     Max.  Global
+## X.Intercept.            11.08183 34.43427 45.76862 59.75372 85.01866 47.8670
+## OA.Census.Unemployed    -5.45291 -3.28308 -2.55398 -1.79413  0.77019 -3.2946
+## OA.Census.White_British -0.28046  0.19955  0.37788  0.53216  0.94678  0.4109
 ## Number of data points: 749 
 ## Effective number of parameters (residual: 2traceS - traceS&#39;S): 132.6449 
 ## Effective degrees of freedom (residual: 2traceS - traceS&#39;S): 616.3551 
@@ -515,12 +561,16 @@ grid.newpage()
 pushViewport(viewport(layout=grid.layout(2,2)))
 
 # prints a map object into a defined cell   
-print(map1, vp=viewport(layout.pos.col = 1, layout.pos.row =1))
-print(map2, vp=viewport(layout.pos.col = 2, layout.pos.row =1))</code></pre>
-<pre><code>## Variable &quot;OA.Census.White_British&quot; contains positive and negative values, so midpoint is set to 0. Set midpoint = NA to show the full spectrum of the color palette.</code></pre>
-<pre class="r"><code>print(map3, vp=viewport(layout.pos.col = 1, layout.pos.row =2))
-print(map4, vp=viewport(layout.pos.col = 2, layout.pos.row =2))</code></pre>
-<pre><code>## Variable &quot;OA.Census.Unemployed&quot; contains positive and negative values, so midpoint is set to 0. Set midpoint = NA to show the full spectrum of the color palette.</code></pre>
+print(map1, vp=viewport(layout.pos.col = 1, layout.pos.row =1))</code></pre>
+<pre><code>## Warning in sp::proj4string(obj): CRS object has comment, which is lost in output</code></pre>
+<pre class="r"><code>print(map2, vp=viewport(layout.pos.col = 2, layout.pos.row =1))</code></pre>
+<pre><code>## Warning in sp::proj4string(obj): CRS object has comment, which is lost in output</code></pre>
+<pre><code>## Variable(s) &quot;OA.Census.White_British&quot; contains positive and negative values, so midpoint is set to 0. Set midpoint = NA to show the full spectrum of the color palette.</code></pre>
+<pre class="r"><code>print(map3, vp=viewport(layout.pos.col = 1, layout.pos.row =2))</code></pre>
+<pre><code>## Warning in sp::proj4string(obj): CRS object has comment, which is lost in output</code></pre>
+<pre class="r"><code>print(map4, vp=viewport(layout.pos.col = 2, layout.pos.row =2))</code></pre>
+<pre><code>## Warning in sp::proj4string(obj): CRS object has comment, which is lost in output</code></pre>
+<pre><code>## Variable(s) &quot;OA.Census.Unemployed&quot; contains positive and negative values, so midpoint is set to 0. Set midpoint = NA to show the full spectrum of the color palette.</code></pre>
 <p><img src="lesson6_files/figure-html/g12-1.png" width="672" /></p>
 </div>
 </div>
@@ -531,6 +581,8 @@ print(map4, vp=viewport(layout.pos.col = 2, layout.pos.row =2))</code></pre>
 
 
 
+</div>
+</div>
 
 </div>
 
@@ -538,7 +590,7 @@ print(map4, vp=viewport(layout.pos.col = 2, layout.pos.row =2))</code></pre>
 
 // add bootstrap table styles to pandoc tables
 function bootstrapStylePandocTables() {
-  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
 }
 $(document).ready(function () {
   bootstrapStylePandocTables();
@@ -556,13 +608,39 @@ $(document).ready(function () {
 
 $(document).ready(function () {
   $('.tabset-dropdown > .nav-tabs > li').click(function () {
-    $(this).parent().toggleClass('nav-tabs-open')
+    $(this).parent().toggleClass('nav-tabs-open');
   });
 });
 </script>
 
 <!-- code folding -->
 
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
 <script>

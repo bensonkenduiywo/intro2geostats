@@ -1,17 +1,21 @@
 ---
-output: html_document
+title: "Analysis of trend: Spatial autocorrelaton"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    toc_collapsed: true
+    toc_depth: 3
+    number_sections: false
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Analysis of trend: Spatial autocorrelaton
-
-
 This practical will cover how to run various measures of spatial autocorrelation in R. We will consider both statistics of global spatial autocorrelation and how to identify spatial clustering across our study area.
 
-### Data & library set-up
+## Data & library set-up
 
 ```{r sa1, message=FALSE, results="hide"}
 rm(list=ls(all=TRUE)) 
@@ -36,7 +40,7 @@ tm_shape(OA.Census) + tm_fill("Qualification", palette = "-Reds", style = "quant
 
 ```
 
-### Spatial autocorrelation
+## Spatial autocorrelation
 
 **Spatial autocorrelation** measures how distance influences a particular variable. In other words, _it quantifies the degree of which objects are similar to nearby objects_. Variables are said to have a positive spaital autocorrelation when similar values tend to be nearer together than dissimilar values.
 
@@ -48,7 +52,7 @@ We will be using the spatial autocorrelation functions available from the `spdep
 library(spdep) 
 ```
 
-### Defining neighbourhood
+## Defining neighbourhood
 
 In order for the spatial autocorrelation models to work, we need to work out what polygons neighbour each other. The following code will calculate neighbours for our _OA.Census polygon_ and print out the results below. We will use `poly2nb` function which builds a neighbours list based on regions with contiguous boundaries, that is sharing one or more boundary point.
 
@@ -84,7 +88,7 @@ plot(neighbours2, coordinates(OA.Census), add=TRUE, col='red')
 
 We can represent spatial autocorrelation in two ways; globally or locally. Global models will create a single measure which represent the entire data whilst local models let us explore spatial clustering across space.
 
-### Global spatial autocorrelation
+## Global spatial autocorrelation
 
 With the neighbours defined. We can now run a model. First we need to convert the neighbours object to a list. This file will be used to determine how the neighbours are weighted.
 
@@ -102,7 +106,7 @@ moran.test(OA.Census$Qualification, listw)
 
 The **Moran I** statistic is 0.54, we can therefore determine that there our qualification variable is positively autocorrelated in Camden. In other words, the data does spatially cluster. We can also consider the p-value as a measure of the statistical significance of the model.
 
-### Local spatial autocorrelation
+## Local spatial autocorrelation
 
 We will first create a Moran plot which looks at each of the values plotted against their spatially lagged values. A spatially lagged variable is a _weighted sum or a weighted average of the neighbouring values_ for that variable. It basically explores the relationship between the data and their neighbours as a scatter plot. The style refers to how the weights are coded. "W" weights are row standardised (sums over all links to n).
 
@@ -192,7 +196,7 @@ legend("bottomleft",legend=c("insignificant","low-low","low-high","high-low","hi
 
 It is apparent that there is a statistically significant geographic pattern to the clustering of our qualification variable in Camden.
 
-### Getis-Ord: hot-spot detection
+## Getis-Ord: hot-spot detection
 
 Another approach we can take is **hot-spot analysis**. The Getis-Ord Gi Statistic looks at neighbours within a defined proximity to identify where either high or low values cluster spatially. Here statistically significant hot-spots are recognised as areas of high values where other areas within a neighbourhood range also share high values too.
 

@@ -1,5 +1,12 @@
 ---
-output: html_document
+title: "Non-geostatistical prediction"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    toc_collapsed: true
+    toc_depth: 3
+    number_sections: false
 ---
 
 ```{r setup, include=FALSE}
@@ -7,7 +14,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
-## Non-geostatistical prediction
+## Data
 
 Load the packages and data we will use.
 
@@ -27,7 +34,7 @@ extent(shp)
 ```
 
 
-### Thiessen polygons
+## Thiessen polygons
 
 - Thiessen polygons are formed to assign boundaries of the areas closest to each unique point. Therefore, for every point in a dataset, it has a corresponding Thiessen polygon.
 - We will create Thiessen polygons for the soil data, then use the polygons to map the Clay at their corresponding locations. 
@@ -96,7 +103,7 @@ tm_layout(legend.position = c("left", "top"),  legend.text.size = 1.05, legend.t
 ```
 
 
-### Inverse Distance Weighting (IDW)
+## Inverse Distance Weighting (IDW)
 
 - IDW is a means of converting point data of numerical values into a continuous surface to visualise how the *data* may be distributed across space. 
 - The technique interpolates point data by using a weighted average of a variable from nearby points to predict the value of that variable for each location (de Smith et al, 2018). 
@@ -180,7 +187,7 @@ tm_layout(legend.position = c("left", "top"),  legend.text.size = 1.1, legend.ti
 
 
 
-### Optimizing IDW predictions
+## Optimizing IDW predictions
 
 The choice of power function `idp` can be subjective. To fine-tune the choice of the power parameter, you can perform a **leave-one-out cross validation** routine to measure the error in the interpolated values.
 
@@ -211,7 +218,7 @@ sqrt( sum((idw.output$prediction - shp$Clay)^2) / length(shp$Clay))
 
 ```
 
-### Cross-validation
+## Cross-validation
 
 We can also create a 95% confidence interval map of the interpolation model to illustrate uncertainity around it. Here we’ll use jackknife technique to estimate a confidence interval at each unsampled point. Frist create an interpolation surface.
 

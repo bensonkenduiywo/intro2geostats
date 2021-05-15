@@ -1,12 +1,18 @@
 ---
-output: html_document
+title: "Geostatistical prediction/prediction"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    toc_collapsed: true
+    toc_depth: 3
+    number_sections: false
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Geostatistical prediction/prediction
 
 Geostatistical interpolation differs from [non-geostatistical interpolation](lesson1.html) approaches in that it assumes the data point values represent a sample from some underlying true population. By analyzing the sample it is possible to derive a general model that describes how the sample values vary with distance (and optionally, direction). A generalized model used conventional to describe spatial correlation of phenomena with respect to distance and direction is term as the **Variogram**. The variogram model may then be used to interpolate, or predict (a process called kriging), values at unsampled locations, in much the same way as with deterministic interpolation. If the samples meet various additional conditions it may also be possible to provide estimated confidence intervals for these predictions. Geostatistical interpolation methods attempt to address questions like:
 
@@ -15,7 +21,7 @@ Geostatistical interpolation differs from [non-geostatistical interpolation](les
 - what model and weights should be used to compute the local average?
 - what errors (uncertainties) are associated with interpolated values?
 
-### Estimating Spatial correlation: the Variogram
+## Estimating Spatial correlation: the Variogram
 
 In geostatistics, spatial correlation has traditionally been modelled by a **variogram**. The variogram (semi-variogram) explains the degree to which nearby locations have similar values using *semi-variance*.
 
@@ -49,7 +55,7 @@ $$N= [n · (n − 1)]/2$$
 (dim(d)[1] * (dim(d)[1] - 1))/2
 ```
 
-### Variogram cloud
+## Variogram cloud
 
 Let us plot a variogram cloud of Clay content. A variogram cloud is a scatterplot of data pairs, in which the semivariance is plotted against interpoint distance.
 
@@ -63,7 +69,7 @@ plot(vc, main = "Variogram cloud of Clay", xlab = "lag in meters")
 
 Note that the formula `d$Clay~1` indicates the form of the spatial dependence. The right-hand side 1 means to model the left-hand side `d$Clay` only as local spatial dependence, i.e. without any trend or other explanatory factors.
 
-### Variogram map
+## Variogram map
 
 We can also show the variogram map. The maps provide another means of looking at directional dependence in semivariograms. The map is centered around (0, 0), as *h* is geographical distance rather than geographical location. Cutoff and width correspond to some extent to map extent and cell size; the semivariance map is point symmetric around (0, 0), as $\gamma(h) = \gamma(−h)$. We will set a threshold of 5 to ensure that only semivariogram map values based on at least 5 point pairs are shown, removing too noisy estimation.
 
@@ -74,7 +80,7 @@ plot(v.map, threshold = 5)
 
 From the map we can see that there is there si strong spatial depency in clay content in the direction NE to SW.
 
-### Empirical variogram
+## Empirical variogram
 
 This variogram can be plotted as semi-variance $\gamma(h)$ (the squared difference of a certain property between locations) against average separation distance (*h*) along with the number of points that contributed to each estimate. Empirical here is used to refer to an experimental/sample variogram i.e. based on data test.
 
@@ -83,7 +89,7 @@ v <- variogram(Clay~1, data=d)
 plot(v, plot.numbers=T,pch=3)
 ```
 
-### Main properties of Variogram
+## Main properties of Variogram
 
 Some key properties of the variogram amongst others include: 
 
@@ -103,7 +109,7 @@ cat("range is ", range, " m")
 
 ```
 
-### Defining variogram bins
+## Defining variogram bins
 
 Some notes:
 
@@ -126,7 +132,7 @@ for (bw in seq(20, 220, by = 40)) {
 
 We observe that if the intervals are short & the bins narrow then there will be many estimates of (*h*), which can lead to a ”noisy” variogram because the semi-variances are calculated from few comparisons. In contrast, if the intervals are large and the bins wide then there might be too few estimates of the semi-variances to reveal the form of the variogram. The choice is thus a compromise; cannot be automated.
 
-### Variogram modelling and fitting
+## Variogram modelling and fitting
 
 In order to be able to define characteristics of the empirical variogram we parameterise it using different semi-variogram models. To do this authorized functions that are conditional negative semi-definite (positive definite) to the experimental values are used. There are a few principal features that the function must be able to represent [(Webster and Oliver, 2007)](https://onlinelibrary.wiley.com/doi/book/10.1002/9780470517277):
 
@@ -181,7 +187,7 @@ cat("SSE of automatic fit ", attr(m2, "SSErr"))
 cat("SSE of manual fit ", attr(m2a, "SSErr"))
 ```
 
-### Prediction: Kriging
+## Prediction: Kriging
 
 Now that we have modelled our variogram we can use it for prediction using Kriging. Kriging is used to interpolate a value $Z(x_i + h)$ of a random field *Z(x)* at unobserved location $x_i + h$, using data from observed location $x_i$. It allows variance to be non-constant, dependent on distance between points as modeled by the variogram  $\gamma(h)$. The kriging estimator is given by
 
@@ -232,7 +238,7 @@ tm_layout(legend.position = c("left", "top"),  legend.text.size = 1.1, legend.ti
 
 Compare the output with that of kriging visually, what do you think?
 
-### Variance and confidence interval maps
+## Variance and confidence interval maps
 
 The `lz.ok` object output from kiriging stores not just the interpolated values, but the variance values as well. These can be passed to the raster object for mapping.
 
