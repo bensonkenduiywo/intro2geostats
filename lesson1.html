@@ -11,8 +11,9 @@
 
 
 
-<title>lesson1.knit</title>
+<title>Exploratory data analysis</title>
 
+<script src="site_libs/header-attrs-2.8/header-attrs.js"></script>
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/yeti.min.css" rel="stylesheet" />
@@ -399,12 +400,11 @@ div.tocify {
 
 
 
+<h1 class="title toc-ignore">Exploratory data analysis</h1>
 
 </div>
 
 
-<div id="exploratory-data-analysis" class="section level1">
-<h1>Exploratory data analysis</h1>
 <p>It is important prior to starting any analysis to inspect data This can be done to check for any departures from normality or any existing trend. Principle plots like histogram, boxplots and measures of central tendency and dispersion can help detect distributions of data that deviates from the normal. In additions maps can aid illustrate any spatial trends.</p>
 <div id="data" class="section level2">
 <h2>Data</h2>
@@ -415,15 +415,144 @@ if (!require(&quot;pacman&quot;)) install.packages(&quot;pacman&quot;)
 pacman::p_load(gstat,sp)
 data(meuse)
 df &lt;- meuse
-head(df, n=3)</code></pre>
-<pre><code>##        x      y cadmium copper lead zinc  elev       dist   om ffreq soil lime
-## 1 181072 333611    11.7     85  299 1022 7.909 0.00135803 13.6     1    1    1
-## 2 181025 333558     8.6     81  277 1141 6.983 0.01222430 14.0     1    1    1
-## 3 181165 333537     6.5     68  199  640 7.800 0.10302900 13.0     1    1    1
-##   landuse dist.m
-## 1      Ah     50
-## 2      Ah     30
-## 3      Ah    150</code></pre>
+knitr::kable(head(df, n=3), align = &#39;l&#39;)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">x</th>
+<th align="left">y</th>
+<th align="left">cadmium</th>
+<th align="left">copper</th>
+<th align="left">lead</th>
+<th align="left">zinc</th>
+<th align="left">elev</th>
+<th align="left">dist</th>
+<th align="left">om</th>
+<th align="left">ffreq</th>
+<th align="left">soil</th>
+<th align="left">lime</th>
+<th align="left">landuse</th>
+<th align="left">dist.m</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">181072</td>
+<td align="left">333611</td>
+<td align="left">11.7</td>
+<td align="left">85</td>
+<td align="left">299</td>
+<td align="left">1022</td>
+<td align="left">7.909</td>
+<td align="left">0.0013580</td>
+<td align="left">13.6</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">Ah</td>
+<td align="left">50</td>
+</tr>
+<tr class="even">
+<td align="left">181025</td>
+<td align="left">333558</td>
+<td align="left">8.6</td>
+<td align="left">81</td>
+<td align="left">277</td>
+<td align="left">1141</td>
+<td align="left">6.983</td>
+<td align="left">0.0122243</td>
+<td align="left">14.0</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">Ah</td>
+<td align="left">30</td>
+</tr>
+<tr class="odd">
+<td align="left">181165</td>
+<td align="left">333537</td>
+<td align="left">6.5</td>
+<td align="left">68</td>
+<td align="left">199</td>
+<td align="left">640</td>
+<td align="left">7.800</td>
+<td align="left">0.1030290</td>
+<td align="left">13.0</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">Ah</td>
+<td align="left">150</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="outlier-detection" class="section level2">
+<h2>OUTLIER DETECTION</h2>
+<p>Values with NA (Not Applicable) are removed from any further analysis. To detect outliers, boxplot.stats()$out function is used. It is based on Tukey’s method designed to identify outliers and missing data above and below the 1.5 times the Inter Quartile Range (IQR). The IQR gives a statistical way to identify where the bulk of the statistical data points (the middle 50%) sit in the range, and how spread out that middle 50% is. Normally a range between the 1st quartile and 3rd quartie is used. However, using the IQR range would aggressively tag too many values as outliers. So Tukey established a 1.5 basis, stating that the IQR should be multiplied by 1.5. The designed function (Getoutlier), shows the percentage (%) and mean of outliers in a dataset. The mean of data with and without outliers is also illustrated by the function. The box-plot and histogram are used to best illustrate the outliers. In the function, the data with and without the outliers are plotted. Finally, with help from interactive input (yes/no) the outliers are kept or removed from data. If the answer is yes then outliers will be replaced with NA. Outliers is a result of several causes i.e. data entry error, equipment error, or some other random variation of factors. Instead of removing them, it’s best practice is to investigate why they exist, where they came from, and what they mean to the analysis. Common practice is to replace them with mean or median of data or at times replicate of neighbouring values in spatial analysis. In this excersis we choose to replace them with median of the original data. Median is preferred to mean because it is established that its a robust estimate of the mean. However, with deeper understanding of sampling framework, equioment used, working conditions etc, other methods are possible like use of regression etc.</p>
+<pre class="r"><code>Data &lt;- meuse
+Getoutlier   &lt;- function(dt, var) {
+  var_name   &lt;- eval(substitute(var),eval(dt))
+    originalData &lt;- var_name
+  na1   &lt;- sum(is.na(var_name))         #count Not Available (missing values) values
+  md1   &lt;- median(var_name, na.rm = T)  #Find median without NA values
+    m1      &lt;- mean(var_name, na.rm = T)    #Find median without NA values
+    #windows() #prepare plot envirnment
+  par(mfrow=c(2, 2), mai=c(1,1,0.25,0.25), oma=c(0,0,3,0))
+    #layout(matrix(c(1,1,1,1), nrow = 4, ncol = 1, byrow = TRUE),widths=c(3,1), heights=c(1,2) )
+  boxplot(var_name, main=&quot;With outliers&quot;)   #Plot boxplot of data with outliers
+  hist(var_name, main=&quot;With outliers&quot;, xlab=deparse(substitute(var)), ylab=&quot;Frequency&quot;) #Plot histogram of data with outliers
+  #Data points which lie beyond the extremes of the whiskers 
+  outlier &lt;- boxplot.stats(var_name)$out 
+  mo &lt;- mean(outlier)       #mean of outliers
+  #Replace outliers by NA of dataset using matching %in% test for ease of counting
+  new_NA &lt;- ifelse(var_name %in% outlier, NA, var_name) 
+    na2 &lt;- sum(is.na(new_NA))   #Count the new number of NA
+    var_name &lt;- ifelse(var_name %in% outlier, md1, var_name) #Replace outliers by median
+  boxplot(var_name, main=&quot;Without outliers&quot;)    #Boxplot without outliers
+  hist(var_name, main=&quot;Without outliers&quot;, xlab=deparse(substitute(var)), ylab=&quot;Frequency&quot;) #Histogram without outliers
+  title(&quot;Outlier Check&quot;, outer=TRUE)
+  #Print identified number of outliers similar to print(paste(&quot;Outliers identified:&quot;, na2 - na1, &quot;n&quot;))
+  cat(&quot;Outliers identified:&quot;, na2 - na1, &quot;numbers&quot;, &quot;\n&quot;) 
+  # compute the proportion of outliers in data rounded to 1 decimal place
+  cat(&quot;Propotion (%) of outliers:&quot;, round((na2 - na1) / sum(!is.na(var_name))*100, 1), &quot;\n&quot;) 
+  cat(&quot;Mean of the outliers:&quot;, round(mo, 2), &quot;\n&quot;)
+  m2    &lt;- mean(var_name, na.rm = T)    #Mean after removing outliers
+    md2 &lt;- median(var_name, na.rm = T)  #Median after removing outliers
+  cat(&quot;Mean without removing outliers:&quot;, round(m1, 2), &quot;\n&quot;)
+  cat(&quot;Mean if we remove outliers:&quot;, round(m2, 2), &quot;\n&quot;)
+    cat(&quot;Median without removing outliers:&quot;, round(md1, 2), &quot;\n&quot;)
+  cat(&quot;Median if we remove outliers:&quot;, round(md2, 2), &quot;\n&quot;)
+  #response &lt;- readline(prompt=&quot;Do you want to remove outliers and to replace with  data mean? [yes/no]: &quot;) #Interactive input
+    response &lt;- &quot;y&quot;     
+    if(response == &quot;y&quot; | response == &quot;yes&quot;){
+        #originalData &lt;- na.omit(originalData) #remove missing /not applicable values
+    #replace outliers with mean
+        CleanData &lt;- ifelse(originalData %in% outlier, md1, originalData) 
+        CleanData[is.na(CleanData)] &lt;- md1  #Replace all missing values with 0
+        cat(&quot;Outliers successfully replaced with median &quot;, na2 - na1, &quot;\n&quot;)
+        cat(&quot;Missing data successfully replaced with median &quot;, na1, &quot;\n&quot;)
+        write.csv(CleanData, &quot;CleanedData.csv&quot;)
+        return(invisible(CleanData))
+     }
+     if(response == &quot;n&quot; | response == &quot;no&quot;){
+        cat(na2 - na1, &quot; outliers retained&quot;, &quot;\n&quot;)
+        write.csv(originalData, &quot;CleanedData.csv&quot;)
+        return(invisible(originalData))
+     }
+}
+CleanData     &lt;- Data #create another variable to hold cleaned data
+CleanData$om    &lt;- Getoutlier(Data, om) # remove outliers from organic matter (OM)</code></pre>
+<p><img src="lesson1_files/figure-html/outlier1-1.png" width="672" /></p>
+<pre><code>## Outliers identified: 9 numbers 
+## Propotion (%) of outliers: 5.9 
+## Mean of the outliers: 15.77 
+## Mean without removing outliers: 7.48 
+## Mean if we remove outliers: 6.96 
+## Median without removing outliers: 6.9 
+## Median if we remove outliers: 6.9 
+## Outliers successfully replaced with median  9 
+## Missing data successfully replaced with median  2</code></pre>
 </div>
 <div id="measures-of-cental-tendency" class="section level2">
 <h2>Measures of Cental Tendency</h2>
@@ -476,6 +605,27 @@ sd(copper)</code></pre>
 sd(copper)==sqrt(var(copper))</code></pre>
 <pre><code>## [1] TRUE</code></pre>
 </div>
+<div id="covariance-and-correlation" class="section level3">
+<h3>Covariance and correlation</h3>
+<p>Covariance and correlation are used to illustrate joint dispersion of two variables. Using the same dataset, we can compute the covariance and correlation of copper and lead as follows:</p>
+<pre class="r"><code>rm(list=ls(all=TRUE)) 
+if (!require(&quot;pacman&quot;)) install.packages(&quot;pacman&quot;) 
+pacman::p_load(sp)
+data(meuse)
+attach(meuse)</code></pre>
+<pre><code>## The following objects are masked from meuse (pos = 3):
+## 
+##     cadmium, copper, dist, dist.m, elev, ffreq, landuse, lead, lime,
+##     om, soil, x, y, zinc</code></pre>
+<pre><code>## The following objects are masked from df:
+## 
+##     cadmium, copper, dist, dist.m, elev, ffreq, landuse, lead, lime,
+##     om, soil, x, y, zinc</code></pre>
+<pre class="r"><code>cov(copper, lead)</code></pre>
+<pre><code>## [1] 2157.145</code></pre>
+<pre class="r"><code>cor(copper,lead, method = &quot;pearson&quot;)</code></pre>
+<pre><code>## [1] 0.8183069</code></pre>
+</div>
 <div id="kurtosis-and-skewness" class="section level3">
 <h3>Kurtosis and skewness</h3>
 <p>Intuitively, the kurtosis describes the tail shape of the data distribution. The normal distribution has zero kurtosis and thus the standard tail shape. For instance the copper data is more peaked than the normal distribution since the kurtosis &gt; 0. This is also illustrated by a histogram plot overlaid with the normal distribution curve.</p>
@@ -494,18 +644,34 @@ text(median(copper),0.04,&quot;Median&quot;, col = &quot;blue&quot;, adj = c(1, 
 <pre><code>## Skewness of copper is  1.386803  . This means that the data is positively skewed as illustrated on the histogram plot.</code></pre>
 </div>
 </div>
+<div id="exercise" class="section level2">
+<h2>Exercise</h2>
+<p>Compute the coefficient of variation in R.</p>
 </div>
-<div id="normal-distribution" class="section level1">
-<h1>Normal Distribution</h1>
+<div id="normal-distribution" class="section level2">
+<h2>Normal Distribution</h2>
 <p>Here we illustrate how normal distribution looks like. In R you can generate a the normal distribution using a specified mean and standard deviation.</p>
 <pre class="r"><code>x&lt;-rnorm(100000,mean=10, sd=2) 
 hist(x,breaks=150,xlim=c(0,20),freq=FALSE)
 abline(v=10, lwd=5)
 abline(v=c(4,6,8,12,14,16), lwd=3,lty=3)</code></pre>
 <p><img src="lesson1_files/figure-html/m5-1.png" width="672" /></p>
+<pre class="r"><code># Create a sequence of numbers between -10 and 10 incrementing by 0.2.
+x &lt;- seq(-10,10,by = .2)
+# Choose the mean as 2.5 and standard deviation as 2. 
+y &lt;- pnorm(x, mean = 2.5, sd = 2)
+# Plot the graph.
+plot(x,y)</code></pre>
+<p><img src="lesson1_files/figure-html/m5-2.png" width="672" /></p>
+<p>In R you can also check the distribution of data versus the Theoretical quantile distribution using QQ plots. It is possible To compare a sample with a theoretical sample that comes from a certain distribution (for example, the normal distribution).</p>
+<p>To make a QQ plot this way, R has the special qqnorm() function. As the name implies, this function plots your sample against a normal distribution. You simply give the sample you want to plot as a first argument and add any graphical parameters you like.</p>
+<p>R then creates a sample with values coming from the standard normal distribution, or a normal distribution with a mean of zero and a standard deviation of one. With this second sample, R creates the QQ plot as explained before.</p>
+<pre class="r"><code>qqnorm(copper, main=&#39;Copper in Meuse River&#39;)
+qqline(copper)</code></pre>
+<p><img src="lesson1_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
 </div>
-<div id="exploring-spatial-trend" class="section level1">
-<h1>Exploring spatial trend</h1>
+<div id="exploring-spatial-trend" class="section level2">
+<h2>Exploring spatial trend</h2>
 <p>Spatial exploratory data analysis starts with the plotting of maps with a measured variable.</p>
 <pre class="r"><code>coordinates(meuse) &lt;- c(&quot;x&quot;, &quot;y&quot;)
 spplot(meuse, &quot;zinc&quot;, do.log = T)</code></pre>
@@ -527,11 +693,49 @@ spplot(meuse, c(&quot;fitted.s&quot;, &quot;residuals&quot;))</code></pre>
 <p>These plots reveal that although the trend removes a large part of the variability, the residuals do not appear to behave as spatially unstructured (spatially independent) or white noise. We see that <strong>residuals</strong> with a similar value occur regularly close to another. This indicates some degree of <strong>spatial dependency</strong> with distance. More analysis will take place when we further analyse these data in the context of geostatistical models; first we will go through simple, <strong>non-geostatistical interpolation</strong> approaches.</p>
 <p>Let us first look at another example before we go to <strong>non-geostatistical interpolation</strong>. Here we use data from [Piikki et al.] 2019(<a href="https://www.mdpi.com/2071-1050/11/15/4038" class="uri">https://www.mdpi.com/2071-1050/11/15/4038</a>).</p>
 <pre class="r"><code>d &lt;- read.csv(&quot;./data/soil_data_CIAT.csv&quot;, stringsAsFactors=FALSE)
-head(d, n=3)</code></pre>
-<pre><code>##       LAB_ID      X     Y Bulk_density Carbon     Clay     Sand
-## 1 CT258-6711 714875 72875     1.454268  2.472 43.54774 40.47143
-## 2 CT258-6697 713625 73125     1.171975  2.298 51.57937 32.42703
-## 3 CT258-6797 706625 73375     1.398217  1.510 35.93126 54.07674</code></pre>
+knitr::kable(head(d, n=3), align = &#39;l&#39;)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">LAB_ID</th>
+<th align="left">X</th>
+<th align="left">Y</th>
+<th align="left">Bulk_density</th>
+<th align="left">Carbon</th>
+<th align="left">Clay</th>
+<th align="left">Sand</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">CT258-6711</td>
+<td align="left">714875</td>
+<td align="left">72875</td>
+<td align="left">1.454268</td>
+<td align="left">2.472</td>
+<td align="left">43.54774</td>
+<td align="left">40.47143</td>
+</tr>
+<tr class="even">
+<td align="left">CT258-6697</td>
+<td align="left">713625</td>
+<td align="left">73125</td>
+<td align="left">1.171974</td>
+<td align="left">2.298</td>
+<td align="left">51.57937</td>
+<td align="left">32.42703</td>
+</tr>
+<tr class="odd">
+<td align="left">CT258-6797</td>
+<td align="left">706625</td>
+<td align="left">73375</td>
+<td align="left">1.398217</td>
+<td align="left">1.510</td>
+<td align="left">35.93126</td>
+<td align="left">54.07674</td>
+</tr>
+</tbody>
+</table>
 <p>Examine the spatial trend of the variables (Bulk density, Carbon, Sand and Clay).</p>
 <pre class="r"><code>pacman::p_load(gridExtra)
 coordinates(d) &lt;- c(&quot;X&quot;, &quot;Y&quot;)
@@ -561,8 +765,8 @@ plot(Carbon ~ Clay + Sand , d)</code></pre>
 <p><img src="lesson1_files/figure-html/t3-1.png" width="672" /></p>
 <p>We have seen how to explore data using plots and some measures. Next lesson illustrates how to analyze the data using <strong>non-geostatistical interpolation</strong>.</p>
 </div>
-<div id="references" class="section level1">
-<h1>References</h1>
+<div id="references" class="section level2">
+<h2>References</h2>
 <p>Piikki, K.; Söderström, M.; Sommer, R.; Da Silva, M.; Munialo, S.; Abera, W. <a href="https://www.mdpi.com/2071-1050/11/15/4038">A Boundary Plane Approach to Map Hotspots for Achievable Soil Carbon Sequestration and Soil Fertility Improvement.</a> <em>Sustainability</em> 2019, 11, 4038.</p>
 </div>
 

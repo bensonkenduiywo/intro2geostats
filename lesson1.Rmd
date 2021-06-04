@@ -1,4 +1,5 @@
 ---
+title: Exploratory data analysis
 output: 
   html_document:
     toc: true
@@ -15,7 +16,6 @@ unlink(".RData")
 
 ```
 
-# Exploratory data analysis
 
 It is important prior to starting any analysis to inspect data This can be done to check for any departures from normality or any existing trend. Principle plots like histogram, boxplots and measures of central tendency and dispersion can help detect distributions of data that deviates from the normal. In additions maps can aid illustrate any spatial trends.
 
@@ -30,7 +30,68 @@ if (!require("pacman")) install.packages("pacman")
 pacman::p_load(gstat,sp)
 data(meuse)
 df <- meuse
-head(df, n=3)
+knitr::kable(head(df, n=3), align = 'l')
+
+```
+
+## OUTLIER DETECTION
+
+Values with NA (Not Applicable) are removed from any further analysis. To detect outliers, boxplot.stats()$out function is used. It is based on Tukey's method designed to identify outliers and missing data above and below the 1.5 times the Inter Quartile Range (IQR). The IQR gives a statistical way to identify where the bulk of the statistical data points (the middle 50%) sit in the range, and how spread out that middle 50% is. Normally a range between the 1st quartile and 3rd quartie is used. However, using the IQR range would aggressively tag too many values as outliers. So Tukey established a 1.5 basis, stating that the IQR should be multiplied by 1.5. The designed function (Getoutlier), shows the percentage (%) and mean of outliers in a dataset. The mean of data with and without outliers is also illustrated by the function. The box-plot and histogram are used to best illustrate the outliers. In the function, the data with and without the outliers are plotted. Finally, with help from interactive input (yes/no) the outliers are kept or removed from data. If the answer is yes then outliers will be replaced with NA. Outliers is a result of several causes i.e. data entry error, equipment error, or some other random variation of factors. Instead of removing them, it's best practice is to investigate why they exist, where they came from, and what they mean to the analysis. Common practice is to replace them with mean or median of data or at times replicate of neighbouring values in spatial analysis. In this excersis we choose to replace them with median of the original data. Median is preferred to mean because it is established that its a robust estimate of the mean. However, with deeper understanding of sampling framework, equioment used, working conditions etc, other methods are possible like use of regression etc.
+
+```{r outlier1}
+Data <- meuse
+Getoutlier 	 <- function(dt, var) {
+  var_name 	 <- eval(substitute(var),eval(dt))
+	originalData <- var_name
+  na1 	<- sum(is.na(var_name))			#count Not Available (missing values) values
+  md1  	<- median(var_name, na.rm = T)  #Find median without NA values
+	m1	 	<- mean(var_name, na.rm = T) 	#Find median without NA values
+	#windows() #prepare plot envirnment
+  par(mfrow=c(2, 2), mai=c(1,1,0.25,0.25), oma=c(0,0,3,0))
+	#layout(matrix(c(1,1,1,1), nrow = 4, ncol = 1, byrow = TRUE),widths=c(3,1), heights=c(1,2) )
+  boxplot(var_name, main="With outliers") 	#Plot boxplot of data with outliers
+  hist(var_name, main="With outliers", xlab=deparse(substitute(var)), ylab="Frequency") #Plot histogram of data with outliers
+  #Data points which lie beyond the extremes of the whiskers 
+  outlier <- boxplot.stats(var_name)$out 
+  mo <- mean(outlier)		#mean of outliers
+  #Replace outliers by NA of dataset using matching %in% test for ease of counting
+  new_NA <- ifelse(var_name %in% outlier, NA, var_name) 
+	na2 <- sum(is.na(new_NA))	#Count the new number of NA
+	var_name <- ifelse(var_name %in% outlier, md1, var_name) #Replace outliers by median
+  boxplot(var_name, main="Without outliers")	#Boxplot without outliers
+  hist(var_name, main="Without outliers", xlab=deparse(substitute(var)), ylab="Frequency") #Histogram without outliers
+  title("Outlier Check", outer=TRUE)
+  #Print identified number of outliers similar to print(paste("Outliers identified:", na2 - na1, "n"))
+  cat("Outliers identified:", na2 - na1, "numbers", "\n") 
+  # compute the proportion of outliers in data rounded to 1 decimal place
+  cat("Propotion (%) of outliers:", round((na2 - na1) / sum(!is.na(var_name))*100, 1), "\n") 
+  cat("Mean of the outliers:", round(mo, 2), "\n")
+  m2 	<- mean(var_name, na.rm = T) 	#Mean after removing outliers
+	md2 <- median(var_name, na.rm = T) 	#Median after removing outliers
+  cat("Mean without removing outliers:", round(m1, 2), "\n")
+  cat("Mean if we remove outliers:", round(m2, 2), "\n")
+	cat("Median without removing outliers:", round(md1, 2), "\n")
+  cat("Median if we remove outliers:", round(md2, 2), "\n")
+  #response <- readline(prompt="Do you want to remove outliers and to replace with  data mean? [yes/no]: ") #Interactive input
+	response <- "y"		
+    if(response == "y" | response == "yes"){
+		#originalData <- na.omit(originalData) #remove missing /not applicable values
+    #replace outliers with mean
+		CleanData <- ifelse(originalData %in% outlier, md1, originalData) 
+		CleanData[is.na(CleanData)] <- md1	#Replace all missing values with 0
+		cat("Outliers successfully replaced with median ", na2 - na1, "\n")
+		cat("Missing data successfully replaced with median ", na1, "\n")
+		write.csv(CleanData, "CleanedData.csv")
+		return(invisible(CleanData))
+     }
+	 if(response == "n" | response == "no"){
+        cat(na2 - na1, " outliers retained", "\n")
+		write.csv(originalData, "CleanedData.csv")
+		return(invisible(originalData))
+     }
+}
+CleanData 	  <- Data #create another variable to hold cleaned data
+CleanData$om	<- Getoutlier(Data, om) # remove outliers from organic matter (OM)
 
 ```
 
@@ -88,6 +149,21 @@ sd(copper)==sqrt(var(copper))
 
 ```
 
+### Covariance and correlation
+
+Covariance and correlation are used to illustrate joint dispersion of two variables. Using the same dataset, we can compute the covariance and correlation of copper and lead as follows:
+
+```{r cov_Cor}
+rm(list=ls(all=TRUE)) 
+if (!require("pacman")) install.packages("pacman") 
+pacman::p_load(sp)
+data(meuse)
+attach(meuse)
+cov(copper, lead)
+cor(copper,lead, method = "pearson")
+
+```
+
 ### Kurtosis and skewness
 
 Intuitively, the kurtosis describes the tail shape of the data distribution. The normal distribution has zero kurtosis and thus the standard tail shape. For instance the copper data is more peaked than the normal distribution since the kurtosis > 0. This is also illustrated by a histogram plot overlaid with the normal distribution curve.
@@ -106,8 +182,11 @@ text(median(copper),0.04,"Median", col = "blue", adj = c(1, -.1))
 cat("Skewness of copper is ", skewness(copper), " . This means that the data is positively skewed as illustrated on the histogram plot.")
 ```
 
+## Exercise
 
-# Normal Distribution
+Compute the coefficient of variation in R.
+
+## Normal Distribution
 
 Here we illustrate how normal distribution looks like. In R you can generate a the normal distribution using a specified mean and standard deviation. 
 
@@ -116,12 +195,32 @@ x<-rnorm(100000,mean=10, sd=2)
 hist(x,breaks=150,xlim=c(0,20),freq=FALSE)
 abline(v=10, lwd=5)
 abline(v=c(4,6,8,12,14,16), lwd=3,lty=3)
+
+# Create a sequence of numbers between -10 and 10 incrementing by 0.2.
+x <- seq(-10,10,by = .2)
+# Choose the mean as 2.5 and standard deviation as 2. 
+y <- pnorm(x, mean = 2.5, sd = 2)
+# Plot the graph.
+plot(x,y)
+
 ```
 
-# Exploring spatial trend
+In R you can also check the distribution of data versus the Theoretical quantile distribution using QQ plots. It is possible To compare a sample with a theoretical sample that comes from a certain distribution (for example, the normal distribution).
 
-Spatial exploratory data analysis starts with the plotting of maps with a
-measured variable.
+To make a QQ plot this way, R has the special qqnorm() function. As the name implies, this function plots your sample against a normal distribution. You simply give the sample you want to plot as a first argument and add any graphical parameters you like.
+
+R then creates a sample with values coming from the standard normal distribution, or a normal distribution with a mean of zero and a standard deviation of one. With this second sample, R creates the QQ plot as explained before.
+
+```{r}
+qqnorm(copper, main='Copper in Meuse River')
+qqline(copper)
+
+```
+
+
+## Exploring spatial trend
+
+Spatial exploratory data analysis starts with the plotting of maps with a measured variable.
 
 ```{r sp1}
 coordinates(meuse) <- c("x", "y")
@@ -130,8 +229,7 @@ bubble(meuse, "zinc", do.log = T, key.space = "bottom")
 
 ```
 
-The evident structure here is that zinc concentration is larger close to the
-river Meuse banks.
+The evident structure here is that zinc concentration is larger close to the river Meuse banks.
 
 In case of an evident spatial trend, such as the relation between top soil zinc concentration and distance ($\text{zinc} \propto \beta_0 + \beta_1(\text{dist})$) to the river, we make a plot to illustrate this relationship.
 
@@ -162,7 +260,7 @@ Let us first look at another example before we go to **non-geostatistical interp
 
 ```{r t1}
 d <- read.csv("./data/soil_data_CIAT.csv", stringsAsFactors=FALSE)
-head(d, n=3)
+knitr::kable(head(d, n=3), align = 'l')
 
 ```
 
@@ -207,6 +305,6 @@ plot(Carbon ~ Clay + Sand , d)
 
 We have seen how to explore data using plots and some measures. Next lesson illustrates how to analyze the data using **non-geostatistical interpolation**. 
 
-# References
+## References
 
 Piikki, K.; Söderström, M.; Sommer, R.; Da Silva, M.; Munialo, S.; Abera, W. [A Boundary Plane Approach to Map Hotspots for Achievable Soil Carbon Sequestration and Soil Fertility Improvement.](https://www.mdpi.com/2071-1050/11/15/4038) *Sustainability* 2019, 11, 4038.
