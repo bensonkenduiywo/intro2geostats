@@ -39,8 +39,12 @@ navbar:
       href: https://twitter.com/bensonkenduiywo
     - icon: fab fa-linkedin fa-lg
       href: https://www.linkedin.com/in/benson-kenduiywo-1a218137
+
 output:
   html_document:
     theme: yeti
-    css: 'styles.css'
+    highlight: textmate
+    include:
+      after_body: footer.html
+    css: styles.css
 
